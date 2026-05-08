@@ -99,12 +99,31 @@ export async function generateMetadata({ params }: NewsPageProps): Promise<Metad
 // ==========================================
 const portableTextComponents: PortableTextComponents = {
   types: {
-    image: ({ value }: { value: SanityImage & { asset: any } }) => {
+    image: ({ value }: { value: SanityImage & { asset: any; width?: string; alignment?: string; rounded?: boolean } }) => {
       if (!value?.asset) return null;
       const imageUrl = value.asset?.url || urlFor(value).width(1200).url();
+      const width = value.width || "100";
+      const alignment = value.alignment || "center";
+      const isRounded = value.rounded !== false;
+
+      // Float styles for left/right alignment
+      const floatStyles: Record<string, string> = {
+        left: "float-left mr-8 mb-4",
+        right: "float-right ml-8 mb-4",
+        center: "mx-auto",
+      };
+
+      const isFullWidth = width === "100";
+      const containerClass = isFullWidth
+        ? "my-10 -mx-4 sm:mx-0 w-full"
+        : `my-6 ${floatStyles[alignment]}`;
+
       return (
-        <figure className="my-10 -mx-4 sm:mx-0">
-          <div className="relative w-full overflow-hidden rounded-2xl shadow-lg">
+        <figure
+          className={containerClass}
+          style={!isFullWidth ? { maxWidth: `${width}%` } : undefined}
+        >
+          <div className={`relative w-full overflow-hidden ${isRounded ? "rounded-2xl" : ""}`}>
             <Image
               src={imageUrl}
               alt={value.alt || value.caption || "Фото у статті"}
@@ -120,6 +139,44 @@ const portableTextComponents: PortableTextComponents = {
             </figcaption>
           )}
         </figure>
+      );
+    },
+    imageGallery: ({ value }: { value: { images?: any[]; columns?: number; gap?: string; rounded?: boolean } }) => {
+      if (!value?.images || value.images.length === 0) return null;
+      const cols = value.columns || 2;
+      const isRounded = value.rounded === true;
+      const gridClass =
+        cols === 2 ? "grid-cols-2" : cols === 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-4";
+      const gapClass: Record<string, string> = {
+        none: "gap-0",
+        small: "gap-2",
+        medium: "gap-4",
+        large: "gap-8",
+      };
+      const gap = gapClass[value.gap || "medium"] || "gap-4";
+      return (
+        <div className={`my-10 grid ${gridClass} ${gap}`}>
+          {value.images.map((img: any, idx: number) => {
+            if (!img?.asset) return null;
+            const imageUrl = img.asset?.url || urlFor(img).width(800).url();
+            return (
+              <figure key={img._key || idx} className={`group relative overflow-hidden aspect-[4/3] ${isRounded ? "rounded-xl" : ""}`}>
+                <Image
+                  src={imageUrl}
+                  alt={img.alt || img.caption || `Фото ${idx + 1}`}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes={`(max-width: 768px) 50vw, ${Math.round(100 / cols)}vw`}
+                />
+                {img.caption && (
+                  <figcaption className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <p className="text-white text-xs font-medium">{img.caption}</p>
+                  </figcaption>
+                )}
+              </figure>
+            );
+          })}
+        </div>
       );
     },
   },
@@ -276,7 +333,7 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
   return (
     <main className="min-h-screen bg-white">
       {/* ─── Hero Section ─── */}
-      <section className="relative bg-esn-dark pt-36 pb-28 overflow-hidden">
+      <section className="relative bg-esn-dark pt-40 pb-20 overflow-hidden">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#1a1d5e] via-esn-dark to-[#141B41]" />
 
@@ -297,46 +354,48 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
           </div>
         )}
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6 sm:px-12 lg:px-24 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 sm:px-12 lg:px-24 grid lg:grid-cols-12 gap-8 items-center">
           {/* Left Column — Text */}
-          <div>
-            {/* Back link */}
-            <Link
-              href="/news"
-              className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors mb-10 group"
-            >
-              <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-              <span className="text-sm font-medium">Усі новини</span>
-            </Link>
+          <div className="lg:col-span-7">
+            <div className="flex flex-col items-start justify-center h-full -mt-12">
+              {/* Back link */}
+              <Link
+                href="/news"
+                className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors mb-8 group"
+              >
+                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                <span className="text-sm font-medium">Усі новини</span>
+              </Link>
 
-            {/* Meta info */}
-            <div className="flex flex-wrap items-center gap-4 mb-6">
-              <span className="inline-flex items-center gap-2 text-esn-cyan text-sm font-semibold">
-                <Calendar className="w-4 h-4" />
-                {new Date(article.publishedAt).toLocaleDateString("uk-UA", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
+              {/* Meta info */}
+              <div className="flex flex-wrap items-center gap-4 mb-4">
+                <span className="inline-flex items-center gap-2 text-esn-cyan text-sm font-semibold">
+                  <Calendar className="w-4 h-4" />
+                  {new Date(article.publishedAt).toLocaleDateString("uk-UA", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+
+              {/* Title */}
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-[1.1]">
+                {article.title}
+              </h1>
+
+              {/* Excerpt */}
+              {article.excerpt && (
+                <p className="text-lg md:text-xl text-gray-300 leading-relaxed max-w-3xl">
+                  {article.excerpt}
+                </p>
+              )}
             </div>
-
-            {/* Title */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-[1.1]">
-              {article.title}
-            </h1>
-
-            {/* Excerpt */}
-            {article.excerpt && (
-              <p className="text-lg md:text-xl text-gray-300 leading-relaxed max-w-3xl">
-                {article.excerpt}
-              </p>
-            )}
           </div>
 
           {/* Right Column — Featured Image */}
           {mainImageUrl && (
-            <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+            <div className="lg:col-span-5 max-w-md w-full relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10">
               <Image
                 src={mainImageUrl}
                 alt={article.title}

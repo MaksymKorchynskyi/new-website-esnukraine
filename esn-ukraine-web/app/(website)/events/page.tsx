@@ -1,7 +1,7 @@
 import { client } from "@/sanity/client";
-import Image from "next/image";
 import Link from "next/link";
-import { Calendar, ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { EventCard } from "@/components/ui/Card";
 
 // ==========================================
 // INTERFACES (CMS-ready structure)
@@ -14,6 +14,12 @@ interface Event {
   location: string;
   description?: string;
   imageUrl: string | null;
+}
+
+function truncateToSentences(text: string, maxSentences: number): string {
+  const sentences = text.match(/[^.!?]+[.!?]+/g);
+  if (!sentences || sentences.length <= maxSentences) return text;
+  return sentences.slice(0, maxSentences).join('').trim() + '...';
 }
 
 // ==========================================
@@ -103,12 +109,6 @@ const MOCK_EVENTS: Event[] = [
   },
 ];
 
-function truncateToSentences(text: string, maxSentences: number): string {
-  const sentences = text.match(/[^.!?]+[.!?]+/g);
-  if (!sentences || sentences.length <= maxSentences) return text;
-  return sentences.slice(0, maxSentences).join('').trim() + '...';
-}
-
 // ==========================================
 // DATA FETCHING
 // ==========================================
@@ -119,6 +119,7 @@ async function getEvents(): Promise<Event[]> {
       title, 
       date, 
       location, 
+      excerpt,
       description,
       slug,
       "imageUrl": mainImage.asset->url
@@ -129,7 +130,11 @@ async function getEvents(): Promise<Event[]> {
     if (!events || events.length === 0) {
       return MOCK_EVENTS;
     }
-    return events;
+    // Use excerpt as description fallback
+    return events.map((e: any) => ({
+      ...e,
+      description: e.description || e.excerpt || '',
+    }));
   } catch {
     return MOCK_EVENTS;
   }
@@ -177,51 +182,18 @@ export default async function EventsPage() {
           {events.length === 0 ? (
             <p className="text-gray-500 text-center py-12">No events yet.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {events.map((event) => (
-                <article
+                <EventCard
                   key={event._id}
-                  className="group bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                >
-                  {/* Image */}
-                  <div className="relative h-56 overflow-hidden">
-                    {event.imageUrl && (
-                      <Image
-                        src={event.imageUrl}
-                        alt={event.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    )}
-
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-6">
-                    <p className="inline-flex items-center gap-1.5 text-sm text-gray-500 mb-3">
-                      <Calendar className="w-4 h-4 text-esn-magenta" />
-                      {new Date(event.date).toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                    </p>
-
-                    <h3 className="text-xl font-bold text-esn-dark mb-3 group-hover:text-esn-cyan transition-colors line-clamp-2">
-                      {event.title}
-                    </h3>
-
-                    {event.description && (
-                      <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                        {truncateToSentences(event.description, 3)}
-                      </p>
-                    )}
-
-                    <Link
-                      href={`/events/${event.slug.current}`}
-                      className="inline-flex items-center gap-2 text-sm font-bold text-esn-dark hover:text-esn-cyan transition-colors group/link"
-                    >
-                      Read More
-                      <ArrowRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
-                    </Link>
-                  </div>
-                </article>
+                  title={event.title}
+                  slug={event.slug.current}
+                  imageUrl={event.imageUrl}
+                  description={event.description ? truncateToSentences(event.description, 3) : null}
+                  date={event.date}
+                  location={event.location}
+                  type="event"
+                />
               ))}
             </div>
           )}

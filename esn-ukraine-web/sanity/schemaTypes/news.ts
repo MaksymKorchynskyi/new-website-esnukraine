@@ -30,6 +30,13 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'category',
+      title: 'Категорія',
+      type: 'reference',
+      to: [{ type: 'newsCategory' }],
+      description: 'Опціонально. Оберіть категорію або створіть нову.',
+    }),
+    defineField({
       name: 'mainImage',
       title: 'Прев\'ю зображення (для карточки)',
       type: 'image',
@@ -100,7 +107,121 @@ export default defineType({
               title: 'Alt текст',
               description: 'Опис зображення для доступності.',
             }),
+            defineField({
+              name: 'width',
+              type: 'string',
+              title: 'Ширина фото',
+              description: 'Яку частину ширини сторінки займає фото.',
+              options: {
+                list: [
+                  { title: '25%', value: '25' },
+                  { title: '33%', value: '33' },
+                  { title: '50%', value: '50' },
+                  { title: '66%', value: '66' },
+                  { title: '75%', value: '75' },
+                  { title: '100% (на всю ширину)', value: '100' },
+                ],
+                layout: 'radio',
+              },
+              initialValue: '100',
+            }),
+            defineField({
+              name: 'alignment',
+              type: 'string',
+              title: 'Розташування',
+              description: 'Ліворуч / по центру / праворуч. При виборі ліворуч або праворуч текст обтікає фото.',
+              options: {
+                list: [
+                  { title: '← Ліворуч (текст обтікає справа)', value: 'left' },
+                  { title: 'По центру', value: 'center' },
+                  { title: 'Праворуч (текст обтікає зліва) →', value: 'right' },
+                ],
+                layout: 'radio',
+              },
+              initialValue: 'center',
+            }),
+            defineField({
+              name: 'rounded',
+              type: 'boolean',
+              title: 'Закруглені кути',
+              description: 'Увімкнути закруглення кутів фото.',
+              initialValue: true,
+            }),
           ],
+        },
+        {
+          type: 'object',
+          name: 'imageGallery',
+          title: 'Кілька фото в ряд',
+          fields: [
+            defineField({
+              name: 'images',
+              type: 'array',
+              title: 'Фотографії',
+              of: [
+                {
+                  type: 'image',
+                  options: { hotspot: true },
+                  fields: [
+                    defineField({
+                      name: 'caption',
+                      type: 'string',
+                      title: 'Підпис',
+                    }),
+                    defineField({
+                      name: 'alt',
+                      type: 'string',
+                      title: 'Alt текст',
+                    }),
+                  ],
+                },
+              ],
+              validation: (rule) => rule.min(2).max(6),
+            }),
+            defineField({
+              name: 'columns',
+              type: 'number',
+              title: 'Кількість колонок',
+              description: 'Скільки фото показувати в ряд.',
+              options: {
+                list: [
+                  { title: '2 в ряд', value: 2 },
+                  { title: '3 в ряд', value: 3 },
+                  { title: '4 в ряд', value: 4 },
+                ],
+              },
+              initialValue: 2,
+            }),
+            defineField({
+              name: 'rounded',
+              type: 'boolean',
+              title: 'Закруглені кути',
+              description: 'Увімкнути закруглення кутів фото у галереї.',
+              initialValue: false,
+            }),
+            defineField({
+              name: 'gap',
+              type: 'string',
+              title: 'Відстань між фото',
+              options: {
+                list: [
+                  { title: 'Без відстані', value: 'none' },
+                  { title: 'Маленька', value: 'small' },
+                  { title: 'Середня', value: 'medium' },
+                  { title: 'Велика', value: 'large' },
+                ],
+              },
+              initialValue: 'medium',
+            }),
+          ],
+          preview: {
+            select: { images: 'images', columns: 'columns' },
+            prepare({ images, columns }) {
+              return {
+                title: `Галерея: ${images?.length || 0} фото, ${columns || 2} в ряд`,
+              }
+            },
+          },
         },
       ],
       description: 'Основний текст статті. Можна вставляти фото між абзацами.',

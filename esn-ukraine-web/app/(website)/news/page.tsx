@@ -1,7 +1,7 @@
 import { client } from "@/sanity/client";
-import Image from "next/image";
 import Link from "next/link";
-import { Calendar, ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { NewsCard } from "@/components/ui/Card";
 
 // ==========================================
 // INTERFACES (CMS-ready structure)
@@ -13,6 +13,7 @@ interface NewsArticle {
   publishedAt: string;
   excerpt: string;
   imageUrl: string | null;
+  category: string | null;
 }
 
 // ==========================================
@@ -25,7 +26,8 @@ async function getNews(): Promise<NewsArticle[]> {
     slug,
     publishedAt,
     excerpt,
-    "imageUrl": mainImage.asset->url
+    "imageUrl": mainImage.asset->url,
+    "category": category->title
   }`;
   return await client.fetch(query);
 }
@@ -72,62 +74,16 @@ export default async function NewsPage() {
           ) : (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {news.map((article) => (
-                <Link
+                <NewsCard
                   key={article._id}
-                  href={`/news/${article.slug.current}`}
-                  className="group"
-                >
-                  <article className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full flex flex-col">
-                    {/* Image */}
-                    <div className="relative h-56 overflow-hidden bg-gray-100">
-                      {article.imageUrl ? (
-                        <Image
-                          src={article.imageUrl}
-                          alt={article.title}
-                          fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                      ) : (
-                        <div className="flex items-center justify-center h-full bg-esn-cyan/5">
-                          <span className="text-esn-cyan font-bold text-xl">ESN</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex flex-1 flex-col p-6">
-                      {/* Date */}
-                      <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
-                        <Calendar className="w-4 h-4 text-esn-cyan" />
-                        {new Date(article.publishedAt).toLocaleDateString('uk-UA', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                        })}
-                      </div>
-
-                      {/* Title */}
-                      <h3 className="text-xl font-bold text-esn-dark mb-3 group-hover:text-esn-cyan transition-colors line-clamp-2">
-                        {article.title}
-                      </h3>
-
-                      {/* Excerpt */}
-                      {article.excerpt && (
-                        <p className="text-gray-500 text-sm leading-relaxed line-clamp-3 flex-grow">
-                          {article.excerpt}
-                        </p>
-                      )}
-
-                      {/* Read More */}
-                      <div className="mt-6 pt-4 border-t border-gray-100">
-                        <span className="inline-flex items-center gap-2 text-sm font-bold text-esn-dark group-hover:text-esn-cyan group-hover:gap-3 transition-all">
-                          Read Article
-                          <ArrowRight className="w-4 h-4" />
-                        </span>
-                      </div>
-                    </div>
-                  </article>
-                </Link>
+                  title={article.title}
+                  slug={article.slug.current}
+                  imageUrl={article.imageUrl}
+                  excerpt={article.excerpt}
+                  publishedAt={article.publishedAt}
+                  category={article.category}
+                  type="news"
+                />
               ))}
             </div>
           )}
