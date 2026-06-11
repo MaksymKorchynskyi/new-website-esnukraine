@@ -29,7 +29,7 @@ type CardProps = NewsCardProps | EventCardProps;
 export function NewsCard({ title, imageUrl, slug, excerpt, publishedAt, category }: NewsCardProps) {
   return (
     <Link href={`/news/${slug}`} className="group block">
-      <article className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-[#2E3192]/10 hover:-translate-y-2">
+      <article className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-esn-dark/10 hover:-translate-y-2">
         {/* Image Section */}
         <div className="relative h-64 overflow-hidden">
           {imageUrl ? (
@@ -97,7 +97,7 @@ export function NewsCard({ title, imageUrl, slug, excerpt, publishedAt, category
 export function EventCard({ title, imageUrl, slug, description, date, location }: EventCardProps) {
   return (
     <Link href={`/events/${slug}`} className="group block">
-      <article className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-[#2E3192]/10 hover:-translate-y-2">
+      <article className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-esn-dark/10 hover:-translate-y-2">
         {/* Image Section */}
         <div className="relative h-64 overflow-hidden">
           {imageUrl ? (
