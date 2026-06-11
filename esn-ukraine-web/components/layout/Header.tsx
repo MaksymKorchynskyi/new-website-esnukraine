@@ -127,6 +127,7 @@ const Header: React.FC = () => {
                     <button
                       onClick={() => handleDropdownToggle(item.label)}
                       className="text-esn-dark hover:text-esn-cyan transition-colors duration-200"
+                      aria-label={`Toggle dropdown for ${item.label}`}
                     >
                       <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${activeDropdown === item.label ? 'rotate-180' : ''}`} />
                     </button>
@@ -166,6 +167,7 @@ const Header: React.FC = () => {
             <button
               onClick={toggleLanguage}
               className="hidden sm:flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium text-esn-dark hover:bg-esn-cyan/10 transition-all duration-200 border border-gray-200 hover:border-esn-cyan"
+              aria-label="Toggle language"
             >
               <Globe className="w-4 h-4" />
               <span>{language}</span>
@@ -175,6 +177,7 @@ const Header: React.FC = () => {
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="lg:hidden p-2 rounded-md text-esn-dark hover:bg-esn-cyan/10 transition-colors duration-200"
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -190,6 +193,7 @@ const Header: React.FC = () => {
                 <button
                   onClick={toggleLanguage}
                   className="flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium text-esn-dark hover:bg-esn-cyan/10 transition-all duration-200 border border-gray-200 hover:border-esn-cyan"
+                  aria-label="Toggle language"
                 >
                   <Globe className="w-4 h-4" />
                   <span>{language}</span>
@@ -205,6 +209,7 @@ const Header: React.FC = () => {
                         <button
                           onClick={() => handleDropdownToggle(item.label)}
                           className="flex items-center justify-between w-full text-left text-esn-dark font-bold text-sm tracking-wider uppercase hover:text-esn-cyan transition-colors duration-200"
+                          aria-label={`Toggle dropdown for ${item.label}`}
                         >
                           <span>{item.label}</span>
                           <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === item.label ? 'rotate-180' : ''
