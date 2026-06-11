@@ -45,6 +45,20 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'isSpotlight',
+      title: 'Показувати в Spotlight на головній',
+      type: 'boolean',
+      description: 'Увімкніть, щоб ця новина відображалась у великому слайдері на головній сторінці.',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'bannerImage',
+      title: 'Банер (задній фон)',
+      type: 'image',
+      options: { hotspot: true },
+      description: 'Фото для заднього фону на сторінці новини та в Spotlight (якщо увімкнено вище).',
+    }),
+    defineField({
       name: 'excerpt',
       title: 'Короткий опис (Summary)',
       type: 'text',
@@ -61,6 +75,8 @@ export default defineType({
           type: 'block',
           styles: [
             { title: 'Звичайний', value: 'normal' },
+            { title: 'Великий вступ (Lead)', value: 'lead' },
+            { title: 'Малий текст (Small)', value: 'small' },
             { title: 'Заголовок H2', value: 'h2' },
             { title: 'Заголовок H3', value: 'h3' },
             { title: 'Заголовок H4', value: 'h4' },
@@ -71,8 +87,62 @@ export default defineType({
               { title: 'Жирний', value: 'strong' },
               { title: 'Курсив', value: 'em' },
               { title: 'Підкреслений', value: 'underline' },
+              { title: 'Закреслений', value: 'strike-through' },
+              { title: 'Код (Inline)', value: 'code' },
             ],
             annotations: [
+              {
+                name: 'textColor',
+                type: 'object',
+                title: 'Колір тексту',
+                fields: [
+                  {
+                    name: 'color',
+                    type: 'string',
+                    title: 'Колір (HEX)',
+                    options: {
+                      list: [
+                        { title: '#00AEEF (ESN Cyan)', value: '#00AEEF' },
+                        { title: '#EC008C (ESN Magenta)', value: '#EC008C' },
+                        { title: '#2E3192 (ESN Dark Blue)', value: '#2E3192' },
+                        { title: '#7AC143 (ESN Green)', value: '#7AC143' },
+                        { title: '#F47B20 (ESN Orange)', value: '#F47B20' },
+                        { title: '#000000 (Чорний)', value: '#000000' },
+                        { title: '#FFFFFF (Білий)', value: '#FFFFFF' },
+                        { title: '#6B7280 (Сірий)', value: '#6B7280' },
+                        { title: '#EF4444 (Червоний)', value: '#EF4444' },
+                      ],
+                    },
+                  },
+                ],
+              },
+              {
+                name: 'textSize',
+                type: 'object',
+                title: 'Розмір тексту',
+                fields: [
+                  {
+                    name: 'size',
+                    type: 'string',
+                    title: 'Розмір (px)',
+                    options: {
+                      list: [
+                        { title: '12px', value: '12px' },
+                        { title: '14px', value: '14px' },
+                        { title: '16px', value: '16px' },
+                        { title: '18px', value: '18px' },
+                        { title: '20px', value: '20px' },
+                        { title: '24px', value: '24px' },
+                        { title: '30px', value: '30px' },
+                        { title: '36px', value: '36px' },
+                        { title: '48px', value: '48px' },
+                        { title: '60px', value: '60px' },
+                        { title: '72px', value: '72px' },
+                      ],
+                    },
+                  },
+                ],
+              },
               {
                 name: 'link',
                 type: 'object',
@@ -89,6 +159,25 @@ export default defineType({
               },
             ],
           },
+        },
+        {
+          type: 'object',
+          name: 'divider',
+          title: 'Розділювач (Лінія)',
+          fields: [
+            defineField({
+              name: 'style',
+              type: 'string',
+              title: 'Стиль',
+              options: {
+                list: [
+                  { title: 'Звичайна лінія', value: 'solid' },
+                  { title: 'Пунктирна лінія', value: 'dashed' },
+                ],
+              },
+              initialValue: 'solid',
+            }),
+          ],
         },
         {
           type: 'image',
