@@ -36,6 +36,10 @@ export const metadata: Metadata = {
     description: "Erasmus Student Network Ukraine - Students Helping Students",
     images: ["/og-image.jpg"],
   },
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function RootLayout({
