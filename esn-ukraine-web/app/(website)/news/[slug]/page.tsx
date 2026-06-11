@@ -1,11 +1,14 @@
-import { client } from "@/sanity/client";
 import { urlFor } from "@/sanity/lib/image";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, Share2 } from "lucide-react";
+import { ArrowLeft, Calendar, Clock } from "lucide-react";
+import { ShareButton } from "@/components/ui/ShareButton.client";
 import { PortableText, PortableTextComponents } from "@portabletext/react";
 import type { Metadata } from "next";
+import { sanityFetch } from "@/sanity/lib/fetch";
+import { getNewsBySlugQuery, getAllNewsSlugsQuery } from "@/sanity/lib/queries";
+import type { NewsArticleDetail } from "@/sanity/lib/types";
 
 // ==========================================
 // INTERFACES
@@ -19,6 +22,7 @@ interface SanityImage {
   asset: {
     _ref: string;
     _type: "reference";
+    metadata?: { lqip: string };
   };
   caption?: string;
   alt?: string;
@@ -27,48 +31,24 @@ interface SanityImage {
 
 interface GalleryImage {
   _key: string;
-  asset: { _ref: string; _type: "reference"; url?: string };
+  asset: { _ref: string; _type: "reference"; url?: string; metadata?: { lqip: string } };
   caption?: string;
   hotspot?: { x: number; y: number };
 }
 
-interface NewsArticle {
-  _id: string;
-  title: string;
-  publishedAt: string;
-  excerpt: string;
-  mainImage: SanityImage | null;
-  body: any[];
-  gallery: GalleryImage[] | null;
-}
 
 // ==========================================
-// DATA FETCHING
+// STATIC GENERATION
 // ==========================================
-const ARTICLE_QUERY = `*[_type == "news" && slug.current == $slug][0] {
-  _id,
-  title,
-  publishedAt,
-  excerpt,
-  mainImage,
-  body[] {
-    ...,
-    _type == "image" => {
-      ...,
-      asset->,
-      "caption": caption,
-      "alt": alt
-    }
-  },
-  gallery[] {
-    _key,
-    asset->,
-    caption
-  }
-}`;
+export async function generateStaticParams() {
+  const slugs = await sanityFetch<{ slug: string }[]>({
+    query: getAllNewsSlugsQuery,
+    tags: ["news"],
+  });
 
-async function getNewsArticle(slug: string): Promise<NewsArticle | null> {
-  return await client.fetch(ARTICLE_QUERY, { slug });
+  return slugs.map((slugObj) => ({
+    slug: slugObj.slug,
+  }));
 }
 
 // ==========================================
@@ -76,8 +56,12 @@ async function getNewsArticle(slug: string): Promise<NewsArticle | null> {
 // ==========================================
 export async function generateMetadata({ params }: NewsPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = await getNewsArticle(slug);
+  const article = await sanityFetch<NewsArticleDetail | null>({ query: getNewsBySlugQuery, params: { slug } });
   if (!article) return { title: "Article Not Found" };
+
+  const ogImage = article.mainImage
+    ? urlFor(article.mainImage).width(1200).height(630).url()
+    : undefined;
 
   return {
     title: `${article.title} — ESN Ukraine`,
@@ -87,9 +71,13 @@ export async function generateMetadata({ params }: NewsPageProps): Promise<Metad
       description: article.excerpt,
       type: "article",
       publishedTime: article.publishedAt,
-      images: article.mainImage
-        ? [{ url: urlFor(article.mainImage).width(1200).height(630).url() }]
-        : [],
+      images: ogImage ? [{ url: ogImage, width: 1200, height: 630 }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.excerpt,
+      images: ogImage ? [ogImage] : [],
     },
   };
 }
@@ -99,6 +87,12 @@ export async function generateMetadata({ params }: NewsPageProps): Promise<Metad
 // ==========================================
 const portableTextComponents: PortableTextComponents = {
   types: {
+    divider: ({ value }: { value: { style?: string } }) => {
+      const isDashed = value?.style === 'dashed';
+      return (
+        <hr className={`my-16 border-t-2 ${isDashed ? 'border-dashed' : 'border-solid'} border-gray-200`} />
+      );
+    },
     image: ({ value }: { value: SanityImage & { asset: any; width?: string; alignment?: string; rounded?: boolean } }) => {
       if (!value?.asset) return null;
       const imageUrl = value.asset?.url || urlFor(value).width(1200).url();
@@ -131,6 +125,8 @@ const portableTextComponents: PortableTextComponents = {
               height={675}
               className="w-full h-auto object-cover"
               sizes="(max-width: 768px) 100vw, 800px"
+              placeholder={value.asset?.metadata?.lqip ? "blur" : "empty"}
+              blurDataURL={value.asset?.metadata?.lqip}
             />
           </div>
           {value.caption && (
@@ -167,6 +163,8 @@ const portableTextComponents: PortableTextComponents = {
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                   sizes={`(max-width: 768px) 50vw, ${Math.round(100 / cols)}vw`}
+                  placeholder={img.asset?.metadata?.lqip ? "blur" : "empty"}
+                  blurDataURL={img.asset?.metadata?.lqip}
                 />
                 {img.caption && (
                   <figcaption className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -182,28 +180,38 @@ const portableTextComponents: PortableTextComponents = {
   },
   block: {
     h2: ({ children }) => (
-      <h2 className="text-3xl md:text-4xl font-black text-esn-dark mt-14 mb-5 leading-tight">
+      <h2 className="text-3xl md:text-4xl font-black text-esn-dark mt-16 mb-6 leading-tight tracking-tight">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="text-2xl md:text-3xl font-bold text-esn-dark mt-10 mb-4 leading-tight">
+      <h3 className="text-2xl md:text-3xl font-bold text-esn-dark mt-12 mb-4 leading-tight tracking-tight">
         {children}
       </h3>
     ),
     h4: ({ children }) => (
-      <h4 className="text-xl md:text-2xl font-bold text-esn-dark mt-8 mb-3">
+      <h4 className="text-xl md:text-2xl font-bold text-esn-dark mt-8 mb-3 tracking-tight">
         {children}
       </h4>
     ),
     normal: ({ children }) => (
-      <p className="text-lg leading-[1.85] text-gray-700 mb-6">
+      <p className="text-lg md:text-xl leading-[1.8] text-gray-800 mb-6">
+        {children}
+      </p>
+    ),
+    lead: ({ children }) => (
+      <p className="text-xl md:text-2xl font-light leading-[1.7] text-gray-700 mb-8">
+        {children}
+      </p>
+    ),
+    small: ({ children }) => (
+      <p className="text-sm leading-relaxed text-gray-500 mb-4">
         {children}
       </p>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="my-8 border-l-4 border-esn-cyan pl-6 py-2 bg-esn-cyan/5 rounded-r-xl">
-        <p className="text-lg italic text-gray-600 leading-relaxed">{children}</p>
+      <blockquote className="my-10 border-l-4 border-esn-cyan pl-8 py-2">
+        <p className="text-2xl md:text-3xl italic font-medium text-gray-600 leading-snug">{children}</p>
       </blockquote>
     ),
   },
@@ -213,6 +221,18 @@ const portableTextComponents: PortableTextComponents = {
     ),
     em: ({ children }) => (
       <em className="italic">{children}</em>
+    ),
+    "strike-through": ({ children }) => (
+      <del className="line-through text-gray-400">{children}</del>
+    ),
+    code: ({ children }) => (
+      <code className="bg-gray-100 text-esn-magenta px-1.5 py-0.5 rounded text-sm font-mono">{children}</code>
+    ),
+    textColor: ({ children, value }) => (
+      <span style={{ color: value?.color }}>{children}</span>
+    ),
+    textSize: ({ children, value }) => (
+      <span style={{ fontSize: value?.size }}>{children}</span>
     ),
     link: ({ children, value }) => {
       const href = value?.href || "#";
@@ -231,21 +251,21 @@ const portableTextComponents: PortableTextComponents = {
   },
   list: {
     bullet: ({ children }) => (
-      <ul className="my-6 space-y-3 list-none pl-0">{children}</ul>
+      <ul className="my-8 space-y-4 list-none pl-0">{children}</ul>
     ),
     number: ({ children }) => (
-      <ol className="my-6 space-y-3 list-none pl-0 counter-reset-item">{children}</ol>
+      <ol className="my-8 space-y-4 list-none pl-0 counter-reset-item">{children}</ol>
     ),
   },
   listItem: {
     bullet: ({ children }) => (
-      <li className="flex items-start gap-3 text-lg text-gray-700 leading-relaxed">
-        <span className="mt-2 w-2 h-2 rounded-full bg-esn-cyan flex-shrink-0" />
+      <li className="flex items-start gap-4 text-lg md:text-xl text-gray-800 leading-[1.8]">
+        <span className="mt-2.5 w-2 h-2 rounded-sm bg-esn-cyan flex-shrink-0" />
         <span>{children}</span>
       </li>
     ),
     number: ({ children }) => (
-      <li className="flex items-start gap-3 text-lg text-gray-700 leading-relaxed">
+      <li className="flex items-start gap-4 text-lg md:text-xl text-gray-800 leading-[1.8]">
         <span>{children}</span>
       </li>
     ),
@@ -283,6 +303,8 @@ function PhotoGallery({ images }: { images: GalleryImage[] }) {
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    placeholder={img.asset?.metadata?.lqip ? "blur" : "empty"}
+                    blurDataURL={img.asset?.metadata?.lqip}
                   />
                 </div>
                 {img.caption && (
@@ -319,7 +341,7 @@ function getReadingTime(body: any[]): number {
 // ==========================================
 export default async function NewsArticlePage({ params }: NewsPageProps) {
   const { slug } = await params;
-  const article = await getNewsArticle(slug);
+  const article = await sanityFetch<NewsArticleDetail | null>({ query: getNewsBySlugQuery, params: { slug } });
 
   if (!article) {
     notFound();
@@ -329,6 +351,10 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
   const mainImageUrl = article.mainImage
     ? urlFor(article.mainImage).width(1600).height(900).url()
     : null;
+
+  const bannerImageUrl = article.bannerImage
+    ? urlFor(article.bannerImage).width(1920).height(1080).url()
+    : mainImageUrl;
 
   return (
     <main className="min-h-screen bg-white">
@@ -342,10 +368,10 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
         <div className="absolute bottom-0 left-10 w-60 h-60 bg-esn-magenta/8 rounded-full blur-3xl" />
 
         {/* Background image overlay */}
-        {mainImageUrl && (
+        {bannerImageUrl && (
           <div className="absolute inset-0 opacity-10">
             <Image
-              src={mainImageUrl}
+              src={bannerImageUrl}
               alt=""
               fill
               className="object-cover"
@@ -386,7 +412,7 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
 
               {/* Excerpt */}
               {article.excerpt && (
-                <p className="text-lg md:text-xl text-gray-300 leading-relaxed max-w-3xl">
+                <p className="text-lg md:text-xl text-gray-300 leading-relaxed max-w-5xl">
                   {article.excerpt}
                 </p>
               )}
@@ -413,9 +439,9 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
 
       {/* ─── Article Content ─── */}
       <section className="py-16 md:py-20 px-6 sm:px-12">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-5xl">
           {article.body && (
-            <div className="prose prose-lg max-w-none">
+            <div className="prose prose-lg prose-blue max-w-none">
               <PortableText value={article.body} components={portableTextComponents} />
             </div>
           )}
@@ -429,7 +455,7 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
 
       {/* ─── Share & Navigation ─── */}
       <section className="py-12 px-6 sm:px-12 border-t border-gray-100">
-        <div className="mx-auto max-w-3xl flex flex-col sm:flex-row justify-between items-center gap-6">
+        <div className="mx-auto max-w-5xl flex flex-col sm:flex-row justify-between items-center gap-6">
           <Link
             href="/news"
             className="inline-flex items-center gap-2 text-esn-dark font-bold hover:text-esn-cyan transition-colors group"
@@ -438,13 +464,7 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
             Усі новини
           </Link>
 
-          <button
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-gray-500 hover:text-esn-dark hover:border-esn-cyan/30 transition-all text-sm font-medium"
-            title="Поширити"
-          >
-            <Share2 className="w-4 h-4" />
-            Поширити
-          </button>
+          <ShareButton />
         </div>
       </section>
     </main>
