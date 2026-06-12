@@ -13,10 +13,10 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   metadataBase: new URL("https://esnukraine.org"),
   title: "ESN Ukraine",
-  description: "Erasmus Student Network Ukraine - Students Helping Students",
+  description: "Erasmus Student Network Ukraine is a national-level student organization that represents local ESN sections. At the moment, we have a growing network of sections across Ukraine.",
   openGraph: {
     title: "ESN Ukraine",
-    description: "Erasmus Student Network Ukraine - Students Helping Students",
+    description: "Erasmus Student Network Ukraine is a national-level student organization that represents local ESN sections. At the moment, we have a growing network of sections across Ukraine.",
     url: "https://esnukraine.org",
     siteName: "ESN Ukraine",
     images: [
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "ESN Ukraine",
-    description: "Erasmus Student Network Ukraine - Students Helping Students",
+    description: "Erasmus Student Network Ukraine is a national-level student organization that represents local ESN sections. At the moment, we have a growing network of sections across Ukraine.",
     images: ["/og-image.jpg"],
   },
   robots: {
