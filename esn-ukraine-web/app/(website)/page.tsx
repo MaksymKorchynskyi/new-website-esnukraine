@@ -73,7 +73,7 @@ export default async function Home() {
           <div className="grid gap-16 lg:grid-cols-12">
 
             {/* Left Column: Heading */}
-            <div className="lg:col-span-4">
+            <div className="hidden md:block lg:col-span-4">
               <h2 className="sticky top-10 text-5xl font-black uppercase leading-tight text-esn-dark">
                 We are the <br />
                 <span className="text-esn-cyan">Erasmus Generation</span>
