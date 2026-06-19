@@ -35,6 +35,17 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMobileMenuOpen]);
+
   const menuItems: MenuItem[] = [
     {
       label: 'About Us',
@@ -96,7 +107,7 @@ const Header: React.FC = () => {
         ? 'shadow-md border-b border-gray-100'
         : 'border-b border-gray-100'
         }`}>
-        <div className="flex justify-between items-center h-20 px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-[72px] sm:h-20 pl-2 pr-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <Link
             href="/"
@@ -184,9 +195,18 @@ const Header: React.FC = () => {
           </div>
         </div>
 
+        {/* Mobile Menu Overlay */}
+        {isMobileMenuOpen && (
+          <div 
+            className="lg:hidden fixed inset-0 top-[76px] sm:top-[84px] bg-esn-dark/10 backdrop-blur-sm z-40"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden bg-white border-t border-gray-100">
+          <div className="lg:hidden bg-white border-t border-gray-100 relative z-50 shadow-xl max-h-[calc(100vh-76px)] sm:max-h-[calc(100vh-84px)] overflow-y-auto">
             <div className="px-4 py-6 space-y-6">
               {/* Mobile Language Toggle */}
               <div className="flex justify-end">
