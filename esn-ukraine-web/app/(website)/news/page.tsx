@@ -109,7 +109,7 @@ export default async function NewsPage() {
             />
             <button
               type="submit"
-              className="whitespace-nowrap rounded-xl bg-esn-dark px-8 py-4 font-bold text-white shadow-lg transition-all hover:bg-esn-cyan hover:scale-105 tracking-wider uppercase"
+              className="whitespace-nowrap rounded-xl bg-esn-dark px-8 py-4 font-bold text-white shadow-lg transition-colors hover:bg-esn-cyan tracking-wider uppercase"
             >
               Subscribe
             </button>

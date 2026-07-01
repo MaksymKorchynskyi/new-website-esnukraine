@@ -173,12 +173,12 @@ export default function HeroSection({ slides }: HeroSectionProps) {
           className="group flex flex-col items-center text-white/80 hover:text-white transition-all duration-300"
           aria-label="Scroll down"
         >
-          <span className="text-xs font-medium uppercase tracking-wider mb-2 group-hover:mb-3 transition-all">
+          <span className="text-xs font-medium uppercase tracking-wider mb-2 transition-colors">
             Scroll
           </span>
           <div className="relative">
             <div className="w-6 h-10 border-2 border-white/30 rounded-full flex items-center justify-center">
-              <div className="w-1 h-3 bg-white/60 rounded-full animate-bounce"></div>
+              <div className="w-1 h-3 bg-white/60 rounded-full"></div>
             </div>
           </div>
         </button>

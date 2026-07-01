@@ -19,9 +19,9 @@ export default function NotFound() {
 
         <Link 
           href="/"
-          className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-esn-dark hover:bg-[#202273] text-white text-lg font-medium rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-esn-dark/50 hover:-translate-y-0.5 shadow-lg shadow-esn-dark/20"
+          className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-esn-dark hover:bg-[#202273] text-white text-lg font-medium rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-esn-dark/50 shadow-lg shadow-esn-dark/20"
         >
-          <Home className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+          <Home className="w-5 h-5" />
           <span>На головну</span>
         </Link>
       </div>

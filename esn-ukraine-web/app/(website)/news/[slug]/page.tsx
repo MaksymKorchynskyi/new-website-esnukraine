@@ -161,13 +161,13 @@ const portableTextComponents: PortableTextComponents = {
                   src={imageUrl}
                   alt={img.alt || img.caption || `Фото ${idx + 1}`}
                   fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="object-cover"
                   sizes={`(max-width: 768px) 50vw, ${Math.round(100 / cols)}vw`}
                   placeholder={img.asset?.metadata?.lqip ? "blur" : "empty"}
                   blurDataURL={img.asset?.metadata?.lqip}
                 />
                 {img.caption && (
-                  <figcaption className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <figcaption className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-8 opacity-100">
                     <p className="text-white text-xs font-medium">{img.caption}</p>
                   </figcaption>
                 )}
@@ -301,14 +301,14 @@ function PhotoGallery({ images }: { images: GalleryImage[] }) {
                     src={imageUrl}
                     alt={img.caption || `Фото ${idx + 1}`}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-cover"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     placeholder={img.asset?.metadata?.lqip ? "blur" : "empty"}
                     blurDataURL={img.asset?.metadata?.lqip}
                   />
                 </div>
                 {img.caption && (
-                  <figcaption className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 pt-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <figcaption className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 pt-10 opacity-100">
                     <p className="text-white text-sm font-medium">{img.caption}</p>
                   </figcaption>
                 )}

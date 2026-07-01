@@ -93,7 +93,7 @@ export default async function SectionsPage() {
                                                 alt={section.name}
                                                 width={280}
                                                 height={180}
-                                                className="object-contain max-h-[180px] w-auto transition-transform duration-500 group-hover:scale-105"
+                                                className="object-contain max-h-[180px] w-auto"
                                             />
                                         ) : (
                                             <div className="w-32 h-32 rounded-full bg-esn-dark/10 flex items-center justify-center">
