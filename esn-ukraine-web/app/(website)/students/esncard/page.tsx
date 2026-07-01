@@ -141,14 +141,14 @@ export default function ESNcardPage() {
                         ].map((benefit, index) => (
                             <div
                                 key={index}
-                                className="group rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                                className="group rounded-3xl overflow-hidden border border-gray-100 shadow-sm transition-shadow duration-300 hover:shadow-xl"
                             >
                                 <div className="relative h-56 overflow-hidden">
                                     <Image
                                         src={benefit.imageUrl}
                                         alt={benefit.title}
                                         fill
-                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                        className="object-cover"
                                     />
                                 </div>
                                 <div className="p-6">

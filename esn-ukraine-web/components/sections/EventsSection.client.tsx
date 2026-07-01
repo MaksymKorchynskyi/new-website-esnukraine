@@ -11,6 +11,7 @@ export interface PastEvent {
   location: string;
   description: string;
   image: string;
+  link?: string;
 }
 
 export interface EventsSectionProps {
@@ -30,31 +31,34 @@ export default function EventsSection({ events }: EventsSectionProps) {
         <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-8 sm:pb-12 px-5 sm:px-12 lg:px-24 scrollbar-hide snap-x snap-mandatory" id="events-slider">
           {events.map((event) => (
             <div key={event.id} className="relative flex-none w-[82vw] sm:w-[400px] snap-center group">
-              <div className="aspect-[3/4] overflow-hidden rounded-2xl sm:rounded-3xl bg-gray-800 relative">
+              <Link
+                href={event.link || '/events'}
+                className="block aspect-[3/4] overflow-hidden rounded-2xl sm:rounded-3xl bg-gray-800 relative focus:outline-none focus:ring-2 focus:ring-esn-cyan"
+              >
                 <Image
                   src={event.image}
                   alt={event.title}
                   fill={true}
-                  className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100"
+                  className="object-cover transition-all duration-500 opacity-80 group-hover:opacity-100 group-hover:scale-105"
                 />
 
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-esn-dark via-transparent to-transparent opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-esn-dark via-esn-dark/40 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-95" />
 
                 {/* Text Content overlay */}
-                <div className="absolute bottom-0 left-0 p-5 sm:p-8 transform transition-transform duration-500 sm:translate-y-2 sm:group-hover:translate-y-0">
+                <div className="absolute bottom-0 left-0 p-5 sm:p-8">
                   <div className="mb-1 sm:mb-2 text-esn-green font-bold text-xs sm:text-sm uppercase tracking-widest">
                     {event.date}
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 leading-tight">{event.title}</h3>
+                  <h3 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 leading-tight group-hover:text-esn-cyan transition-colors">{event.title}</h3>
                   <div className="flex items-center text-xs sm:text-sm text-esn-cyan font-bold mb-2 sm:mb-4">
                     <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" /> {event.location}
                   </div>
-                  <p className="text-gray-300 text-xs sm:text-sm leading-relaxed sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-500 delay-100 line-clamp-3 sm:line-clamp-none">
+                  <p className="text-gray-300 text-xs sm:text-sm leading-relaxed line-clamp-3">
                     {event.description}
                   </p>
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
 

@@ -142,11 +142,11 @@ const portableTextComponents: PortableTextComponents = {
                                     src={imageUrl}
                                     alt={img.alt || img.caption || `Фото ${idx + 1}`}
                                     fill
-                                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                    className="object-cover"
                                     sizes={`(max-width: 768px) 50vw, ${Math.round(100 / cols)}vw`}
                                 />
                                 {img.caption && (
-                                    <figcaption className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <figcaption className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-8 opacity-100">
                                         <p className="text-white text-xs font-medium">{img.caption}</p>
                                     </figcaption>
                                 )}

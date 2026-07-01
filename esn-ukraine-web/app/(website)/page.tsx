@@ -98,16 +98,16 @@ export default async function Home() {
                 We are one of the youngest existing sections of ESN, but we possess all the energy and courage to make your exchange in Ukraine the most amazing time of your life!
               </p>
 
-              <div className="flex flex-col sm:flex-row sm:items-center justify-start gap-4 sm:gap-8 pt-2 sm:pt-4">
-                <p className="text-2xl sm:text-4xl font-black text-esn-dark">#ESNukraine</p>
+              <div className="flex flex-row items-center justify-start gap-4 sm:gap-8 pt-3 sm:pt-4 flex-wrap">
+                <p className="text-2xl sm:text-4xl font-black text-esn-dark shrink-0">#ESNukraine</p>
 
-                <div className="pt-1 sm:pt-0">
+                <div>
                   <Link
                     href="/about"
-                    className="group inline-flex items-center justify-center gap-2 rounded-full border border-esn-dark sm:border-2 px-5 py-2 sm:px-8 sm:py-3 text-[11px] sm:text-sm font-bold uppercase tracking-widest text-esn-dark transition-all hover:bg-esn-dark hover:text-white w-auto max-w-fit"
+                    className="group inline-flex items-center justify-center gap-2 rounded-full border border-esn-dark sm:border-2 px-5 py-2.5 sm:px-8 sm:py-3 text-xs sm:text-sm font-bold uppercase tracking-widest text-esn-dark transition-all hover:bg-esn-dark hover:text-white shrink-0 min-h-[42px]"
                   >
                     Read More
-                    <ArrowRight className="h-3.5 w-3.5 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </div>
               </div>
@@ -128,15 +128,15 @@ export default async function Home() {
             <div className="relative grid grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-3 sm:space-y-4">
                 <div className="relative h-44 sm:h-64 w-full">
-                  <Image src="https://images.unsplash.com/photo-1541535650810-10d26f5c2ab3?auto=format&fit=crop&q=80" alt="ESN Community" fill={true} sizes="(max-width: 768px) 100vw, 50vw" className="object-cover shadow-lg rounded-xl cursor-pointer transition-transform duration-300 hover:scale-105 active:scale-95" />
+                  <Image src="https://images.unsplash.com/photo-1541535650810-10d26f5c2ab3?auto=format&fit=crop&q=80" alt="ESN Community" fill={true} sizes="(max-width: 768px) 100vw, 50vw" className="object-cover shadow-lg rounded-xl transition-shadow duration-300 hover:shadow-xl" />
                 </div>
                 <div className="relative h-32 sm:h-48 w-full">
-                  <Image src="https://images.unsplash.com/photo-1526716173434-a1b560f2065d?auto=format&fit=crop&q=80" alt="ESN Events" fill={true} sizes="(max-width: 768px) 100vw, 50vw" className="object-cover shadow-lg rounded-xl cursor-pointer transition-transform duration-300 hover:scale-105 active:scale-95" />
+                  <Image src="https://images.unsplash.com/photo-1526716173434-a1b560f2065d?auto=format&fit=crop&q=80" alt="ESN Events" fill={true} sizes="(max-width: 768px) 100vw, 50vw" className="object-cover shadow-lg rounded-xl transition-shadow duration-300 hover:shadow-xl" />
                 </div>
               </div>
               <div className="pt-6 sm:pt-8">
                 <div className="relative h-full w-full min-h-[220px] sm:min-h-[300px]">
-                  <Image src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&q=80" alt="ESN Network" fill={true} sizes="(max-width: 768px) 100vw, 50vw" className="object-cover shadow-lg rounded-xl cursor-pointer transition-transform duration-300 hover:scale-105 active:scale-95" />
+                  <Image src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&q=80" alt="ESN Network" fill={true} sizes="(max-width: 768px) 100vw, 50vw" className="object-cover shadow-lg rounded-xl transition-shadow duration-300 hover:shadow-xl" />
                 </div>
               </div>
               {/* Decorative Elements */}
@@ -185,7 +185,7 @@ export default async function Home() {
             </div>
             <div>
               <Link href="/news" className="group inline-flex items-center font-bold text-esn-magenta text-xs sm:text-base">
-                <span className="border-b-2 border-esn-magenta pb-0.5 group-hover:border-transparent transition-colors">Read all news</span>
+                <span className="border-b-2 border-transparent pb-0.5 group-hover:border-esn-magenta transition-colors">Read all news</span>
                 <ChevronRight className="ml-1 h-3.5 w-3.5 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>

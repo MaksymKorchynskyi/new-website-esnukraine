@@ -29,7 +29,7 @@ type CardProps = NewsCardProps | EventCardProps;
 export function NewsCard({ title, imageUrl, slug, excerpt, publishedAt, category }: NewsCardProps) {
   return (
     <Link href={`/news/${slug}`} className="group block">
-      <article className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-esn-dark/10 hover:-translate-y-2">
+      <article className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-esn-dark/10">
         {/* Image Section */}
         <div className="relative h-52 sm:h-64 overflow-hidden">
           {imageUrl ? (
@@ -37,7 +37,7 @@ export function NewsCard({ title, imageUrl, slug, excerpt, publishedAt, category
               src={imageUrl}
               alt={title}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
@@ -59,7 +59,7 @@ export function NewsCard({ title, imageUrl, slug, excerpt, publishedAt, category
           {/* Date */}
           {publishedAt && (
             <div className="mb-3 sm:mb-4 flex items-center text-xs sm:text-sm font-medium text-gray-400">
-              <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-esn-cyan" />
+              <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
               <span>
                 {new Date(publishedAt).toLocaleDateString('en-GB', {
                   day: 'numeric',
@@ -97,7 +97,7 @@ export function NewsCard({ title, imageUrl, slug, excerpt, publishedAt, category
 export function EventCard({ title, imageUrl, slug, description, date, location }: EventCardProps) {
   return (
     <Link href={`/events/${slug}`} className="group block">
-      <article className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-esn-dark/10 hover:-translate-y-2">
+      <article className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-esn-dark/10">
         {/* Image Section */}
         <div className="relative h-52 sm:h-64 overflow-hidden">
           {imageUrl ? (
@@ -105,7 +105,7 @@ export function EventCard({ title, imageUrl, slug, description, date, location }
               src={imageUrl}
               alt={title}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
@@ -121,7 +121,7 @@ export function EventCard({ title, imageUrl, slug, description, date, location }
           <div className="mb-3 sm:mb-4 space-y-1.5 sm:space-y-2">
             {date && (
               <div className="flex items-center text-xs sm:text-sm font-medium text-gray-400">
-                <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-esn-magenta" />
+                <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
                 <span>
                   {new Date(date).toLocaleDateString('en-GB', {
                     day: 'numeric',
@@ -134,7 +134,7 @@ export function EventCard({ title, imageUrl, slug, description, date, location }
             
             {location && (
               <div className="flex items-center text-xs sm:text-sm font-medium text-gray-400">
-                <MapPin className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-esn-green" />
+                <MapPin className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
                 <span>{location}</span>
               </div>
             )}
