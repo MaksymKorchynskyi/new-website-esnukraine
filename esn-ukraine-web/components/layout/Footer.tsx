@@ -27,9 +27,9 @@ const SOCIALS = [
 export default function Footer() {
     return (
         <footer className="bg-[#17194A] text-white">
-            <div className="mx-auto max-w-5xl px-6 sm:px-10 pt-16 pb-8">
+            <div className="mx-auto max-w-5xl px-5 sm:px-10 pt-12 sm:pt-16 pb-8">
                 {/* 4-Column Grid — centred with tighter max-width */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_0.7fr_0.7fr] gap-x-8 gap-y-10 pb-14">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_0.7fr_0.7fr] gap-x-8 gap-y-8 sm:gap-y-10 pb-10 sm:pb-14">
 
                     {/* Column 1 — Brand, Mission & Socials */}
                     <div className="flex flex-col">

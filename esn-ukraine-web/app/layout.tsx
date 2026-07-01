@@ -48,8 +48,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="uk" className={manrope.variable}>
-      <body className="font-sans antialiased bg-white text-gray-900">
+    <html lang="uk" className={`${manrope.variable} overflow-x-hidden`}>
+      <body className="font-sans antialiased bg-white text-gray-900 overflow-x-hidden w-full max-w-full">
         {children}
         {(await draftMode()).isEnabled && <VisualEditing />}
       </body>
