@@ -130,8 +130,15 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <p className="text-sm font-medium text-gray-500">Address</p>
-                                        <p className="text-lg font-bold text-esn-dark">58 Volodymyrska str., r. 45a</p>
-                                        <p className="text-sm text-gray-500">01601 Kyiv, Ukraine</p>
+                                        <a
+                                            href="https://maps.google.com/?q=Volodymyrska+St,+58,+Kyiv,+Ukraine,+01601"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group block"
+                                        >
+                                            <p className="text-lg font-bold text-esn-dark group-hover:text-esn-cyan transition-colors">58 Volodymyrska str., r. 45a</p>
+                                            <p className="text-sm text-gray-500 group-hover:text-esn-cyan/80 transition-colors">01601 Kyiv, Ukraine</p>
+                                        </a>
                                     </div>
                                 </div>
                             </div>

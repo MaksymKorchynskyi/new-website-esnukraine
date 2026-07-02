@@ -5,9 +5,22 @@ import Link from 'next/link';
 import {
   ChevronDown,
   Globe,
+  Instagram,
+  Linkedin,
+  Mail,
   Menu,
-  X
+  Twitter,
+  X,
+  Youtube
 } from 'lucide-react';
+
+const SOCIAL_LINKS = [
+  { Icon: Instagram, href: 'https://instagram.com/esn.ukraine', label: 'Instagram' },
+  { Icon: Linkedin, href: 'https://linkedin.com/company/esn-ukraine', label: 'LinkedIn' },
+  { Icon: Twitter, href: 'https://x.com/esnukraine', label: 'X / Twitter' },
+  { Icon: Youtube, href: 'https://youtube.com/@esnukraine', label: 'YouTube' },
+  { Icon: Mail, href: 'mailto:ukraine-nr@esn.org', label: 'Email' },
+];
 
 interface DropdownItem {
   label: string;
@@ -38,11 +51,14 @@ const Header: React.FC = () => {
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     }
     return () => {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     };
   }, [isMobileMenuOpen]);
 
@@ -108,10 +124,15 @@ const Header: React.FC = () => {
         : 'border-b border-gray-100'
         }`}>
         <div className="flex justify-between items-center h-[72px] sm:h-20 pl-2 pr-4 sm:px-6 lg:px-8">
-          {/* Logo */}
           <Link
             href="/"
-            className="flex items-center transition-colors duration-300"
+            onClick={(e) => {
+              if (window.location.pathname === '/') {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className="flex items-center transition-opacity duration-200 hover:opacity-90 cursor-pointer"
           >
             <div className="w-28 h-14 sm:w-32 sm:h-16 flex items-center justify-start sm:justify-center">
               <img src="/logo-esn-ukraine.png" alt="ESN Ukraine" className="w-full h-full object-contain object-left sm:object-center" />
@@ -198,7 +219,7 @@ const Header: React.FC = () => {
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
           <div 
-            className="lg:hidden fixed inset-0 top-[76px] sm:top-[84px] bg-esn-dark/10 backdrop-blur-sm z-40"
+            className="lg:hidden fixed inset-0 top-[76px] sm:top-[84px] bg-esn-dark/10 backdrop-blur-sm z-40 touch-none overscroll-none"
             onClick={() => setIsMobileMenuOpen(false)}
             aria-hidden="true"
           />
@@ -206,13 +227,28 @@ const Header: React.FC = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden bg-white border-t border-gray-100 relative z-50 shadow-xl max-h-[calc(100vh-76px)] sm:max-h-[calc(100vh-84px)] overflow-y-auto">
+          <div className="lg:hidden bg-white border-t border-gray-100 relative z-50 shadow-xl max-h-[calc(100vh-76px)] sm:max-h-[calc(100vh-84px)] overflow-y-auto overscroll-contain">
             <div className="px-4 py-6 space-y-6">
-              {/* Mobile Language Toggle */}
-              <div className="flex justify-end">
+              {/* Top Bar inside Mobile Menu: Round Social Icons, Email & Language Toggle */}
+              <div className="flex items-center justify-between gap-2 pb-4 border-b border-gray-100">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {SOCIAL_LINKS.map(({ Icon, href, label }) => (
+                    <a
+                      key={label}
+                      href={href}
+                      target={href.startsWith('mailto:') ? '_self' : '_blank'}
+                      rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+                      aria-label={label}
+                      className="flex items-center justify-center w-9 h-9 rounded-full border border-gray-200 bg-gray-50 text-esn-dark hover:bg-esn-cyan hover:text-white hover:border-esn-cyan transition-all duration-200 shadow-sm shrink-0"
+                    >
+                      <Icon className="w-5 h-5" />
+                    </a>
+                  ))}
+                </div>
+
                 <button
                   onClick={toggleLanguage}
-                  className="flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium text-esn-dark hover:bg-esn-cyan/10 transition-all duration-200 border border-gray-200 hover:border-esn-cyan"
+                  className="flex items-center space-x-2 px-3.5 py-2 rounded-full text-xs font-bold text-esn-dark hover:bg-esn-cyan/10 transition-all duration-200 border border-gray-200 hover:border-esn-cyan shrink-0"
                   aria-label="Toggle language"
                 >
                   <Globe className="w-4 h-4" />
