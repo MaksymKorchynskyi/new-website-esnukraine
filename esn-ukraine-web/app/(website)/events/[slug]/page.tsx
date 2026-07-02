@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, MapPin } from "lucide-react";
-import { ShareButton } from "@/components/ui/ShareButton.client";
 import { PortableText, PortableTextComponents } from "@portabletext/react";
 import type { Metadata } from "next";
 import { getAllEventsSlugsQuery } from "@/sanity/lib/queries";
@@ -532,9 +531,9 @@ export default async function EventPage({ params }: EventPageProps) {
         <PhotoGallery images={event.gallery} />
       )}
 
-      {/* ─── Share & Navigation ─── */}
+      {/* ─── Navigation ─── */}
       <section className="py-12 px-6 sm:px-12 border-t border-gray-100">
-        <div className="mx-auto max-w-5xl flex flex-col sm:flex-row justify-between items-center gap-6">
+        <div className="mx-auto max-w-5xl flex items-center">
           <Link
             href="/events"
             className="inline-flex items-center gap-2 text-esn-dark font-bold hover:text-esn-cyan transition-colors group"
@@ -542,8 +541,6 @@ export default async function EventPage({ params }: EventPageProps) {
             <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
             Усі події
           </Link>
-
-          <ShareButton />
         </div>
       </section>
     </main>

@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Clock } from "lucide-react";
-import { ShareButton } from "@/components/ui/ShareButton.client";
 import { PortableText, PortableTextComponents } from "@portabletext/react";
 import type { Metadata } from "next";
 import { sanityFetch } from "@/sanity/lib/fetch";
@@ -453,9 +452,9 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
         <PhotoGallery images={article.gallery} />
       )}
 
-      {/* ─── Share & Navigation ─── */}
+      {/* ─── Navigation ─── */}
       <section className="py-12 px-6 sm:px-12 border-t border-gray-100">
-        <div className="mx-auto max-w-5xl flex flex-col sm:flex-row justify-between items-center gap-6">
+        <div className="mx-auto max-w-5xl flex items-center">
           <Link
             href="/news"
             className="inline-flex items-center gap-2 text-esn-dark font-bold hover:text-esn-cyan transition-colors group"
@@ -463,8 +462,6 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
             <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
             Усі новини
           </Link>
-
-          <ShareButton />
         </div>
       </section>
     </main>

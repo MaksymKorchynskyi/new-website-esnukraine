@@ -226,22 +226,47 @@ export default async function Home() {
             Stay Connected
           </h2>
 
-          <p className="mb-6 sm:mb-10 text-base sm:text-lg font-medium text-gray-500 leading-relaxed max-w-lg mx-auto">
-            Subscribe to our newsletter. No spam — just ESN love, mobility news, and event recaps.
+          <p className="mb-6 sm:mb-8 text-base sm:text-lg font-medium text-gray-600 leading-relaxed max-w-md mx-auto">
+            Join our community newsletter to receive the latest updates, events, and ESN Ukraine initiatives.
           </p>
 
-          <form className="flex flex-col sm:flex-row gap-2 sm:gap-3 max-w-md mx-auto">
+          <form className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
             <label htmlFor="newsletter-email" className="sr-only">Your email address</label>
             <input
               id="newsletter-email"
               type="email"
-              placeholder="Your email address"
-              className="flex-1 rounded-full border border-gray-200 bg-white px-4 py-2.5 sm:px-6 sm:py-3.5 text-xs sm:text-sm text-esn-dark focus:ring-4 focus:ring-esn-cyan/20 focus:border-esn-cyan outline-none placeholder:text-gray-400 font-medium transition-all"
+              required
+              placeholder="Enter your email address"
+              className="w-full sm:flex-1 rounded-full border border-gray-200 bg-white px-5 py-3 sm:px-6 sm:py-3.5 text-base sm:text-sm text-esn-dark focus:ring-4 focus:ring-esn-cyan/20 focus:border-esn-cyan outline-none placeholder:text-gray-400 font-medium shadow-sm transition-all"
             />
-            <button className="whitespace-nowrap rounded-full bg-esn-dark px-5 py-2.5 sm:px-7 sm:py-3.5 text-[11px] sm:text-sm font-bold text-white transition-all hover:bg-esn-cyan hover:shadow-lg tracking-wider uppercase">
+            <button
+              type="submit"
+              className="group whitespace-nowrap px-8 py-3 sm:py-3.5 rounded-full bg-esn-dark text-xs sm:text-sm font-bold text-white transition-all hover:bg-esn-cyan hover:shadow-lg tracking-wider uppercase inline-flex items-center justify-center gap-2 shadow-md shrink-0 active:scale-95"
+            >
               Subscribe
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </button>
           </form>
+
+          <div className="mt-4 sm:mt-5 flex justify-center">
+            <div className="inline-flex items-start gap-2.5 text-left max-w-sm">
+              <input
+                id="privacy-consent"
+                name="privacy-consent"
+                type="checkbox"
+                required
+                defaultChecked
+                className="mt-0.5 h-4 w-4 rounded border-gray-300 text-esn-dark focus:ring-esn-cyan cursor-pointer transition-colors accent-esn-dark shrink-0"
+              />
+              <label htmlFor="privacy-consent" className="text-xs text-gray-500 leading-normal cursor-pointer select-none">
+                I agree to the processing of personal data per ESN Ukraine&apos;s{' '}
+                <Link href="/privacy" className="font-semibold text-esn-dark underline decoration-esn-dark/30 hover:decoration-esn-dark hover:text-esn-cyan transition-colors">
+                  Privacy Policy
+                </Link>
+                .
+              </label>
+            </div>
+          </div>
         </div>
 
         {/* Infinite Marquee Ticker */}
