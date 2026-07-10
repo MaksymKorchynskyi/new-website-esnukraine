@@ -8,6 +8,8 @@ import type { Metadata } from "next";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { getNewsBySlugQuery, getAllNewsSlugsQuery } from "@/sanity/lib/queries";
 import type { NewsArticleDetail } from "@/sanity/lib/types";
+import AttachmentFiles from "@/components/ui/AttachmentFiles";
+import { formatDate } from "@/sanity/lib/utils";
 
 // ==========================================
 // INTERFACES
@@ -389,18 +391,14 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
                 className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors mb-8 group"
               >
                 <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                <span className="text-sm font-medium">Усі новини</span>
+                <span className="text-sm font-medium">All News</span>
               </Link>
 
               {/* Meta info */}
               <div className="flex flex-wrap items-center gap-4 mb-4">
-                <span className="inline-flex items-center gap-2 text-esn-cyan text-sm font-semibold">
-                  <Calendar className="w-4 h-4" />
-                  {new Date(article.publishedAt).toLocaleDateString("uk-UA", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                <span className="inline-flex items-center gap-2 text-gray-300 text-sm font-medium">
+                  <Calendar className="w-4 h-4 text-gray-400" />
+                  {formatDate(article.publishedAt)}
                 </span>
               </div>
 
@@ -447,6 +445,9 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
         </div>
       </section>
 
+      {/* ─── Attachment Files ─── */}
+      <AttachmentFiles files={article.attachmentFiles} />
+
       {/* ─── Photo Gallery ─── */}
       {article.gallery && article.gallery.length > 0 && (
         <PhotoGallery images={article.gallery} />
@@ -460,7 +461,7 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
             className="inline-flex items-center gap-2 text-esn-dark font-bold hover:text-esn-cyan transition-colors group"
           >
             <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
-            Усі новини
+            All News
           </Link>
         </div>
       </section>

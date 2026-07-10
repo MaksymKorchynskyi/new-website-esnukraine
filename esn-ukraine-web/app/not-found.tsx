@@ -1,30 +1,27 @@
 import Link from 'next/link';
-import { Home } from 'lucide-react';
 
-export default function NotFound() {
+export default function NotFoundRoot() {
   return (
-    <div className="flex flex-col items-center justify-center px-4 w-full min-h-screen py-20 font-sans bg-white">
-      <div className="flex flex-col items-center text-center w-full max-w-2xl mx-auto animate-fade-in">
-        <h1 className="text-5xl md:text-6xl font-black text-esn-dark tracking-tight mb-4">
-          404
-        </h1>
-        
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-          Сторінку не знайдено
-        </h2>
-        
-        <p className="text-gray-500 mb-10 text-lg">
-          Ця сторінка була переміщена, видалена або ніколи не існувала.
-        </p>
-
-        <Link 
-          href="/"
-          className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-esn-dark hover:bg-[#202273] text-white text-lg font-medium rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-esn-dark/50 shadow-lg shadow-esn-dark/20"
-        >
-          <Home className="w-5 h-5" />
-          <span>На головну</span>
-        </Link>
-      </div>
-    </div>
+    <html lang="en">
+      <body style={{ margin: 0, padding: 0, fontFamily: 'sans-serif', backgroundColor: '#ffffff', color: '#111827' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '2rem', textAlign: 'center' }}>
+          <h1 style={{ fontSize: '4rem', fontWeight: 900, margin: '0 0 1rem 0', color: '#2E3192' }}>
+            404
+          </h1>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 1rem 0' }}>
+            Page Not Found
+          </h2>
+          <p style={{ color: '#6B7280', margin: '0 0 2rem 0', fontSize: '1.125rem' }}>
+            The page you are looking for does not exist or has been moved.
+          </p>
+          <Link 
+            href="/"
+            style={{ display: 'inline-block', padding: '0.875rem 2rem', backgroundColor: '#2E3192', color: '#ffffff', textDecoration: 'none', borderRadius: '9999px', fontWeight: 500 }}
+          >
+            Return Home
+          </Link>
+        </div>
+      </body>
+    </html>
   );
 }

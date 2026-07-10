@@ -39,6 +39,15 @@ export const getNewsBySlugQuery = groq`
         "alt": alt
       }
     },
+    attachmentFiles[] {
+      _key,
+      title,
+      description,
+      "fileUrl": asset->url,
+      "originalFilename": asset->originalFilename,
+      "mimeType": asset->mimeType,
+      "size": asset->size
+    },
     gallery[] {
       _key,
       asset->,

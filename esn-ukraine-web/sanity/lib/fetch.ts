@@ -22,6 +22,7 @@ export async function sanityFetch<QueryResponse>({
     console.warn("The `SANITY_API_READ_TOKEN` environment variable is required in Draft Mode.");
   }
 
+  const isDev = process.env.NODE_ENV === 'development';
   const queryOptions = isDraftMode
     ? {
         perspective: "previewDrafts" as const,
@@ -31,14 +32,17 @@ export async function sanityFetch<QueryResponse>({
       }
     : {
         perspective: "published" as const,
-        useCdn: true,
+        stega: false,
+        useCdn: !isDev,
       };
 
   return client.fetch<QueryResponse>(query, params, {
     ...queryOptions,
-    next: {
-      revalidate: 3600,
-      tags: ['sanity', ...tags], // Базовий тег 'sanity' для всіх запитів + специфічні теги
-    },
+    next: isDraftMode || isDev
+      ? { revalidate: 0 }
+      : {
+          revalidate: 3600,
+          tags: ['sanity', ...tags], // Базовий тег 'sanity' для всіх запитів + специфічні теги
+        },
   });
 }

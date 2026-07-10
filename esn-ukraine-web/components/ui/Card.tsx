@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, MapPin, ArrowRight } from "lucide-react";
+import { formatDate } from "@/sanity/lib/utils";
 
 interface BaseCardProps {
   title: string;
@@ -60,13 +61,7 @@ export function NewsCard({ title, imageUrl, slug, excerpt, publishedAt, category
           {publishedAt && (
             <div className="mb-3 sm:mb-4 flex items-center text-xs sm:text-sm font-medium text-gray-400">
               <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
-              <span>
-                {new Date(publishedAt).toLocaleDateString('en-GB', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                })}
-              </span>
+              <span>{formatDate(publishedAt)}</span>
             </div>
           )}
 
@@ -122,13 +117,7 @@ export function EventCard({ title, imageUrl, slug, description, date, location }
             {date && (
               <div className="flex items-center text-xs sm:text-sm font-medium text-gray-400">
                 <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
-                <span>
-                  {new Date(date).toLocaleDateString('en-GB', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </span>
+                <span>{formatDate(date)}</span>
               </div>
             )}
             

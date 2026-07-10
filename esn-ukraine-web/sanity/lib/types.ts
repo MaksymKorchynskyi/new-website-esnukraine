@@ -17,6 +17,16 @@ export interface GalleryImage {
   hotspot?: { x: number; y: number };
 }
 
+export interface AttachmentFile {
+  _key: string;
+  title?: string;
+  description?: string;
+  fileUrl: string;
+  originalFilename?: string;
+  mimeType?: string;
+  size?: number;
+}
+
 // ==========================================
 // NEWS TYPES
 // ==========================================
@@ -38,6 +48,7 @@ export interface NewsArticleDetail {
   mainImage: SanityImage | null;
   bannerImage: SanityImage | null;
   body: any[];
+  attachmentFiles?: AttachmentFile[] | null;
   gallery: GalleryImage[] | null;
 }
 
@@ -67,6 +78,7 @@ export interface EventDetail {
   mainImage: SanityImage | null;
   bannerImage: SanityImage | null;
   body: any[];
+  attachmentFiles?: AttachmentFile[] | null;
   gallery: GalleryImage[] | null;
 }
 

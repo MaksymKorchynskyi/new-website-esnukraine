@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { AlertTriangle, RefreshCcw } from 'lucide-react';
 
-export default function ErrorBoundary({
+export default function ErrorRoot({
   error,
   reset,
 }: {
@@ -11,33 +10,27 @@ export default function ErrorBoundary({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Логуємо помилку для аналітики або моніторингу
     console.error(error);
   }, [error]);
 
   return (
-    <div className="flex flex-col items-center justify-center px-4 w-full min-h-screen py-20 font-sans bg-white">
-      <div className="flex flex-col items-center text-center w-full max-w-2xl mx-auto">
-        <div className="mb-6 text-esn-magenta">
-          <AlertTriangle className="w-16 h-16 opacity-90" />
+    <html lang="en">
+      <body style={{ margin: 0, padding: 0, fontFamily: 'sans-serif', backgroundColor: '#ffffff', color: '#111827' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '2rem', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 1rem 0' }}>
+            Something went wrong
+          </h2>
+          <p style={{ color: '#6B7280', margin: '0 0 2rem 0', fontSize: '1.125rem' }}>
+            A system error occurred. Please try refreshing the page.
+          </p>
+          <button
+            onClick={() => reset()}
+            style={{ display: 'inline-block', padding: '0.875rem 2rem', backgroundColor: '#00AEEF', color: '#ffffff', border: 'none', borderRadius: '9999px', fontWeight: 500, cursor: 'pointer' }}
+          >
+            Try again
+          </button>
         </div>
-        
-        <h2 className="text-3xl font-bold text-gray-900 mb-4 tracking-tight">
-          Щось пішло не так
-        </h2>
-        
-        <p className="text-gray-500 mb-10 text-lg">
-          Сталася системна помилка. Ми вже працюємо над її вирішенням.
-        </p>
-
-        <button
-          onClick={() => reset()}
-          className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-esn-cyan hover:bg-[#0095cc] text-white text-lg font-medium rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-esn-cyan/50 shadow-lg shadow-esn-cyan/20 cursor-pointer"
-        >
-          <RefreshCcw className="w-5 h-5" />
-          <span>Спробувати знову</span>
-        </button>
-      </div>
-    </div>
+      </body>
+    </html>
   );
 }

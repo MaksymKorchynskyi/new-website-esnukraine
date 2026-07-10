@@ -7,7 +7,7 @@ export default function Loading() {
           <div className="absolute w-full h-full border-4 border-esn-magenta rounded-full border-t-transparent animate-spin"></div>
         </div>
         <div className="text-esn-cyan font-medium text-lg animate-pulse tracking-wide">
-          Завантаження...
+          Loading...
         </div>
       </div>
     </div>

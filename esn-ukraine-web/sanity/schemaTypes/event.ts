@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity'
+import { formatDate } from '../lib/utils'
 
 export default defineType({
   name: 'event',
@@ -330,6 +331,31 @@ export default defineType({
       description: 'Основний текст сторінки події. Можна вставляти фото між абзацами.',
     }),
     defineField({
+      name: 'attachmentFiles',
+      title: 'Прикріплені файли (Attachment Files)',
+      type: 'array',
+      of: [
+        {
+          type: 'file',
+          title: 'Файл',
+          fields: [
+            defineField({
+              name: 'title',
+              type: 'string',
+              title: 'Назва файлу (для відображення на сайті)',
+              description: 'Наприклад: "Положення про конкурс.pdf" або "Програма заходу"',
+            }),
+            defineField({
+              name: 'description',
+              type: 'string',
+              title: 'Короткий опис файлу',
+            }),
+          ],
+        },
+      ],
+      description: 'Файли (PDF, документи тощо), які відображатимуться перед фотогалереєю. При кліку файл відкриється у новій вкладеці або прямо на сайті.',
+    }),
+    defineField({
       name: 'gallery',
       title: 'Фотогалерея',
       type: 'array',
@@ -359,13 +385,7 @@ export default defineType({
     prepare({ title, subtitle, media }) {
       return {
         title,
-        subtitle: subtitle
-          ? new Date(subtitle).toLocaleDateString('uk-UA', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          })
-          : 'Без дати',
+        subtitle: subtitle ? formatDate(subtitle) : 'Без дати',
         media,
       }
     },

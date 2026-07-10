@@ -1,4 +1,5 @@
-import { client } from "@/sanity/client";
+import { sanityFetch } from "@/sanity/lib/fetch";
+import { groq } from "next-sanity";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { NewsCard } from "@/components/ui/Card";
@@ -20,7 +21,7 @@ interface NewsArticle {
 // SANITY FETCH (CMS integration)
 // ==========================================
 async function getNews(): Promise<NewsArticle[]> {
-  const query = `*[_type == "news"] | order(publishedAt desc) {
+  const query = groq`*[_type == "news"] | order(publishedAt desc) {
     _id, 
     title, 
     slug,
@@ -29,7 +30,7 @@ async function getNews(): Promise<NewsArticle[]> {
     "imageUrl": mainImage.asset->url,
     "category": category->title
   }`;
-  return await client.fetch(query);
+  return await sanityFetch<NewsArticle[]>({ query, tags: ['news'] });
 }
 
 export default async function NewsPage() {

@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { client } from '@/sanity/client';
+import { sanityFetch } from '@/sanity/lib/fetch';
+import { groq } from 'next-sanity';
 import BoardSection, { BoardMemberItem } from '@/components/sections/BoardSection.client';
 
 // ==========================================
 // DATA FETCHING FROM SANITY CMS
 // ==========================================
 async function getBoardMembers(): Promise<BoardMemberItem[]> {
-    const query = `*[_type == "boardMember"] | order(order asc, name asc) {
+    const query = groq`*[_type == "boardMember"] | order(order asc, name asc) {
         _id,
         name,
         position,
@@ -20,7 +21,7 @@ async function getBoardMembers(): Promise<BoardMemberItem[]> {
         "imageUrl": image.asset->url,
         "imageAlt": image.alt
     }`;
-    return await client.fetch(query);
+    return await sanityFetch<BoardMemberItem[]>({ query, tags: ['boardMember'] });
 }
 
 export default async function BoardPage() {

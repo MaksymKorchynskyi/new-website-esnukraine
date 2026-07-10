@@ -1,16 +1,62 @@
+import type { Metadata } from "next";
+import { Manrope } from "next/font/google";
+import { VisualEditing } from "next-sanity/visual-editing";
+import { draftMode } from "next/headers";
+import "@/app/globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
-export default function WebsiteLayout({
-    children,
+const manrope = Manrope({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://esnukraine.org"),
+  title: "ESN Ukraine",
+  description: "Erasmus Student Network Ukraine is a national-level student organization that represents local ESN sections. At the moment, we have a growing network of sections across Ukraine.",
+  openGraph: {
+    title: "ESN Ukraine",
+    description: "Erasmus Student Network Ukraine is a national-level student organization that represents local ESN sections. At the moment, we have a growing network of sections across Ukraine.",
+    url: "https://esnukraine.org",
+    siteName: "ESN Ukraine",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "ESN Ukraine Default Image",
+      },
+    ],
+    locale: "uk_UA",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ESN Ukraine",
+    description: "Erasmus Student Network Ukraine is a national-level student organization that represents local ESN sections. At the moment, we have a growing network of sections across Ukraine.",
+    images: ["/og-image.jpg"],
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
+export default async function WebsiteLayout({
+  children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-    return (
-        <>
-            <Header />
-            {children}
-            <Footer />
-        </>
-    );
+  return (
+    <html lang="uk" className={`${manrope.variable} overflow-x-hidden`}>
+      <body className="font-sans antialiased bg-white text-gray-900 overflow-x-hidden w-full max-w-full">
+        <Header />
+        {children}
+        <Footer />
+        {(await draftMode()).isEnabled && <VisualEditing />}
+      </body>
+    </html>
+  );
 }

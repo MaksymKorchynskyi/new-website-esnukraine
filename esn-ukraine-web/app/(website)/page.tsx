@@ -13,6 +13,7 @@ import Image from 'next/image';
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { getSpotlightItemsQuery, getLatestNewsQuery, getLatestEventsQuery } from "@/sanity/lib/queries";
 import type { SpotlightItem, NewsArticlePreview, EventPreview } from "@/sanity/lib/types";
+import { formatDate } from "@/sanity/lib/utils";
 
 
 
@@ -23,8 +24,8 @@ export default async function Home() {
 
   const SPOTLIGHT_SLIDES = sanitySpotlight.map((item, index) => ({
     id: item._id || String(index),
-    type: item._type === 'news' ? 'Новина' : 'Подія',
-    date: new Date(item.date || item.publishedAt || '').toLocaleDateString('uk-UA', { day: 'numeric', month: 'short', year: 'numeric' }),
+    type: item._type === 'news' ? 'News' : 'Event',
+    date: formatDate(item.date || item.publishedAt),
     title: item.title,
     description: item.excerpt,
     image: item.bannerUrl || 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80',
@@ -35,7 +36,6 @@ export default async function Home() {
     id: item._id || String(index),
     title: item.title,
     publishedAt: item.publishedAt,
-    category: item.categoryTitle || 'News',
     excerpt: item.excerpt,
     imageUrl: item.imageUrl || 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80',
     slug: item.slug.current,
@@ -45,7 +45,7 @@ export default async function Home() {
   const PAST_EVENTS = sanityEvents.map((item, index) => ({
     id: index,
     title: item.title,
-    date: new Date(item.date).toLocaleDateString('uk-UA', { month: 'long', year: 'numeric' }),
+    date: formatDate(item.date),
     location: item.location || 'Online',
     description: item.excerpt,
     image: item.imageUrl || 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80',
@@ -78,9 +78,10 @@ export default async function Home() {
 
             {/* Left Column: Heading */}
             <div className="lg:col-span-4">
-              <h2 className="mb-2 md:mb-0 md:sticky md:top-24 text-3xl sm:text-4xl md:text-5xl font-black uppercase leading-tight text-esn-dark">
-                We are the <br />
-                <span className="text-esn-cyan">Erasmus Generation</span>
+              <h2 className="mb-4 md:mb-0 md:sticky md:top-24 text-[1.9rem] xs:text-[2.2rem] sm:text-5xl lg:text-[2.65rem] xl:text-5xl font-black uppercase leading-[1.08] tracking-tighter sm:tracking-tight text-esn-dark">
+                This is{' '}
+                <br className="hidden sm:block" />
+                <span className="text-esn-cyan whitespace-nowrap inline sm:block sm:mt-1.5">ESN Ukraine.</span>
               </h2>
             </div>
 
@@ -93,10 +94,14 @@ export default async function Home() {
 
               <div className="h-px w-full bg-gradient-to-r from-esn-dark to-transparent opacity-20" />
 
-              <p className="text-base sm:text-xl leading-relaxed text-gray-600">
-                Our mission is to represent international students, thus providing opportunities for cultural understanding and self-development under the principle of <strong className="text-esn-magenta font-black">Students Helping Students</strong>.
-                We are one of the youngest existing sections of ESN, but we possess all the energy and courage to make your exchange in Ukraine the most amazing time of your life!
-              </p>
+              <div className="space-y-4 sm:space-y-5 text-base sm:text-xl leading-relaxed text-gray-600">
+                <p>
+                  Our mission is to facilitate the development of the Ukrainian youth sector on its path to the EU, implementing the best international educational practices.
+                </p>
+                <p>
+                  Remaining true to the principle of <span className="text-esn-magenta font-black whitespace-nowrap">Students Helping Students</span>, we possess all the energy and courage to represent our youth internationally and build a strong European future for Ukraine!
+                </p>
+              </div>
 
               <div className="flex flex-row items-center justify-start gap-4 sm:gap-8 pt-3 sm:pt-4 flex-wrap">
                 <p className="text-2xl sm:text-4xl font-black text-esn-dark shrink-0">#ESNukraine</p>
@@ -147,13 +152,12 @@ export default async function Home() {
             {/* Right Side: Content */}
             <div className="mt-2 lg:mt-0 lg:pl-10">
               <div className="mb-4 sm:mb-6 inline-flex items-center gap-2">
-                <span className="h-px w-8 bg-esn-dark"></span>
                 <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-esn-dark">Our Network</span>
               </div>
 
-              <h2 className="mb-4 sm:mb-6 text-3xl sm:text-4xl font-black leading-tight text-esn-dark md:text-5xl">
-                One Family,<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-esn-cyan to-esn-dark">Growing Across Ukraine.</span>
+              <h2 className="mb-4 sm:mb-6 text-4xl sm:text-5xl lg:text-[2.65rem] xl:text-5xl font-black leading-[1.08] tracking-tight text-esn-dark">
+                One Family, <br />
+                <span className="text-esn-cyan block mt-1.5">Growing Across Ukraine.</span>
               </h2>
 
               <p className="mb-6 sm:mb-8 text-base sm:text-xl leading-relaxed text-gray-600">
@@ -161,9 +165,9 @@ export default async function Home() {
               </p>
 
               <div className="pt-1 sm:pt-0">
-                <Link href="/sections" className="inline-flex items-center justify-center bg-esn-dark px-5 py-2.5 sm:px-10 sm:py-5 text-[11px] sm:text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-esn-magenta rounded-full shadow-md sm:shadow-lg hover:shadow-xl group w-auto">
+                <Link href="/sections" className="inline-flex items-center justify-center bg-esn-dark px-6 py-3 sm:px-8 sm:py-3.5 text-xs sm:text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-esn-magenta rounded-full shadow-md sm:shadow-lg hover:shadow-xl group w-auto">
                   View Our Sections
-                  <ArrowRight className="ml-2 sm:ml-3 h-3.5 w-3.5 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="ml-2 sm:ml-2.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>

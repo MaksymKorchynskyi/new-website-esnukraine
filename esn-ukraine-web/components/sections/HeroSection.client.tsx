@@ -21,9 +21,9 @@ export interface HeroSectionProps {
 
 function getTitleSizeClass(title: string): string {
   const length = title?.length || 0;
-  if (length < 30) {
+  if (length < 28) {
     return "text-4xl sm:text-5xl md:text-7xl lg:text-8xl";
-  } else if (length <= 60) {
+  } else if (length <= 48) {
     return "text-3xl sm:text-4xl md:text-6xl lg:text-7xl";
   } else {
     return "text-2xl sm:text-3xl md:text-5xl lg:text-6xl";
@@ -203,7 +203,11 @@ export default function HeroSection({ slides }: HeroSectionProps) {
         <button
           onClick={() => {
             const nextSection = document.querySelector('section:nth-of-type(2)');
-            nextSection?.scrollIntoView({ behavior: 'smooth' });
+            if (nextSection) {
+              const headerHeight = 84;
+              const targetTop = nextSection.getBoundingClientRect().top + window.scrollY - headerHeight;
+              window.scrollTo({ top: targetTop, behavior: 'smooth' });
+            }
           }}
           className="group flex flex-col items-center text-white/80 hover:text-white transition-all duration-300"
           aria-label="Scroll down"
