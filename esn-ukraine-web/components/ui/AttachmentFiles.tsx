@@ -39,6 +39,16 @@ function getFileExtension(filename?: string, url?: string): string {
 
 export default function AttachmentFiles({ files }: AttachmentFilesProps) {
   const [activeFile, setActiveFile] = useState<AttachmentFile | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Закриття модального вікна по Escape
   useEffect(() => {
@@ -144,16 +154,16 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
                   href={activeFile.fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-esn-cyan hover:bg-[#0095cc] text-white text-xs sm:text-sm font-semibold rounded-xl transition-colors shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-esn-cyan hover:bg-[#0095cc] text-white text-xs sm:text-sm font-semibold rounded-xl transition-colors shadow-sm shrink-0"
                   title="Open in new tab or download"
                 >
-                  <ExternalLink className="w-4 h-4" />
-                  <span className="hidden sm:inline">New tab</span>
+                  <ExternalLink className="w-4 h-4 shrink-0" />
+                  <span className="inline font-bold">Open</span>
                 </a>
 
                 <button
                   onClick={() => setActiveFile(null)}
-                  className="w-9 h-9 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-9 h-9 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
                   aria-label="Close"
                 >
                   <X className="w-5 h-5" />
@@ -162,10 +172,17 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
             </div>
 
             {/* Modal Content: Iframe / PDF Viewer */}
-            <div className="flex-1 w-full bg-gray-100 relative overflow-hidden flex flex-col">
+            <div 
+              className="flex-1 w-full bg-gray-100 relative overflow-auto flex flex-col"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
               <iframe
-                src={`${activeFile.fileUrl}#view=FitH`}
-                className="w-full h-full border-0 flex-1 bg-white"
+                src={
+                  isMobile
+                    ? `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(activeFile.fileUrl)}`
+                    : `${activeFile.fileUrl}#view=Fit`
+                }
+                className="w-full min-h-[75vh] sm:min-h-0 sm:h-full border-0 flex-1 bg-white"
                 title={activeFile.title || activeFile.originalFilename || 'Document'}
               />
               <div className="bg-gray-50 border-t border-gray-200 px-6 py-2.5 text-xs text-gray-500 flex items-center justify-between shrink-0">
