@@ -95,7 +95,7 @@ export default function Footer() {
 
                         <address className="not-italic text-sm text-gray-400 leading-relaxed mb-5">
                             <a
-                                href="https://maps.google.com/?q=Volodymyrska+St,+58,+Kyiv,+Ukraine,+01601"
+                                href="https://maps.app.goo.gl/cMbvbYobajVy4uEm8"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="hover:text-white transition-colors duration-300 block"

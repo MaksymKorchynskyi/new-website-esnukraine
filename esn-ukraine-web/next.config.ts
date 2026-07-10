@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
@@ -9,7 +9,6 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
-      // Якщо ви будете використовувати картинки з Sanity, додайте і цей домен:
       {
         protocol: 'https',
         hostname: 'cdn.sanity.io',
@@ -17,6 +16,9 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  experimental: {
+    optimizePackageImports: ['@sanity/icons', '@sanity/ui', '@sanity/util', 'sanity', 'lucide-react'],
   },
 };
 

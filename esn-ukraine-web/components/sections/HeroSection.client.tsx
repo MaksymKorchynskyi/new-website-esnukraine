@@ -203,7 +203,11 @@ export default function HeroSection({ slides }: HeroSectionProps) {
         <button
           onClick={() => {
             const nextSection = document.querySelector('section:nth-of-type(2)');
-            nextSection?.scrollIntoView({ behavior: 'smooth' });
+            if (nextSection) {
+              const headerHeight = 84;
+              const targetTop = nextSection.getBoundingClientRect().top + window.scrollY - headerHeight;
+              window.scrollTo({ top: targetTop, behavior: 'smooth' });
+            }
           }}
           className="group flex flex-col items-center text-white/80 hover:text-white transition-all duration-300"
           aria-label="Scroll down"

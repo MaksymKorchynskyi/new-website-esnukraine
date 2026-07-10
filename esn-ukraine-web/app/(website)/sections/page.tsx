@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { client } from '@/sanity/client';
+import { sanityFetch } from '@/sanity/lib/fetch';
+import { groq } from 'next-sanity';
 
 // ==========================================
 // INTERFACES
@@ -9,29 +10,23 @@ import { client } from '@/sanity/client';
 interface SectionCard {
     _id: string;
     name: string;
-    slug: string;
-    city: string;
     summary: string;
     imageUrl: string | null;
     instagram: string;
-    email: string;
 }
 
 // ==========================================
 // DATA FETCHING
 // ==========================================
 async function getSections(): Promise<SectionCard[]> {
-    const query = `*[_type == "section"] | order(name asc) {
+    const query = groq`*[_type == "section"] | order(name asc) {
     _id,
     name,
-    "slug": slug.current,
-    city,
     summary,
     instagram,
-    email,
     "imageUrl": mainImage.asset->url
   }`;
-    return await client.fetch(query);
+    return await sanityFetch<SectionCard[]>({ query, tags: ['section'] });
 }
 
 // ==========================================
@@ -93,7 +88,7 @@ export default async function SectionsPage() {
                                                 alt={section.name}
                                                 width={280}
                                                 height={180}
-                                                className="object-contain max-h-[180px] w-auto"
+                                                className="object-contain max-h-[180px] w-auto transition-transform duration-500 group-hover:scale-105"
                                             />
                                         ) : (
                                             <div className="w-32 h-32 rounded-full bg-esn-dark/10 flex items-center justify-center">
@@ -106,25 +101,28 @@ export default async function SectionsPage() {
 
                                     {/* Content */}
                                     <div className="p-6 flex flex-col flex-1">
-                                        <h3 className="text-2xl font-black text-esn-dark mb-2 group-hover:text-esn-cyan transition-colors text-center">
+                                        <h3 className="text-2xl font-black text-esn-dark mb-3 group-hover:text-esn-cyan transition-colors text-center">
                                             {section.name}
                                         </h3>
 
-                                        <p className="text-gray-600 text-sm leading-relaxed mb-5 flex-1 line-clamp-3 text-center">
+                                        <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-1 line-clamp-3 text-center">
                                             {section.summary}
                                         </p>
 
                                         {/* Divider */}
                                         <hr className="border-gray-100 mb-4" />
 
-                                        {/* Read More */}
-                                        <Link
-                                            href={`/sections/${section.slug}`}
-                                            className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-esn-dark hover:text-esn-cyan transition-all group-hover:gap-3"
-                                        >
-                                            Read More
-                                            <ArrowRight className="w-4 h-4" />
-                                        </Link>
+                                        {/* Read More - Redirects to external Instagram */}
+                                        <div className="flex justify-center">
+                                            <a
+                                                href={section.instagram || '#'}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-block text-sm font-bold uppercase tracking-wide text-esn-dark hover:text-esn-magenta transition-colors py-1"
+                                            >
+                                                Read More
+                                            </a>
+                                        </div>
                                     </div>
                                 </article>
                             ))}

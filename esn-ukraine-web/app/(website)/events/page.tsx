@@ -1,4 +1,5 @@
-import { client } from "@/sanity/client";
+import { sanityFetch } from "@/sanity/lib/fetch";
+import { groq } from "next-sanity";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { EventCard } from "@/components/ui/Card";
@@ -114,7 +115,7 @@ const MOCK_EVENTS: Event[] = [
 // ==========================================
 async function getEvents(): Promise<Event[]> {
   try {
-    const query = `*[_type == "event"] | order(date desc) {
+    const query = groq`*[_type == "event"] | order(date desc) {
       _id, 
       title, 
       date, 
@@ -124,7 +125,7 @@ async function getEvents(): Promise<Event[]> {
       slug,
       "imageUrl": mainImage.asset->url
     }`;
-    const events = await client.fetch(query);
+    const events = await sanityFetch<any[]>({ query, tags: ['event'] });
 
     // If no events from CMS, return mock data
     if (!events || events.length === 0) {

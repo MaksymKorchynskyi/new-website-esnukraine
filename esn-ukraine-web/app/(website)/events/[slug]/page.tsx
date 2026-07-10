@@ -7,6 +7,8 @@ import { ArrowLeft, Calendar, MapPin } from "lucide-react";
 import { PortableText, PortableTextComponents } from "@portabletext/react";
 import type { Metadata } from "next";
 import { getAllEventsSlugsQuery } from "@/sanity/lib/queries";
+import AttachmentFiles, { type AttachmentFile } from "@/components/ui/AttachmentFiles";
+import { formatDate } from "@/sanity/lib/utils";
 
 // ==========================================
 // INTERFACES
@@ -46,6 +48,7 @@ interface EventArticle {
   mainImage: SanityImage | null;
   bannerImage: SanityImage | null;
   body: any[];
+  attachmentFiles?: AttachmentFile[] | null;
   gallery: GalleryImage[] | null;
 }
 
@@ -71,6 +74,15 @@ const EVENT_QUERY = `*[_type == "event" && slug.current == $slug][0] {
       "caption": caption,
       "alt": alt
     }
+  },
+  attachmentFiles[] {
+    _key,
+    title,
+    description,
+    "fileUrl": asset->url,
+    "originalFilename": asset->originalFilename,
+    "mimeType": asset->mimeType,
+    "size": asset->size
   },
   gallery[] {
     _key,
@@ -436,25 +448,14 @@ export default async function EventPage({ params }: EventPageProps) {
                 className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors mb-8 group"
               >
                 <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                <span className="text-sm font-medium">Усі події</span>
+                <span className="text-sm font-medium">All Events</span>
               </Link>
-
-              {/* Category badge */}
-              {event.categoryTitle && (
-                <span className="inline-block px-4 py-1.5 text-xs font-bold uppercase tracking-widest rounded-full mb-4 bg-esn-cyan text-white">
-                  {event.categoryTitle}
-                </span>
-              )}
 
               {/* Meta info */}
               <div className="flex flex-wrap items-center gap-4 mb-4">
-                <span className="inline-flex items-center gap-2 text-esn-cyan text-sm font-semibold">
-                  <Calendar className="w-4 h-4" />
-                  {new Date(event.date).toLocaleDateString("uk-UA", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                <span className="inline-flex items-center gap-2 text-gray-300 text-sm font-medium">
+                  <Calendar className="w-4 h-4 text-gray-400" />
+                  {formatDate(event.date)}
                 </span>
                 {event.location && (
                   <span className="inline-flex items-center gap-2 text-esn-magenta text-sm font-semibold">
@@ -526,6 +527,9 @@ export default async function EventPage({ params }: EventPageProps) {
         </div>
       </section>
 
+      {/* ─── Attachment Files ─── */}
+      <AttachmentFiles files={event.attachmentFiles} />
+
       {/* ─── Photo Gallery ─── */}
       {event.gallery && event.gallery.length > 0 && (
         <PhotoGallery images={event.gallery} />
@@ -539,7 +543,7 @@ export default async function EventPage({ params }: EventPageProps) {
             className="inline-flex items-center gap-2 text-esn-dark font-bold hover:text-esn-cyan transition-colors group"
           >
             <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
-            Усі події
+            All Events
           </Link>
         </div>
       </section>

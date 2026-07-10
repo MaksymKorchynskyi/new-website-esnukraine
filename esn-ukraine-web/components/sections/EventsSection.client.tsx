@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { MapPin, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface PastEvent {
   id: number;
@@ -51,9 +51,6 @@ export default function EventsSection({ events }: EventsSectionProps) {
                     {event.date}
                   </div>
                   <h3 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 leading-tight group-hover:text-esn-cyan transition-colors">{event.title}</h3>
-                  <div className="flex items-center text-xs sm:text-sm text-esn-cyan font-bold mb-2 sm:mb-4">
-                    <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" /> {event.location}
-                  </div>
                   <p className="text-gray-300 text-xs sm:text-sm leading-relaxed line-clamp-3">
                     {event.description}
                   </p>
