@@ -33,7 +33,7 @@ export async function sanityFetch<QueryResponse>({
     : {
         perspective: "published" as const,
         stega: false,
-        useCdn: !isDev,
+        useCdn: false,
       };
 
   return client.fetch<QueryResponse>(query, params, {

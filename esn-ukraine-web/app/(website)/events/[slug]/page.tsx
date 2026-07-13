@@ -92,7 +92,7 @@ const EVENT_QUERY = `*[_type == "event" && slug.current == $slug][0] {
 }`;
 
 async function getEvent(slug: string): Promise<EventArticle | null> {
-  return await sanityFetch<EventArticle | null>({ query: EVENT_QUERY, params: { slug } });
+  return await sanityFetch<EventArticle | null>({ query: EVENT_QUERY, params: { slug }, tags: ['event', `event:${slug}`] });
 }
 
 // ==========================================

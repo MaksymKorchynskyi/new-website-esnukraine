@@ -18,9 +18,9 @@ import { formatDate } from "@/sanity/lib/utils";
 
 
 export default async function Home() {
-  const sanitySpotlight = await sanityFetch<SpotlightItem[]>({ query: getSpotlightItemsQuery });
-  const sanityNews = await sanityFetch<NewsArticlePreview[]>({ query: getLatestNewsQuery });
-  const sanityEvents = await sanityFetch<EventPreview[]>({ query: getLatestEventsQuery });
+  const sanitySpotlight = await sanityFetch<SpotlightItem[]>({ query: getSpotlightItemsQuery, tags: ['news', 'event'] });
+  const sanityNews = await sanityFetch<NewsArticlePreview[]>({ query: getLatestNewsQuery, tags: ['news'] });
+  const sanityEvents = await sanityFetch<EventPreview[]>({ query: getLatestEventsQuery, tags: ['event'] });
 
   const SPOTLIGHT_SLIDES = sanitySpotlight.map((item, index) => ({
     id: item._id || String(index),
