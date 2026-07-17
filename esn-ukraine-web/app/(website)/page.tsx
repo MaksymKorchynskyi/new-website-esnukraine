@@ -1,17 +1,17 @@
 import Link from 'next/link';
 import {
-  ArrowRight,
   Calendar,
   ChevronRight,
   Mail
 } from 'lucide-react';
 import HeroSection from '@/components/sections/HeroSection.client';
 import EventsSection from '@/components/sections/EventsSection.client';
+import NetworkCollage from '@/components/sections/NetworkCollage.client';
 import { NewsCard } from '@/components/ui/Card';
 
 import Image from 'next/image';
 import { sanityFetch } from "@/sanity/lib/fetch";
-import { getSpotlightItemsQuery, getLatestNewsQuery, getLatestEventsQuery } from "@/sanity/lib/queries";
+import { getSpotlightItemsQuery, getLatestNewsQuery, getLatestEventsQuery, getNetworkPhotosQuery } from "@/sanity/lib/queries";
 import type { SpotlightItem, NewsArticlePreview, EventPreview } from "@/sanity/lib/types";
 import { formatDate } from "@/sanity/lib/utils";
 
@@ -21,6 +21,11 @@ export default async function Home() {
   const sanitySpotlight = await sanityFetch<SpotlightItem[]>({ query: getSpotlightItemsQuery, tags: ['news', 'event'] });
   const sanityNews = await sanityFetch<NewsArticlePreview[]>({ query: getLatestNewsQuery, tags: ['news'] });
   const sanityEvents = await sanityFetch<EventPreview[]>({ query: getLatestEventsQuery, tags: ['event'] });
+  const sanityNetworkPhotos = await sanityFetch<{ id: string; title: string; slot: string; url: string; }[]>({ query: getNetworkPhotosQuery, tags: ['networkPhoto'] });
+
+  const photosSlotA = sanityNetworkPhotos?.filter(p => p.slot === 'slotA').map(p => ({ id: p.id, url: p.url, alt: p.title })) || [];
+  const photosSlotB = sanityNetworkPhotos?.filter(p => p.slot === 'slotB').map(p => ({ id: p.id, url: p.url, alt: p.title })) || [];
+  const photosSlotC = sanityNetworkPhotos?.filter(p => p.slot === 'slotC').map(p => ({ id: p.id, url: p.url, alt: p.title })) || [];
 
   const SPOTLIGHT_SLIDES = sanitySpotlight.map((item, index) => ({
     id: item._id || String(index),
@@ -112,7 +117,6 @@ export default async function Home() {
                     className="group inline-flex items-center justify-center gap-2 rounded-full border border-esn-dark sm:border-2 px-5 py-2.5 sm:px-8 sm:py-3 text-xs sm:text-sm font-bold uppercase tracking-widest text-esn-dark transition-all hover:bg-esn-dark hover:text-white shrink-0 min-h-[42px]"
                   >
                     Read More
-                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </div>
               </div>
@@ -129,25 +133,12 @@ export default async function Home() {
         <div className="mx-auto max-w-7xl px-5 sm:px-12">
           <div className="grid gap-8 md:gap-12 lg:grid-cols-2 lg:items-center">
 
-            {/* Left Side: Visual Collage */}
-            <div className="relative grid grid-cols-2 gap-3 sm:gap-4">
-              <div className="space-y-3 sm:space-y-4">
-                <div className="relative h-44 sm:h-64 w-full">
-                  <Image src="https://images.unsplash.com/photo-1541535650810-10d26f5c2ab3?auto=format&fit=crop&q=80" alt="ESN Community" fill={true} sizes="(max-width: 768px) 100vw, 50vw" className="object-cover shadow-lg rounded-xl transition-shadow duration-300 hover:shadow-xl" />
-                </div>
-                <div className="relative h-32 sm:h-48 w-full">
-                  <Image src="https://images.unsplash.com/photo-1526716173434-a1b560f2065d?auto=format&fit=crop&q=80" alt="ESN Events" fill={true} sizes="(max-width: 768px) 100vw, 50vw" className="object-cover shadow-lg rounded-xl transition-shadow duration-300 hover:shadow-xl" />
-                </div>
-              </div>
-              <div className="pt-6 sm:pt-8">
-                <div className="relative h-full w-full min-h-[220px] sm:min-h-[300px]">
-                  <Image src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&q=80" alt="ESN Network" fill={true} sizes="(max-width: 768px) 100vw, 50vw" className="object-cover shadow-lg rounded-xl transition-shadow duration-300 hover:shadow-xl" />
-                </div>
-              </div>
-              {/* Decorative Elements */}
-              <div className="absolute -bottom-6 -left-6 -z-10 h-32 w-32 bg-esn-magenta/20 rounded-full blur-2xl"></div>
-              <div className="absolute -top-6 -right-6 -z-10 h-32 w-32 bg-esn-cyan/20 rounded-full blur-2xl"></div>
-            </div>
+            {/* Left Side: Dynamic Animated Visual Collage (from Sanity CMS or fallbacks) */}
+            <NetworkCollage
+              photosSlotA={photosSlotA.length > 0 ? photosSlotA : undefined}
+              photosSlotB={photosSlotB.length > 0 ? photosSlotB : undefined}
+              photosSlotC={photosSlotC.length > 0 ? photosSlotC : undefined}
+            />
 
             {/* Right Side: Content */}
             <div className="mt-2 lg:mt-0 lg:pl-10">
@@ -167,7 +158,6 @@ export default async function Home() {
               <div className="pt-1 sm:pt-0">
                 <Link href="/sections" className="inline-flex items-center justify-center bg-esn-dark px-6 py-3 sm:px-8 sm:py-3.5 text-xs sm:text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-esn-magenta rounded-full shadow-md sm:shadow-lg hover:shadow-xl group w-auto">
                   View Our Sections
-                  <ArrowRight className="ml-2 sm:ml-2.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>
@@ -248,7 +238,6 @@ export default async function Home() {
               className="group whitespace-nowrap px-8 py-3 sm:py-3.5 rounded-full bg-esn-dark text-xs sm:text-sm font-bold text-white transition-all hover:bg-esn-cyan hover:shadow-lg tracking-wider uppercase inline-flex items-center justify-center gap-2 shadow-md shrink-0 active:scale-95"
             >
               Subscribe
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </button>
           </form>
 

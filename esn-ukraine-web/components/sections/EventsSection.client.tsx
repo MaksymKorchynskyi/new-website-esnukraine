@@ -61,9 +61,9 @@ export default function EventsSection({ events }: EventsSectionProps) {
 
           {/* End Card */}
           <div className="flex-none w-[150px] sm:w-[200px] flex items-center justify-center snap-center">
-            <Link href="/events" className="group flex flex-col items-center justify-center h-28 w-28 sm:h-40 sm:w-40 rounded-full border border-white/20 hover:bg-white hover:text-esn-dark transition-all">
-              <span className="font-bold text-xs sm:text-base">View Archive</span>
-              <ArrowRight className="mt-1.5 sm:mt-2 h-3.5 w-3.5 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
+            <Link href="/events" className="group flex flex-col items-center justify-center h-28 w-28 sm:h-40 sm:w-40 rounded-full border border-white/20 hover:bg-white hover:text-esn-dark transition-all p-2 text-center">
+              <span className="font-bold text-xs sm:text-base leading-tight">View All Events</span>
+              <ArrowRight className="mt-1.5 sm:mt-2 h-3.5 w-3.5 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform shrink-0" />
             </Link>
           </div>
         </div>

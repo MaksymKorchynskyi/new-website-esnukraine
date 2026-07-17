@@ -56,30 +56,32 @@ export function NewsCard({ title, imageUrl, slug, excerpt, publishedAt, category
         </div>
 
         {/* Content Section */}
-        <div className="flex flex-1 flex-col p-6 sm:p-8">
-          {/* Date */}
-          {publishedAt && (
-            <div className="mb-3 sm:mb-4 flex items-center text-xs sm:text-sm font-medium text-gray-400">
-              <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
-              <span>{formatDate(publishedAt)}</span>
-            </div>
-          )}
+        <div className="flex flex-1 flex-col justify-between p-6 sm:p-8">
+          <div className="flex-1 mb-4 sm:mb-6">
+            {/* Date */}
+            {publishedAt && (
+              <div className="mb-3 sm:mb-4 flex items-center text-xs sm:text-sm font-medium text-gray-400">
+                <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
+                <span>{formatDate(publishedAt)}</span>
+              </div>
+            )}
 
-          {/* Title */}
-          <h3 className="mb-2 sm:mb-3 text-xl sm:text-2xl font-bold leading-tight text-esn-dark group-hover:text-esn-cyan transition-colors">
-            {title}
-          </h3>
+            {/* Title */}
+            <h3 className="mb-2 sm:mb-3 text-xl sm:text-2xl font-bold leading-tight text-esn-dark group-hover:text-esn-cyan transition-colors break-words">
+              {title}
+            </h3>
 
-          {/* Excerpt */}
-          {excerpt && (
-            <p className="mb-4 sm:mb-6 flex-1 text-sm sm:text-base text-gray-500 line-clamp-3 leading-relaxed">
-              {excerpt}
-            </p>
-          )}
+            {/* Excerpt */}
+            {excerpt && (
+              <p className="text-sm sm:text-base text-gray-500 line-clamp-3 leading-relaxed break-words">
+                {excerpt}
+              </p>
+            )}
+          </div>
 
           {/* Read More */}
-          <div className="mt-auto pt-4 sm:pt-6 border-t border-gray-100">
-            <span className="text-xs sm:text-sm font-bold text-esn-dark uppercase tracking-wide group-hover:text-esn-magenta transition-colors">
+          <div className="pt-4 sm:pt-6 border-t border-gray-100 shrink-0">
+            <span className="text-xs sm:text-sm font-bold text-esn-dark uppercase tracking-wide group-hover:text-esn-magenta transition-colors block">
               Read More
             </span>
           </div>
@@ -111,39 +113,41 @@ export function EventCard({ title, imageUrl, slug, description, date, location }
         </div>
 
         {/* Content Section */}
-        <div className="flex flex-1 flex-col p-6 sm:p-8">
-          {/* Date & Location */}
-          <div className="mb-3 sm:mb-4 space-y-1.5 sm:space-y-2">
-            {date && (
-              <div className="flex items-center text-xs sm:text-sm font-medium text-gray-400">
-                <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
-                <span>{formatDate(date)}</span>
-              </div>
-            )}
-            
-            {location && (
-              <div className="flex items-center text-xs sm:text-sm font-medium text-gray-400">
-                <MapPin className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
-                <span>{location}</span>
-              </div>
+        <div className="flex flex-1 flex-col justify-between p-6 sm:p-8">
+          <div className="flex-1 mb-4 sm:mb-6">
+            {/* Date & Location */}
+            <div className="mb-3 sm:mb-4 space-y-1.5 sm:space-y-2">
+              {date && (
+                <div className="flex items-center text-xs sm:text-sm font-medium text-gray-400">
+                  <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
+                  <span>{formatDate(date)}</span>
+                </div>
+              )}
+              
+              {location && (
+                <div className="flex items-center text-xs sm:text-sm font-medium text-gray-400">
+                  <MapPin className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
+                  <span>{location}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Title */}
+            <h3 className="mb-2 sm:mb-3 text-xl sm:text-2xl font-bold leading-tight text-esn-dark group-hover:text-esn-cyan transition-colors break-words">
+              {title}
+            </h3>
+
+            {/* Description */}
+            {description && (
+              <p className="text-sm sm:text-base text-gray-500 line-clamp-3 leading-relaxed break-words">
+                {description}
+              </p>
             )}
           </div>
 
-          {/* Title */}
-          <h3 className="mb-2 sm:mb-3 text-xl sm:text-2xl font-bold leading-tight text-esn-dark group-hover:text-esn-cyan transition-colors">
-            {title}
-          </h3>
-
-          {/* Description */}
-          {description && (
-            <p className="mb-4 sm:mb-6 flex-1 text-sm sm:text-base text-gray-500 line-clamp-3 leading-relaxed">
-              {description}
-            </p>
-          )}
-
           {/* Read More */}
-          <div className="mt-auto pt-4 sm:pt-6 border-t border-gray-100">
-            <span className="text-xs sm:text-sm font-bold text-esn-dark uppercase tracking-wide group-hover:text-esn-magenta transition-colors">
+          <div className="pt-4 sm:pt-6 border-t border-gray-100 shrink-0">
+            <span className="text-xs sm:text-sm font-bold text-esn-dark uppercase tracking-wide group-hover:text-esn-magenta transition-colors block">
               Read More
             </span>
           </div>

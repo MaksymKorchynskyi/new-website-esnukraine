@@ -100,28 +100,32 @@ export default async function SectionsPage() {
                                     </div>
 
                                     {/* Content */}
-                                    <div className="p-6 flex flex-col flex-1">
-                                        <h3 className="text-2xl font-black text-esn-dark mb-3 group-hover:text-esn-cyan transition-colors text-center">
-                                            {section.name}
-                                        </h3>
+                                    <div className="p-6 flex flex-col flex-1 justify-between">
+                                        <div className="flex-1 mb-6">
+                                            <h3 className="text-2xl font-black text-esn-dark mb-3 group-hover:text-esn-cyan transition-colors text-center">
+                                                {section.name}
+                                            </h3>
 
-                                        <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-1 line-clamp-3 text-center">
-                                            {section.summary}
-                                        </p>
+                                            <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 text-center break-words">
+                                                {section.summary}
+                                            </p>
+                                        </div>
 
                                         {/* Divider */}
-                                        <hr className="border-gray-100 mb-4" />
+                                        <div className="shrink-0">
+                                            <hr className="border-gray-100 mb-4" />
 
-                                        {/* Read More - Redirects to external Instagram */}
-                                        <div className="flex justify-center">
-                                            <a
-                                                href={section.instagram || '#'}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-block text-sm font-bold uppercase tracking-wide text-esn-dark hover:text-esn-magenta transition-colors py-1"
-                                            >
-                                                Read More
-                                            </a>
+                                            {/* Read More - Redirects to external Instagram */}
+                                            <div className="flex justify-center">
+                                                <a
+                                                    href={section.instagram || '#'}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-block text-sm font-bold uppercase tracking-wide text-esn-dark hover:text-esn-magenta transition-colors py-1"
+                                                >
+                                                    Read More
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </article>
