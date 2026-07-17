@@ -37,7 +37,7 @@ export default function ESNcardPage() {
                     <div className="grid gap-16 lg:grid-cols-2 items-center">
                         {/* ESNcard Image */}
                         <div className="relative flex items-center justify-center p-2 sm:p-4">
-                            <div className="relative w-full max-w-[540px] transition-all duration-500 hover:scale-[1.03]">
+                            <div className="relative w-full max-w-[540px]">
                                 <Image
                                     src="/esncard.png"
                                     alt="ESNcard Membership Card Specimen"
