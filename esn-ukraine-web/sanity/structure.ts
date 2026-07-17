@@ -28,7 +28,7 @@ export const structure: StructureResolver = (S) =>
         .child(
           S.documentTypeList('section')
             .title('Секції')
-            .defaultOrdering([{ field: 'name', direction: 'asc' }])
+            .defaultOrdering([{ field: 'order', direction: 'asc' }, { field: 'name', direction: 'asc' }])
         ),
       S.listItem()
         .title('Члени Борду (Board Members)')

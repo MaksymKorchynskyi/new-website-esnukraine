@@ -7,6 +7,13 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({
+      name: 'order',
+      title: 'Порядковий номер (Order)',
+      type: 'number',
+      description: 'Число для сортування (наприклад: 1, 2, 3...). Секції з меншим числом відображатимуться першими на сайті.',
+      initialValue: 10,
+    }),
+    defineField({
       name: 'name',
       title: 'Назва секції',
       type: 'string',

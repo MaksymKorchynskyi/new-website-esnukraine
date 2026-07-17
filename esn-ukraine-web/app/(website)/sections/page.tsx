@@ -19,7 +19,7 @@ interface SectionCard {
 // DATA FETCHING
 // ==========================================
 async function getSections(): Promise<SectionCard[]> {
-    const query = groq`*[_type == "section"] | order(name asc) {
+    const query = groq`*[_type == "section"] | order(order asc, name asc) {
     _id,
     name,
     summary,
@@ -79,17 +79,19 @@ export default async function SectionsPage() {
                                     className="group relative bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col"
                                 >
                                     {/* Section Logo / Image */}
-                                    <div className="relative w-full bg-gray-50 flex items-center justify-center p-8"
-                                        style={{ minHeight: '220px' }}
-                                    >
+                                    <div className="relative w-full bg-gray-50/70 flex items-center justify-center p-4 sm:p-6 h-60 sm:h-64">
                                         {section.imageUrl ? (
-                                            <Image
-                                                src={section.imageUrl}
-                                                alt={section.name}
-                                                width={280}
-                                                height={180}
-                                                className="object-contain max-h-[180px] w-auto transition-transform duration-500 group-hover:scale-105"
-                                            />
+                                            <div className={`relative flex items-center justify-center w-full h-full transition-transform duration-500 group-hover:scale-105 ${
+                                                section.name.toLowerCase().includes('kyiv') ? 'scale-110 sm:scale-[1.18] group-hover:scale-[1.23]' : ''
+                                            }`}>
+                                                <Image
+                                                    src={section.imageUrl}
+                                                    alt={section.name}
+                                                    width={360}
+                                                    height={240}
+                                                    className="object-contain max-h-[190px] sm:max-h-[210px] w-auto max-w-[90%]"
+                                                />
+                                            </div>
                                         ) : (
                                             <div className="w-32 h-32 rounded-full bg-esn-dark/10 flex items-center justify-center">
                                                 <span className="text-esn-dark font-black text-2xl">
