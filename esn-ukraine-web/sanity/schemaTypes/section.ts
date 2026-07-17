@@ -1,10 +1,18 @@
 import { defineField, defineType } from 'sanity'
+import { ACCEPTED_IMAGE_TYPES, validateImageSize } from '../lib/imageValidation'
 
 export default defineType({
   name: 'section',
   title: 'Секції (ESN Sections)',
   type: 'document',
   fields: [
+    defineField({
+      name: 'order',
+      title: 'Порядковий номер (Order)',
+      type: 'number',
+      description: 'Число для сортування (наприклад: 1, 2, 3...). Секції з меншим числом відображатимуться першими на сайті.',
+      initialValue: 10,
+    }),
     defineField({
       name: 'name',
       title: 'Назва секції',
@@ -23,9 +31,9 @@ export default defineType({
       name: 'mainImage',
       title: 'Логотип секції',
       type: 'image',
-      options: { hotspot: true },
-      description: 'Логотип або фото секції для карточки.',
-      validation: (rule) => rule.required(),
+      options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
+      description: 'Логотип або фото секції для карточки. Ліміти Sanity Free: макс. 2 МБ, формати JPG/PNG/WebP. Рекомендуємо стискати фото перед завантаженням.',
+      validation: (rule) => rule.required().custom(validateImageSize(2, 3000, 3000)),
     }),
     defineField({
       name: 'summary',

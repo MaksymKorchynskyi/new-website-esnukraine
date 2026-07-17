@@ -115,6 +115,26 @@ export default async function NewsPage() {
               Subscribe
             </button>
           </form>
+
+          <div className="mt-4 sm:mt-5 flex justify-center">
+            <div className="inline-flex items-start gap-2.5 text-left max-w-sm">
+              <input
+                id="privacy-consent"
+                name="privacy-consent"
+                type="checkbox"
+                required
+                defaultChecked
+                className="mt-0.5 h-4 w-4 rounded border-gray-300 text-esn-dark focus:ring-esn-cyan cursor-pointer transition-colors accent-esn-dark shrink-0"
+              />
+              <label htmlFor="privacy-consent" className="text-xs text-gray-500 leading-normal cursor-pointer select-none">
+                I agree to the processing of personal data per ESN Ukraine&apos;s{' '}
+                <Link href="/privacy" className="font-semibold text-esn-dark underline decoration-esn-dark/30 hover:decoration-esn-dark hover:text-esn-cyan transition-colors">
+                  Privacy Policy
+                </Link>
+                .
+              </label>
+            </div>
+          </div>
         </div>
       </section>
     </main>

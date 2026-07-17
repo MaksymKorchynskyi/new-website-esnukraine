@@ -9,15 +9,20 @@ import {
   Linkedin,
   Mail,
   Menu,
-  Twitter,
   X,
   Youtube
 } from 'lucide-react';
 
+const XSocialIcon: React.FC<{ className?: string }> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
+
 const SOCIAL_LINKS = [
   { Icon: Instagram, href: 'https://instagram.com/esn.ukraine', label: 'Instagram' },
   { Icon: Linkedin, href: 'https://linkedin.com/company/esn-ukraine', label: 'LinkedIn' },
-  { Icon: Twitter, href: 'https://x.com/esnukraine', label: 'X / Twitter' },
+  { Icon: XSocialIcon, href: 'https://x.com/esnukraine', label: 'X / Twitter' },
   { Icon: Youtube, href: 'https://youtube.com/@esnukraine', label: 'YouTube' },
   { Icon: Mail, href: 'mailto:ukraine-nr@esn.org', label: 'Email' },
 ];

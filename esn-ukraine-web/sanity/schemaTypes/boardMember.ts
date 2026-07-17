@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity'
+import { ACCEPTED_IMAGE_TYPES, validateImageSize } from '../lib/imageValidation'
 
 export default defineType({
   name: 'boardMember',
@@ -45,9 +46,9 @@ export default defineType({
       name: 'image',
       title: 'Фотографія (продовгувата / вертикальна 4:5)',
       type: 'image',
-      options: { hotspot: true },
-      description: 'Рекомендується завантажувати вертикальне / продовгувате зображення борду (наприклад, співвідношення 4:5 або 3:4).',
-      validation: (rule) => rule.required(),
+      options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
+      description: 'Рекомендується завантажувати вертикальне / продовгувате зображення борду (співвідношення 4:5 або 3:4). Ліміти Sanity Free: макс. 2 МБ, формати JPG/PNG/WebP. Обов\'язково стискайте фото (наприклад, через tinypng.com або squoosh.app)!',
+      validation: (rule) => rule.required().custom(validateImageSize(2, 3000, 3500)),
       fields: [
         {
           name: 'alt',

@@ -253,23 +253,23 @@ const portableTextComponents: PortableTextComponents = {
       </h4>
     ),
     normal: ({ children }) => (
-      <p className="text-lg md:text-xl leading-[1.8] text-gray-800 mb-6">
+      <p className="text-lg md:text-xl leading-[1.8] text-gray-800 mb-6 break-words [word-break:break-word] [overflow-wrap:anywhere]">
         {children}
       </p>
     ),
     lead: ({ children }) => (
-      <p className="text-xl md:text-2xl font-light leading-[1.7] text-gray-700 mb-8">
+      <p className="text-xl md:text-2xl font-light leading-[1.7] text-gray-700 mb-8 break-words [word-break:break-word] [overflow-wrap:anywhere]">
         {children}
       </p>
     ),
     small: ({ children }) => (
-      <p className="text-sm leading-relaxed text-gray-500 mb-4">
+      <p className="text-sm leading-relaxed text-gray-500 mb-4 break-words [word-break:break-word] [overflow-wrap:anywhere]">
         {children}
       </p>
     ),
     blockquote: ({ children }) => (
       <blockquote className="my-10 border-l-4 border-esn-cyan pl-8 py-2">
-        <p className="text-2xl md:text-3xl italic font-medium text-gray-600 leading-snug">{children}</p>
+        <p className="text-2xl md:text-3xl italic font-medium text-gray-600 leading-snug break-words [word-break:break-word] [overflow-wrap:anywhere]">{children}</p>
       </blockquote>
     ),
   },
@@ -284,7 +284,7 @@ const portableTextComponents: PortableTextComponents = {
       <del className="line-through text-gray-400">{children}</del>
     ),
     code: ({ children }) => (
-      <code className="bg-gray-100 text-esn-magenta px-1.5 py-0.5 rounded text-sm font-mono">{children}</code>
+      <code className="bg-gray-100 text-esn-magenta px-1.5 py-0.5 rounded text-sm font-mono break-words [word-break:break-word]">{children}</code>
     ),
     textColor: ({ children, value }) => (
       <span style={{ color: value?.color }}>{children}</span>
@@ -298,7 +298,7 @@ const portableTextComponents: PortableTextComponents = {
       return (
         <a
           href={href}
-          className="text-esn-cyan font-medium underline decoration-esn-cyan/30 underline-offset-2 hover:decoration-esn-cyan transition-colors"
+          className="text-esn-cyan font-medium underline decoration-esn-cyan/30 underline-offset-2 hover:decoration-esn-cyan transition-colors break-words [word-break:break-word] [overflow-wrap:anywhere]"
           target={isExternal ? "_blank" : undefined}
           rel={isExternal ? "noopener noreferrer" : undefined}
         >
@@ -317,14 +317,14 @@ const portableTextComponents: PortableTextComponents = {
   },
   listItem: {
     bullet: ({ children }) => (
-      <li className="flex items-start gap-4 text-lg md:text-xl text-gray-800 leading-[1.8]">
+      <li className="flex items-start gap-4 text-lg md:text-xl text-gray-800 leading-[1.8] break-words [word-break:break-word] [overflow-wrap:anywhere]">
         <span className="mt-2.5 w-2 h-2 rounded-sm bg-esn-cyan flex-shrink-0" />
-        <span>{children}</span>
+        <span className="min-w-0 flex-1 break-words [word-break:break-word] [overflow-wrap:anywhere]">{children}</span>
       </li>
     ),
     number: ({ children }) => (
-      <li className="flex items-start gap-4 text-lg md:text-xl text-gray-800 leading-[1.8]">
-        <span>{children}</span>
+      <li className="flex items-start gap-4 text-lg md:text-xl text-gray-800 leading-[1.8] break-words [word-break:break-word] [overflow-wrap:anywhere]">
+        <span className="min-w-0 flex-1 break-words [word-break:break-word] [overflow-wrap:anywhere]">{children}</span>
       </li>
     ),
   },
@@ -340,9 +340,9 @@ function PhotoGallery({ images }: { images: GalleryImage[] }) {
     <section className="py-16 px-6 sm:px-12 lg:px-24 bg-gray-50">
       <div className="mx-auto max-w-6xl">
         <div className="flex items-center gap-3 mb-10">
-          <div className="w-12 h-1 bg-esn-cyan rounded-full" />
-          <h2 className="text-2xl md:text-3xl font-black text-esn-dark">
-            Фотогалерея
+          <div className="w-1.5 h-8 bg-esn-cyan rounded-full shadow-sm" />
+          <h2 className="text-2xl md:text-3xl font-black text-esn-dark tracking-tight">
+            Photo Gallery
           </h2>
         </div>
 
@@ -520,7 +520,7 @@ export default async function EventPage({ params }: EventPageProps) {
       <section className="py-16 md:py-20 px-6 sm:px-12">
         <div className="mx-auto max-w-5xl">
           {event.body && (
-            <div className="prose prose-lg max-w-none">
+            <div className="prose prose-lg max-w-none break-words [word-break:break-word] [overflow-wrap:anywhere] overflow-hidden sm:overflow-visible">
               <PortableText value={event.body} components={portableTextComponents} />
             </div>
           )}

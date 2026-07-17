@@ -19,7 +19,7 @@ interface SectionCard {
 // DATA FETCHING
 // ==========================================
 async function getSections(): Promise<SectionCard[]> {
-    const query = groq`*[_type == "section"] | order(name asc) {
+    const query = groq`*[_type == "section"] | order(order asc, name asc) {
     _id,
     name,
     summary,
@@ -79,17 +79,19 @@ export default async function SectionsPage() {
                                     className="group relative bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col"
                                 >
                                     {/* Section Logo / Image */}
-                                    <div className="relative w-full bg-gray-50 flex items-center justify-center p-8"
-                                        style={{ minHeight: '220px' }}
-                                    >
+                                    <div className="relative w-full bg-gray-50/70 flex items-center justify-center p-4 sm:p-6 h-60 sm:h-64">
                                         {section.imageUrl ? (
-                                            <Image
-                                                src={section.imageUrl}
-                                                alt={section.name}
-                                                width={280}
-                                                height={180}
-                                                className="object-contain max-h-[180px] w-auto transition-transform duration-500 group-hover:scale-105"
-                                            />
+                                            <div className={`relative flex items-center justify-center w-full h-full transition-transform duration-500 group-hover:scale-105 ${
+                                                section.name.toLowerCase().includes('kyiv') ? 'scale-110 sm:scale-[1.18] group-hover:scale-[1.23]' : ''
+                                            }`}>
+                                                <Image
+                                                    src={section.imageUrl}
+                                                    alt={section.name}
+                                                    width={360}
+                                                    height={240}
+                                                    className="object-contain max-h-[190px] sm:max-h-[210px] w-auto max-w-[90%]"
+                                                />
+                                            </div>
                                         ) : (
                                             <div className="w-32 h-32 rounded-full bg-esn-dark/10 flex items-center justify-center">
                                                 <span className="text-esn-dark font-black text-2xl">
@@ -100,28 +102,32 @@ export default async function SectionsPage() {
                                     </div>
 
                                     {/* Content */}
-                                    <div className="p-6 flex flex-col flex-1">
-                                        <h3 className="text-2xl font-black text-esn-dark mb-3 group-hover:text-esn-cyan transition-colors text-center">
-                                            {section.name}
-                                        </h3>
+                                    <div className="p-6 flex flex-col flex-1 justify-between">
+                                        <div className="flex-1 mb-6">
+                                            <h3 className="text-2xl font-black text-esn-dark mb-3 group-hover:text-esn-cyan transition-colors text-center">
+                                                {section.name}
+                                            </h3>
 
-                                        <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-1 line-clamp-3 text-center">
-                                            {section.summary}
-                                        </p>
+                                            <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 text-center break-words">
+                                                {section.summary}
+                                            </p>
+                                        </div>
 
                                         {/* Divider */}
-                                        <hr className="border-gray-100 mb-4" />
+                                        <div className="shrink-0">
+                                            <hr className="border-gray-100 mb-4" />
 
-                                        {/* Read More - Redirects to external Instagram */}
-                                        <div className="flex justify-center">
-                                            <a
-                                                href={section.instagram || '#'}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-block text-sm font-bold uppercase tracking-wide text-esn-dark hover:text-esn-magenta transition-colors py-1"
-                                            >
-                                                Read More
-                                            </a>
+                                            {/* Read More - Redirects to external Instagram */}
+                                            <div className="flex justify-center">
+                                                <a
+                                                    href={section.instagram || '#'}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-block text-sm font-bold uppercase tracking-wide text-esn-dark hover:text-esn-magenta transition-colors py-1"
+                                                >
+                                                    Read More
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </article>

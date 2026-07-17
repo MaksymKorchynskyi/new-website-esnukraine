@@ -36,13 +36,17 @@ export default function ESNcardPage() {
                 <div className="mx-auto max-w-7xl">
                     <div className="grid gap-16 lg:grid-cols-2 items-center">
                         {/* ESNcard Image */}
-                        <div className="relative aspect-[3/2] rounded-3xl overflow-hidden shadow-2xl bg-gray-100">
-                            <Image
-                                src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=800"
-                                alt="ESNcard"
-                                fill
-                                className="object-cover"
-                            />
+                        <div className="relative flex items-center justify-center p-2 sm:p-4">
+                            <div className="relative w-full max-w-[540px]">
+                                <Image
+                                    src="/esncard.png"
+                                    alt="ESNcard Membership Card Specimen"
+                                    width={800}
+                                    height={507}
+                                    className="w-full h-auto object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.18)]"
+                                    priority
+                                />
+                            </div>
                         </div>
                                                        
                         {/* Text Content */}

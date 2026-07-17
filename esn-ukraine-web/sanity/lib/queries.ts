@@ -124,3 +124,16 @@ export const getSpotlightItemsQuery = groq`
     "bannerUrl": bannerImage.asset->url
   }
 `;
+
+// ==========================================
+// NETWORK COLLAGE QUERIES
+// ==========================================
+
+export const getNetworkPhotosQuery = groq`
+  *[_type == "networkPhoto" && defined(image.asset)] | order(slot asc, order asc) {
+    "id": _id,
+    title,
+    slot,
+    "url": image.asset->url
+  }
+`;

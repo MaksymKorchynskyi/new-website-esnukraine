@@ -1,5 +1,6 @@
 import { defineField, defineType } from 'sanity'
 import { formatDate } from '../lib/utils'
+import { ACCEPTED_FILE_TYPES, ACCEPTED_IMAGE_TYPES, validateFileSize, validateImageSize } from '../lib/imageValidation'
 
 export default defineType({
   name: 'news',
@@ -41,9 +42,9 @@ export default defineType({
       name: 'mainImage',
       title: 'Прев\'ю зображення (для карточки)',
       type: 'image',
-      options: { hotspot: true },
-      description: 'Це фото буде показано у карточці новини на сторінці "News".',
-      validation: (rule) => rule.required(),
+      options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
+      description: 'Це фото буде показано у карточці новини на сторінці "News". Ліміти Sanity Free: макс. 2 МБ, формати JPG/PNG/WebP. Стискайте фото перед завантаженням.',
+      validation: (rule) => rule.required().custom(validateImageSize(2, 3500, 3500)),
     }),
     defineField({
       name: 'isSpotlight',
@@ -56,8 +57,9 @@ export default defineType({
       name: 'bannerImage',
       title: 'Банер (задній фон)',
       type: 'image',
-      options: { hotspot: true },
-      description: 'Фото для заднього фону на сторінці новини та в Spotlight (якщо увімкнено вище).',
+      options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
+      description: 'Фото для заднього фону на сторінці новини та в Spotlight. Ліміти Sanity Free: макс. 2.5 МБ, формати JPG/PNG/WebP. Рекомендуємо стискати фото.',
+      validation: (rule) => rule.custom(validateImageSize(2.5, 4000, 4000)),
     }),
     defineField({
       name: 'excerpt',
@@ -183,7 +185,8 @@ export default defineType({
         {
           type: 'image',
           title: 'Фото у тексті',
-          options: { hotspot: true },
+          options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
+          validation: (rule) => rule.custom(validateImageSize(2, 3500, 3500)),
           fields: [
             defineField({
               name: 'caption',
@@ -251,7 +254,8 @@ export default defineType({
               of: [
                 {
                   type: 'image',
-                  options: { hotspot: true },
+                  options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
+                  validation: (rule) => rule.custom(validateImageSize(2, 3500, 3500)),
                   fields: [
                     defineField({
                       name: 'caption',
@@ -324,6 +328,8 @@ export default defineType({
         {
           type: 'file',
           title: 'Файл',
+          options: { accept: ACCEPTED_FILE_TYPES },
+          validation: (rule) => rule.custom(validateFileSize(5)),
           fields: [
             defineField({
               name: 'title',
@@ -339,17 +345,18 @@ export default defineType({
           ],
         },
       ],
-      description: 'Файли (PDF, документи тощо), які відображатимуться перед фотогалереєю. При кліку файл відкриється у новій вкладеці або прямо на сайті.',
+      description: 'Файли (PDF, документи тощо), які відображатимуться перед фотогалереєю. Ліміт для безкоштовного тарифу Sanity: макс. 5 МБ на файл.',
     }),
     defineField({
       name: 'gallery',
-      title: 'Фотогалерея',
+      title: 'Photo Gallery',
       type: 'array',
       of: [
         {
           type: 'image',
           title: 'Фото',
-          options: { hotspot: true },
+          options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
+          validation: (rule) => rule.custom(validateImageSize(2, 3500, 3500)),
           fields: [
             defineField({
               name: 'caption',
@@ -359,7 +366,7 @@ export default defineType({
           ],
         },
       ],
-      description: 'Додаткові фото, які будуть відображені як галерея під статтею.',
+      description: 'Додаткові фото, які будуть відображені як галерея під статтею. Ліміти Sanity Free: макс. 2 МБ на фото.',
     }),
   ],
   preview: {

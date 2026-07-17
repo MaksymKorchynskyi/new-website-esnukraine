@@ -268,14 +268,14 @@ export default function BoardSection({ members }: BoardSectionProps) {
     };
 
     return (
-        <section className="py-20 px-6 sm:px-12 lg:px-24">
-            <div className="mx-auto max-w-7xl space-y-20">
+        <section className="py-10 sm:py-20 px-6 sm:px-12 lg:px-24">
+            <div className="mx-auto max-w-7xl space-y-10 sm:space-y-20">
                 {GROUPS.map((group) => {
                     const groupMembers = getMembersForGroup(group.key);
                     if (groupMembers.length === 0) return null;
 
                     return (
-                        <div key={group.key} className="space-y-8">
+                        <div key={group.key} className="space-y-4 sm:space-y-8">
                             {/* Section Header styled as vertical line with title */}
                             <div className="flex items-center gap-3.5">
                                 <div className="w-1.5 h-8 bg-esn-cyan rounded-full shadow-sm" />
@@ -285,7 +285,7 @@ export default function BoardSection({ members }: BoardSectionProps) {
                             </div>
 
                             {/* Portrait / Oblong Cards Grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+                            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
                                 {groupMembers.map((member) => (
                                     <button
                                         key={member._id}
