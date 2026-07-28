@@ -57,7 +57,12 @@ export async function generateStaticParams() {
 // ==========================================
 export async function generateMetadata({ params }: NewsPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = await sanityFetch<NewsArticleDetail | null>({ query: getNewsBySlugQuery, params: { slug }, tags: ['news', `news:${slug}`] });
+  let decodedSlug = slug;
+  try {
+    decodedSlug = decodeURIComponent(slug);
+  } catch (e) {}
+
+  const article = await sanityFetch<NewsArticleDetail | null>({ query: getNewsBySlugQuery, params: { slug: decodedSlug }, tags: ['news', `news:${decodedSlug}`] });
   if (!article) return { title: "Article Not Found" };
 
   const ogImage = article.mainImage
@@ -342,7 +347,12 @@ function getReadingTime(body: any[]): number {
 // ==========================================
 export default async function NewsArticlePage({ params }: NewsPageProps) {
   const { slug } = await params;
-  const article = await sanityFetch<NewsArticleDetail | null>({ query: getNewsBySlugQuery, params: { slug }, tags: ['news', `news:${slug}`] });
+  let decodedSlug = slug;
+  try {
+    decodedSlug = decodeURIComponent(slug);
+  } catch (e) {}
+
+  const article = await sanityFetch<NewsArticleDetail | null>({ query: getNewsBySlugQuery, params: { slug: decodedSlug }, tags: ['news', `news:${decodedSlug}`] });
 
   if (!article) {
     notFound();
