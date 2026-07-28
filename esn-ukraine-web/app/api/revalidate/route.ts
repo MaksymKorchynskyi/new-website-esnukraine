@@ -24,11 +24,11 @@ export async function POST(req: NextRequest) {
 
     // 4. Логіка ревалідації
     // Завжди ревалідуємо загальний тег 'sanity'
-    revalidateTag('sanity');
+    revalidateTag('sanity', 'max');
 
     // Якщо Sanity надсилає `_type` (наприклад, 'news', 'event'), ревалідуємо й його
     if (type && typeof type === 'string') {
-      revalidateTag(type);
+      revalidateTag(type, 'max');
     }
 
     // 5. Успішна відповідь
