@@ -92,7 +92,13 @@ const EVENT_QUERY = `*[_type == "event" && slug.current == $slug][0] {
 }`;
 
 async function getEvent(slug: string): Promise<EventArticle | null> {
-  return await sanityFetch<EventArticle | null>({ query: EVENT_QUERY, params: { slug }, tags: ['event', `event:${slug}`] });
+  let decodedSlug = slug;
+  try {
+    decodedSlug = decodeURIComponent(slug);
+  } catch (e) {
+    // fallback if decode fails
+  }
+  return await sanityFetch<EventArticle | null>({ query: EVENT_QUERY, params: { slug: decodedSlug }, tags: ['event', `event:${decodedSlug}`] });
 }
 
 // ==========================================
@@ -114,7 +120,12 @@ export async function generateStaticParams() {
 // ==========================================
 export async function generateMetadata({ params }: EventPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const event = await getEvent(slug);
+  let decodedSlug = slug;
+  try {
+    decodedSlug = decodeURIComponent(slug);
+  } catch (e) {}
+  
+  const event = await getEvent(decodedSlug);
   if (!event) return { title: "Event Not Found" };
 
   const ogImage = event.mainImage
