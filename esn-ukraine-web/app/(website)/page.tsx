@@ -83,7 +83,7 @@ export default async function Home() {
 
             {/* Left Column: Heading */}
             <div className="lg:col-span-4">
-              <h2 className="mb-4 md:mb-0 md:sticky md:top-24 text-[1.9rem] xs:text-[2.2rem] sm:text-5xl lg:text-[2.65rem] xl:text-5xl font-black uppercase leading-[1.08] tracking-tighter sm:tracking-tight text-esn-dark">
+              <h2 className="mb-4 md:mb-0 md:sticky md:top-24 text-[1.9rem] xs:text-[2.2rem] sm:text-5xl lg:text-[2.65rem] xl:text-5xl font-black md:uppercase leading-[1.08] tracking-tighter sm:tracking-tight text-esn-dark">
                 This is{' '}
                 <br className="hidden sm:block" />
                 <span className="text-esn-cyan whitespace-nowrap inline sm:block sm:mt-1.5">ESN Ukraine.</span>
