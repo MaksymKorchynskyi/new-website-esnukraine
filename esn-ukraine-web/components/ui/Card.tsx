@@ -30,7 +30,7 @@ type CardProps = NewsCardProps | EventCardProps;
 export function NewsCard({ title, imageUrl, slug, excerpt, publishedAt, category }: NewsCardProps) {
   return (
     <Link href={`/news/${slug}`} className="group block">
-      <article className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-esn-dark/10">
+      <article className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-200 sm:border-gray-100 shadow-md sm:shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-esn-dark/10">
         {/* Image Section */}
         <div className="relative h-52 sm:h-64 overflow-hidden">
           {imageUrl ? (
@@ -38,7 +38,7 @@ export function NewsCard({ title, imageUrl, slug, excerpt, publishedAt, category
               src={imageUrl}
               alt={title}
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
@@ -60,8 +60,8 @@ export function NewsCard({ title, imageUrl, slug, excerpt, publishedAt, category
           <div className="flex-1 mb-4 sm:mb-6">
             {/* Date */}
             {publishedAt && (
-              <div className="mb-3 sm:mb-4 flex items-center text-xs sm:text-sm font-medium text-gray-400">
-                <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
+              <div className="mb-3 sm:mb-4 flex items-center text-xs sm:text-sm font-medium text-gray-500">
+                <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-500" />
                 <span>{formatDate(publishedAt)}</span>
               </div>
             )}
@@ -73,7 +73,7 @@ export function NewsCard({ title, imageUrl, slug, excerpt, publishedAt, category
 
             {/* Excerpt */}
             {excerpt && (
-              <p className="text-sm sm:text-base text-gray-500 line-clamp-3 leading-relaxed break-words">
+              <p className="text-sm sm:text-base text-gray-600 sm:text-gray-500 line-clamp-3 leading-relaxed break-words">
                 {excerpt}
               </p>
             )}
@@ -94,7 +94,7 @@ export function NewsCard({ title, imageUrl, slug, excerpt, publishedAt, category
 export function EventCard({ title, imageUrl, slug, description, date, location }: EventCardProps) {
   return (
     <Link href={`/events/${slug}`} className="group block">
-      <article className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-esn-dark/10">
+      <article className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-200 sm:border-gray-100 shadow-md sm:shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-esn-dark/10">
         {/* Image Section */}
         <div className="relative h-52 sm:h-64 overflow-hidden">
           {imageUrl ? (
@@ -102,7 +102,7 @@ export function EventCard({ title, imageUrl, slug, description, date, location }
               src={imageUrl}
               alt={title}
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
@@ -118,15 +118,15 @@ export function EventCard({ title, imageUrl, slug, description, date, location }
             {/* Date & Location */}
             <div className="mb-3 sm:mb-4 space-y-1.5 sm:space-y-2">
               {date && (
-                <div className="flex items-center text-xs sm:text-sm font-medium text-gray-400">
-                  <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
+                <div className="flex items-center text-xs sm:text-sm font-medium text-gray-500">
+                  <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-500" />
                   <span>{formatDate(date)}</span>
                 </div>
               )}
               
               {location && (
-                <div className="flex items-center text-xs sm:text-sm font-medium text-gray-400">
-                  <MapPin className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
+                <div className="flex items-center text-xs sm:text-sm font-medium text-gray-500">
+                  <MapPin className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-500" />
                   <span>{location}</span>
                 </div>
               )}
@@ -139,7 +139,7 @@ export function EventCard({ title, imageUrl, slug, description, date, location }
 
             {/* Description */}
             {description && (
-              <p className="text-sm sm:text-base text-gray-500 line-clamp-3 leading-relaxed break-words">
+              <p className="text-sm sm:text-base text-gray-600 sm:text-gray-500 line-clamp-3 leading-relaxed break-words">
                 {description}
               </p>
             )}
