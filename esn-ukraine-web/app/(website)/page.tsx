@@ -155,9 +155,15 @@ export default async function Home() {
                 The ESN family in Ukraine is growing bigger every year. We started with small steps, but now the spirit of mobility is spreading fast. We are actively working on opening new sections to cover every corner of Ukraine.
               </p>
 
-              <div className="pt-1 sm:pt-0">
-                <Link href="/sections" className="inline-flex items-center justify-center bg-esn-dark px-6 py-3 sm:px-8 sm:py-3.5 text-xs sm:text-sm font-bold uppercase tracking-widest text-white transition-all hover:bg-esn-magenta rounded-full shadow-md sm:shadow-lg hover:shadow-xl group w-auto">
-                  View Our Sections
+              <div className="pt-2 sm:pt-0 flex justify-start">
+                <Link 
+                  href="/sections" 
+                  className="group inline-flex items-center justify-center font-bold uppercase tracking-widest transition-all text-esn-magenta text-[13px] py-2 sm:bg-esn-dark sm:px-8 sm:py-3.5 sm:text-sm sm:text-white sm:hover:bg-esn-magenta sm:rounded-full sm:shadow-lg sm:hover:shadow-xl sm:w-auto"
+                >
+                  <span className="border-b-2 border-transparent pb-0.5 group-hover:border-esn-magenta sm:border-none sm:pb-0 transition-colors">
+                    View Our Sections
+                  </span>
+                  <ChevronRight className="ml-1.5 h-4 w-4 sm:hidden transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>
