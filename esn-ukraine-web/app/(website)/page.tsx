@@ -183,10 +183,10 @@ export default async function Home() {
               <h2 className="text-3xl sm:text-4xl font-black text-esn-dark md:text-5xl">Latest Updates</h2>
               <p className="mt-2 sm:mt-4 text-base sm:text-lg text-gray-500 max-w-md">Keep up with the pulse of the organization. What we have been up to lately.</p>
             </div>
-            <div>
-              <Link href="/news" className="group inline-flex items-center font-bold text-esn-magenta text-xs sm:text-base">
+            <div className="hidden md:block">
+              <Link href="/news" className="group inline-flex items-center font-bold text-esn-magenta sm:text-base">
                 <span className="border-b-2 border-transparent pb-0.5 group-hover:border-esn-magenta transition-colors">Read all news</span>
-                <ChevronRight className="ml-1 h-3.5 w-3.5 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
+                <ChevronRight className="ml-1 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
           </div>
@@ -195,6 +195,14 @@ export default async function Home() {
             {NEWS.map((item) => (
               <NewsCard key={item.id} {...item} />
             ))}
+          </div>
+
+          {/* Mobile 'Read all news' button below the grid */}
+          <div className="mt-8 flex justify-start md:hidden">
+            <Link href="/news" className="group inline-flex items-center font-bold text-esn-magenta text-[13px] uppercase tracking-wider">
+              <span className="border-b-2 border-transparent pb-0.5 group-hover:border-esn-magenta transition-colors">Read all news</span>
+              <ChevronRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
           </div>
         </div>
       </section>
