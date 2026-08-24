@@ -329,7 +329,7 @@ export default defineType({
           type: 'file',
           title: 'Файл',
           options: { accept: ACCEPTED_FILE_TYPES },
-          validation: (rule) => rule.custom(validateFileSize(5)),
+          validation: (rule) => rule.custom(validateFileSize(10)),
           fields: [
             defineField({
               name: 'title',
