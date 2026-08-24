@@ -67,7 +67,7 @@ export function validateImageSize(
 /**
  * Валідатор для перевірки розміру прикріплених файлів (PDF, DOCX тощо).
  */
-export function validateFileSize(maxSizeMB: number = 5): CustomValidator {
+export function validateFileSize(maxSizeMB: number = 10): CustomValidator {
   return async (value: any, context) => {
     if (!value || !value.asset || !value.asset._ref) {
       return true
