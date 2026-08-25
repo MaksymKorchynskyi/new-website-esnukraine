@@ -70,21 +70,21 @@ const Header: React.FC = () => {
   const menuItems: MenuItem[] = [
     {
       label: 'About Us',
-      href: '/about',
+      href: '/about-us',
       dropdown: [
-        { label: 'About Us', href: '/about' },
-        { label: 'National Board', href: '/about/board' },
-        { label: 'History', href: '/about/history' },
-        { label: 'Sections', href: '/sections' },
+        { label: 'About Us', href: '/about-us' },
+        { label: 'National Board', href: '/national-board' },
+        { label: 'History', href: '/our-history' },
+        { label: 'Sections', href: '/our-sections' },
       ],
     },
     {
       label: 'For Students',
       dropdown: [
-        { label: 'Survival Guide', href: '/students/survival-guide' },
-        { label: 'Buddy System', href: '/students/buddy' },
-        { label: 'Erasmus+', href: '/students/erasmus' },
-        { label: 'ESNcard', href: '/students/esncard' },
+        { label: 'Survival Guide', href: '/for-students/survival-guide' },
+        { label: 'Buddy System', href: '/for-students/buddy' },
+        { label: 'Erasmus+', href: '/for-students/erasmus' },
+        { label: 'ESNcard', href: '/for-students/esncard' },
       ],
     },
     {

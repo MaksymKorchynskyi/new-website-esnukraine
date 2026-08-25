@@ -11,10 +11,10 @@ const XSocialIcon: React.FC<{ className?: string }> = ({ className = 'w-5 h-5' }
 
 const QUICK_LINKS = [
     { label: 'Home', href: '/' },
-    { label: 'About Us', href: '/about' },
+    { label: 'About Us', href: '/about-us' },
     { label: 'Events', href: '/events' },
     { label: 'News', href: '/news' },
-    { label: 'Our Sections', href: '/sections' },
+    { label: 'Our Sections', href: '/our-sections' },
 ];
 
 const POLICY_LINKS = [

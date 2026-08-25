@@ -7,6 +7,7 @@ import {
 import HeroSection from '@/components/sections/HeroSection.client';
 import EventsSection from '@/components/sections/EventsSection.client';
 import NetworkCollage from '@/components/sections/NetworkCollage.client';
+import NewsletterForm from '@/components/sections/NewsletterForm.client';
 import { NewsCard } from '@/components/ui/Card';
 
 import Image from 'next/image';
@@ -113,7 +114,7 @@ export default async function Home() {
 
                 <div>
                   <Link
-                    href="/about"
+                    href="/about-us"
                     className="group inline-flex items-center justify-center gap-2 rounded-full border border-esn-dark sm:border-2 px-5 py-2.5 sm:px-8 sm:py-3 text-xs sm:text-sm font-bold uppercase tracking-widest text-esn-dark transition-all hover:bg-esn-dark hover:text-white shrink-0 min-h-[42px]"
                   >
                     Read More
@@ -157,7 +158,7 @@ export default async function Home() {
 
               <div className="pt-2 sm:pt-0 flex justify-start">
                 <Link 
-                  href="/sections" 
+                  href="/our-sections" 
                   className="group inline-flex items-center justify-center font-bold uppercase tracking-widest transition-all text-esn-magenta text-[13px] py-2 sm:bg-esn-dark sm:px-8 sm:py-3.5 sm:text-sm sm:text-white sm:hover:bg-esn-magenta sm:rounded-full sm:shadow-lg sm:hover:shadow-xl sm:w-auto"
                 >
                   <span className="border-b-2 border-transparent pb-0.5 group-hover:border-esn-magenta sm:border-none sm:pb-0 transition-colors">
@@ -238,42 +239,7 @@ export default async function Home() {
             Join our community newsletter to receive the latest updates, events, and ESN Ukraine initiatives.
           </p>
 
-          <form className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
-            <label htmlFor="newsletter-email" className="sr-only">Your email address</label>
-            <input
-              id="newsletter-email"
-              type="email"
-              required
-              placeholder="Enter your email address"
-              className="w-full sm:flex-1 rounded-full border border-gray-200 bg-white px-5 py-3 sm:px-6 sm:py-3.5 text-base sm:text-sm text-esn-dark focus:ring-4 focus:ring-esn-cyan/20 focus:border-esn-cyan outline-none placeholder:text-gray-400 font-medium shadow-sm transition-all"
-            />
-            <button
-              type="submit"
-              className="group whitespace-nowrap px-8 py-3 sm:py-3.5 rounded-full bg-esn-dark text-xs sm:text-sm font-bold text-white transition-all hover:bg-esn-cyan hover:shadow-lg tracking-wider uppercase inline-flex items-center justify-center gap-2 shadow-md shrink-0 active:scale-95"
-            >
-              Subscribe
-            </button>
-          </form>
-
-          <div className="mt-4 sm:mt-5 flex justify-center">
-            <div className="inline-flex items-start gap-2.5 text-left max-w-sm">
-              <input
-                id="privacy-consent"
-                name="privacy-consent"
-                type="checkbox"
-                required
-                defaultChecked
-                className="mt-0.5 h-4 w-4 rounded border-gray-300 text-esn-dark focus:ring-esn-cyan cursor-pointer transition-colors accent-esn-dark shrink-0"
-              />
-              <label htmlFor="privacy-consent" className="text-xs text-gray-500 leading-normal cursor-pointer select-none">
-                I agree to the processing of personal data per ESN Ukraine&apos;s{' '}
-                <Link href="/privacy" className="font-semibold text-esn-dark underline decoration-esn-dark/30 hover:decoration-esn-dark hover:text-esn-cyan transition-colors">
-                  Privacy Policy
-                </Link>
-                .
-              </label>
-            </div>
-          </div>
+          <NewsletterForm />
         </div>
 
         {/* Infinite Marquee Ticker */}
