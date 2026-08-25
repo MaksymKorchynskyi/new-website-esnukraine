@@ -25,7 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1.0,
     },
     {
-      url: 'https://esnukraine.org/about',
+      url: 'https://esnukraine.org/about-us',
       lastModified: new Date(),
       priority: 0.8,
     },
@@ -35,7 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
-      url: 'https://esnukraine.org/sections',
+      url: 'https://esnukraine.org/our-sections',
       lastModified: new Date(),
       priority: 0.8,
     },

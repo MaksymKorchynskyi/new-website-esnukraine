@@ -89,7 +89,7 @@ export default function AboutPage() {
                     <div className="space-y-6 text-lg leading-relaxed text-gray-700">
                         <p>
                             Currently, we are a section of 40 members. A lot of us are students, some are recent graduates, but we all are active and inspired volunteers. Many of us take part in different international projects, are members of other youth organisations, or even lead our own initiatives. You can learn more about our team{' '}
-                            <Link href="/about/board" className="text-esn-cyan hover:text-esn-magenta font-semibold underline decoration-2 underline-offset-4 transition-colors">
+                            <Link href="/national-board" className="text-esn-cyan hover:text-esn-magenta font-semibold underline decoration-2 underline-offset-4 transition-colors">
                                 here
                             </Link>.
                         </p>

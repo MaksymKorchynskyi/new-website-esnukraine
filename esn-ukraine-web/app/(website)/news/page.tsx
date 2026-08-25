@@ -3,6 +3,7 @@ import { groq } from "next-sanity";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { NewsCard } from "@/components/ui/Card";
+import NewsletterForm from "@/components/sections/NewsletterForm.client";
 
 // ==========================================
 // INTERFACES (CMS-ready structure)
@@ -100,41 +101,7 @@ export default async function NewsPage() {
           <p className="text-lg text-gray-600 mb-8">
             Subscribe to our newsletter and stay connected with ESN Ukraine.
           </p>
-          <form className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
-            <label htmlFor="newsletter-email" className="sr-only">Your email address</label>
-            <input
-              id="newsletter-email"
-              type="email"
-              placeholder="Your email address"
-              className="flex-1 rounded-xl border border-gray-200 bg-white px-6 py-4 text-esn-dark focus:ring-4 focus:ring-esn-cyan/20 focus:border-esn-cyan outline-none placeholder:text-gray-400 font-medium transition-all shadow-sm"
-            />
-            <button
-              type="submit"
-              className="whitespace-nowrap rounded-xl bg-esn-dark px-8 py-4 font-bold text-white shadow-lg transition-colors hover:bg-esn-cyan tracking-wider uppercase"
-            >
-              Subscribe
-            </button>
-          </form>
-
-          <div className="mt-4 sm:mt-5 flex justify-center">
-            <div className="inline-flex items-start gap-2.5 text-left max-w-sm">
-              <input
-                id="privacy-consent"
-                name="privacy-consent"
-                type="checkbox"
-                required
-                defaultChecked
-                className="mt-0.5 h-4 w-4 rounded border-gray-300 text-esn-dark focus:ring-esn-cyan cursor-pointer transition-colors accent-esn-dark shrink-0"
-              />
-              <label htmlFor="privacy-consent" className="text-xs text-gray-500 leading-normal cursor-pointer select-none">
-                I agree to the processing of personal data per ESN Ukraine&apos;s{' '}
-                <Link href="/privacy" className="font-semibold text-esn-dark underline decoration-esn-dark/30 hover:decoration-esn-dark hover:text-esn-cyan transition-colors">
-                  Privacy Policy
-                </Link>
-                .
-              </label>
-            </div>
-          </div>
+          <NewsletterForm />
         </div>
       </section>
     </main>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Mail, MapPin, Send, CheckCircle, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Mail, MapPin, Send, CheckCircle, ExternalLink, ChevronDown } from 'lucide-react';
 
 export default function ContactPage() {
     const [formState, setFormState] = useState({
@@ -61,7 +61,7 @@ export default function ContactPage() {
             href: 'https://linktr.ee/esnukraine',
             icon: (
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M7.953 15.066l-.038-4.086 4.078-.036-.038 13.056h4.086l-.036-13.056 4.078-.036-.036-4.086 4.078.036L12.078 0 0 6.858l4.078.036-.036 4.086z" />
+                    <path d="m13.73635 5.85251 4.00467-4.11665 2.3248 2.3808-4.20064 4.00466h5.9085v3.30473h-5.9365l4.22865 4.10766-2.3248 2.3338L12.0005 12.099l-5.74052 5.76852-2.3248-2.3248 4.22864-4.10766h-5.9375V8.12132h5.9085L3.93417 4.11666l2.3248-2.3808 4.00468 4.11665V0h3.4727zm-3.4727 10.30614h3.4727V24h-3.4727z" />
                 </svg>
             ),
         },
@@ -234,21 +234,26 @@ export default function ContactPage() {
                                             <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
                                                 Subject
                                             </label>
-                                            <select
-                                                id="subject"
-                                                required
-                                                value={formState.subject}
-                                                onChange={(e) => setFormState({ ...formState, subject: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-4 focus:ring-esn-cyan/20 focus:border-esn-cyan outline-none transition-all bg-white"
-                                            >
-                                                <option value="">Select a topic</option>
-                                                <option value="general">General Inquiry</option>
-                                                <option value="buddy">Buddy System</option>
-                                                <option value="partnership">Partnership</option>
-                                                <option value="new-section">Start a New Section</option>
-                                                <option value="media">Media Request</option>
-                                                <option value="other">Other</option>
-                                            </select>
+                                            <div className="relative">
+                                                <select
+                                                    id="subject"
+                                                    required
+                                                    value={formState.subject}
+                                                    onChange={(e) => setFormState({ ...formState, subject: e.target.value })}
+                                                    className="w-full px-4 py-3 pr-10 rounded-xl border border-gray-200 focus:ring-4 focus:ring-esn-cyan/20 focus:border-esn-cyan outline-none transition-all bg-white appearance-none"
+                                                >
+                                                    <option value="">Select a topic</option>
+                                                    <option value="general">General Inquiry</option>
+                                                    <option value="buddy">Buddy System</option>
+                                                    <option value="partnership">Partnership</option>
+                                                    <option value="new-section">Start a New Section</option>
+                                                    <option value="media">Media Request</option>
+                                                    <option value="other">Other</option>
+                                                </select>
+                                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500">
+                                                    <ChevronDown className="w-5 h-5" />
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div>
