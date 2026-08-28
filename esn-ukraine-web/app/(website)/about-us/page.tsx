@@ -157,19 +157,21 @@ export default function AboutPage() {
     return (
         <main className="min-h-screen bg-white" ref={scrollRef}>
             <style jsx global>{`
-                .reveal {
-                    opacity: 0;
-                    transform: translateY(28px);
-                    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-                                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+                @media (min-width: 768px) {
+                    .reveal {
+                        opacity: 0;
+                        transform: translateY(28px);
+                        transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                                    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+                    }
+                    .reveal.revealed {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                    .reveal-d1 { transition-delay: 0.1s; }
+                    .reveal-d2 { transition-delay: 0.2s; }
+                    .reveal-d3 { transition-delay: 0.3s; }
                 }
-                .reveal.revealed {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-                .reveal-d1 { transition-delay: 0.1s; }
-                .reveal-d2 { transition-delay: 0.2s; }
-                .reveal-d3 { transition-delay: 0.3s; }
             `}</style>
 
             {/* ═══════ HERO & INTRO ═══════ */}
