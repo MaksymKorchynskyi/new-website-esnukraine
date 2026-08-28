@@ -74,7 +74,6 @@ const Header: React.FC = () => {
       dropdown: [
         { label: 'About Us', href: '/about-us' },
         { label: 'National Board', href: '/national-board' },
-        { label: 'History', href: '/our-history' },
         { label: 'Sections', href: '/our-sections' },
       ],
     },

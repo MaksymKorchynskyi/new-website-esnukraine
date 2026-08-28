@@ -27,8 +27,8 @@ const nextConfig: NextConfig = {
       
       { source: '/our-team', destination: '/national-board', permanent: true },
       { source: '/national-team', destination: '/national-board', permanent: true },
-      { source: '/our-team/alumni', destination: '/our-history', permanent: true },
-      { source: '/our-team/former-boards', destination: '/our-history', permanent: true },
+      { source: '/our-team/alumni', destination: '/about-us', permanent: true },
+      { source: '/our-team/former-boards', destination: '/about-us', permanent: true },
       
       { source: '/national-erasmus-office', destination: '/about-us', permanent: true },
       { source: '/partners', destination: '/about-us', permanent: true },
