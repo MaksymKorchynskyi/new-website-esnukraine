@@ -47,6 +47,7 @@ jobs:
           NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
           
       - name: Run Lighthouse CI
+        id: lhci
         uses: treosh/lighthouse-ci-action@v12
         with:
           configPath: './esn-ukraine-web/.lighthouserc.json'
@@ -54,3 +55,27 @@ jobs:
           temporaryPublicStorage: true 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post Lighthouse Comment in PR
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const links = ${{ steps.lhci.outputs.links }};
+            const reportUrl = Object.values(links)[0];
+            
+            const comment = `## ⚡ Lighthouse CI Report
+            
+            The performance audit has completed successfully.
+            
+            📊 **[View Detailed Lighthouse Report](${reportUrl})**
+            
+            > **Note:** This report is stored in temporary public storage and will expire in a few days.`;
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
