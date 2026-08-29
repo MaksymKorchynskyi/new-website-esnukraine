@@ -65,7 +65,12 @@ jobs:
             const links = ${{ steps.lhci.outputs.links }};
             const reportUrl = Object.values(links)[0];
             
-            const comment = `## ⚡ Lighthouse CI Report
+            const comment = `<table>
+              <tr>
+                <td><img src="https://raw.githubusercontent.com/GoogleChrome/lighthouse-ci/main/docs/assets/lhci-logo.png" width="50" height="50" alt="Lighthouse Logo" /></td>
+                <td><h2>Lighthouse CI Report</h2></td>
+              </tr>
+            </table>
             
             The performance audit has completed successfully.
             
