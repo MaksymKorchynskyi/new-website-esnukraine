@@ -1,7 +1,7 @@
 {
   "ci": {
     "collect": {
-      "startServerCommand": "npm start",
+      "startServerCommand": "cd esn-ukraine-web && npm start",
       "url": [
         "http://localhost:3000/"
       ],
