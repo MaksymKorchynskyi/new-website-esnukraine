@@ -6,14 +6,10 @@ import { ChevronDown, Menu, X } from 'lucide-react';
 
 import { MAIN_NAV, SOCIAL_LINKS } from '@/lib/navigation';
 import type { NavItem, NavItemMega, NavItemDropdown } from '@/lib/navigation';
-import LanguageSwitcher from './LanguageSwitcher';
-import { SearchModal } from './SearchModal';
-
-const Header: React.FC = () => {
+import LanguageSwitcher from './LanguageSwitcher';const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -36,11 +32,7 @@ const Header: React.FC = () => {
     };
   }, [isMobileMenuOpen]);
 
-  useEffect(() => {
-    const handleOpenSearch = () => setIsSearchOpen(true);
-    document.addEventListener('open-search', handleOpenSearch);
-    return () => document.removeEventListener('open-search', handleOpenSearch);
-  }, []);
+
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -303,9 +295,6 @@ const Header: React.FC = () => {
           </div>
         )}
       </nav>
-
-      {/* Search Modal — ⌘K */}
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   );
 };
