@@ -217,14 +217,15 @@ export default async function Home() {
       {/* =========================================
           6. STAY CONNECTED (OUTLINED BOX)
       ========================================= */}
-      <section className="relative bg-gray-50 pt-12 sm:pt-16 md:pt-24 pb-6 sm:pb-8 px-5 sm:px-12 lg:px-24 overflow-hidden">
+      <section className="relative bg-gray-50 pt-12 sm:pt-16 md:pt-24 pb-8 sm:pb-12 overflow-hidden">
         {/* Subtle Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0 opacity-5 pointer-events-none">
           <div className="h-full w-full bg-gradient-to-br from-esn-cyan/20 to-esn-magenta/20"></div>
         </div>
 
-        {/* Outlined Box */}
-        <div className="relative z-10 border border-esn-dark/15 rounded-2xl sm:rounded-3xl p-6 sm:p-10 md:p-16 max-w-4xl mx-auto bg-white/60 backdrop-blur-sm text-center shadow-xl shadow-esn-dark/5">
+        <div className="px-5 sm:px-12 lg:px-24 mb-10 sm:mb-16">
+          {/* Outlined Box */}
+          <div className="relative z-10 border border-esn-dark/15 rounded-2xl sm:rounded-3xl p-6 sm:p-10 md:p-16 max-w-4xl mx-auto bg-white/60 backdrop-blur-sm text-center shadow-xl shadow-esn-dark/5">
           <div className="mb-4 sm:mb-6">
             <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-esn-dark/5 rounded-2xl mb-2 sm:mb-4">
               <Mail className="h-6 w-6 sm:h-7 sm:w-7 text-esn-dark" />
@@ -240,36 +241,37 @@ export default async function Home() {
           </p>
 
           <NewsletterForm />
+          </div>
         </div>
 
         {/* Infinite Marquee Ticker */}
-        <div className="relative z-10 mt-10 sm:mt-16 mb-2 sm:mb-4 overflow-hidden">
-          <div className="w-max animate-marquee flex">
-            {[...Array(2)].map((_, dupeIdx) => (
-              <div key={dupeIdx} className="flex gap-10 sm:gap-16 pr-10 sm:pr-16">
-                {[
-                  { tag: '#Travel', hoverColor: 'hover:text-esn-cyan' },
-                  { tag: '#Education', hoverColor: 'hover:text-esn-magenta' },
-                  { tag: '#SocialImpact', hoverColor: 'hover:text-esn-green' },
-                  { tag: '#Culture', hoverColor: 'hover:text-esn-dark' },
-                  { tag: '#Mobility', hoverColor: 'hover:text-esn-cyan' },
-                  { tag: '#Volunteering', hoverColor: 'hover:text-esn-magenta' },
-                  { tag: '#Erasmus', hoverColor: 'hover:text-esn-green' },
-                  { tag: '#Diversity', hoverColor: 'hover:text-esn-dark' },
-                  { tag: '#Inclusion', hoverColor: 'hover:text-esn-cyan' },
-                  { tag: '#ErasmusGeneration', hoverColor: 'hover:text-esn-magenta' },
-                ].map((item) => (
-                  <span
-                    key={`${dupeIdx}-${item.tag}`}
-                    className={`whitespace-nowrap text-xl sm:text-3xl font-bold text-gray-300 cursor-pointer transition-colors duration-300 ${item.hoverColor}`}
-                  >
-                    {item.tag}
-                  </span>
-                ))}
-              </div>
-            ))}
-          </div>
+        <div className="relative w-full z-10">
+        <div className="w-max animate-marquee flex">
+          {[...Array(3)].map((_, dupeIdx) => (
+            <div key={dupeIdx} className="flex gap-10 sm:gap-16 pr-10 sm:pr-16">
+              {[
+                { tag: '#Travel', hoverColor: 'hover:text-esn-cyan' },
+                { tag: '#Education', hoverColor: 'hover:text-esn-magenta' },
+                { tag: '#SocialImpact', hoverColor: 'hover:text-esn-green' },
+                { tag: '#Culture', hoverColor: 'hover:text-esn-dark' },
+                { tag: '#Mobility', hoverColor: 'hover:text-esn-cyan' },
+                { tag: '#Volunteering', hoverColor: 'hover:text-esn-magenta' },
+                { tag: '#Erasmus', hoverColor: 'hover:text-esn-green' },
+                { tag: '#Diversity', hoverColor: 'hover:text-esn-dark' },
+                { tag: '#Inclusion', hoverColor: 'hover:text-esn-cyan' },
+                { tag: '#ErasmusGeneration', hoverColor: 'hover:text-esn-magenta' },
+              ].map((item) => (
+                <span
+                  key={`${dupeIdx}-${item.tag}`}
+                  className={`whitespace-nowrap text-xl sm:text-3xl font-bold text-gray-300 cursor-pointer transition-colors duration-300 ${item.hoverColor}`}
+                >
+                  {item.tag}
+                </span>
+              ))}
+            </div>
+          ))}
         </div>
+      </div>
       </section>
     </main>
   );
