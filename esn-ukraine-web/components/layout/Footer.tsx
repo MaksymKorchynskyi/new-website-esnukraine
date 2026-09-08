@@ -51,7 +51,7 @@ export default function Footer() {
 
                         {/* Social Icons */}
                         <div className="flex items-center gap-3 pt-1 sm:mt-auto">
-                            {SOCIAL_LINKS.filter(s => s.label !== 'Email').map(({ Icon, href, label }) => (
+                            {SOCIAL_LINKS.filter(s => !s.href.startsWith('mailto:')).map(({ Icon, href, label }) => (
                                 <a
                                     key={label}
                                     href={href}

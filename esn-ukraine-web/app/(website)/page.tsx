@@ -245,9 +245,9 @@ export default async function Home() {
         </div>
 
         {/* Infinite Marquee Ticker */}
-        <div className="relative w-full z-10">
+        <div className="relative w-full z-10" aria-hidden="true">
         <div className="w-max animate-marquee flex">
-          {[...Array(3)].map((_, dupeIdx) => (
+          {[...Array(2)].map((_, dupeIdx) => (
             <div key={dupeIdx} className="flex gap-10 sm:gap-16 pr-10 sm:pr-16">
               {[
                 { tag: '#Travel', hoverColor: 'hover:text-esn-cyan' },

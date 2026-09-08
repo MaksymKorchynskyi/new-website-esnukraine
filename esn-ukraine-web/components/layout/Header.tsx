@@ -6,7 +6,9 @@ import { ChevronDown, Menu, X } from 'lucide-react';
 
 import { MAIN_NAV, SOCIAL_LINKS } from '@/lib/navigation';
 import type { NavItem, NavItemMega, NavItemDropdown } from '@/lib/navigation';
-import LanguageSwitcher from './LanguageSwitcher';const Header: React.FC = () => {
+import LanguageSwitcher from './LanguageSwitcher';
+
+const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -16,6 +18,20 @@ import LanguageSwitcher from './LanguageSwitcher';const Header: React.FC = () =>
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close mobile menu when viewport reaches xl breakpoint (1280px)
+  // to prevent scroll-lock from persisting when menu is hidden by CSS
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1280px)');
+    const handler = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        setIsMobileMenuOpen(false);
+        setActiveDropdown(null);
+      }
+    };
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
   }, []);
 
   useEffect(() => {
