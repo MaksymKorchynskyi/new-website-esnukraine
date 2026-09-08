@@ -1,34 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Instagram, Linkedin, Youtube } from 'lucide-react';
-
-const XSocialIcon: React.FC<{ className?: string }> = ({ className = 'w-5 h-5' }) => (
-    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-);
-
-const QUICK_LINKS = [
-    { label: 'Home', href: '/' },
-    { label: 'About Us', href: '/about-us' },
-    { label: 'Events', href: '/events' },
-    { label: 'News', href: '/news' },
-    { label: 'Our Sections', href: '/our-sections' },
-];
-
-const POLICY_LINKS = [
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Code of Conduct', href: '/code-of-conduct' },
-    { label: 'Cookie Policy', href: '/cookies' },
-];
-
-const SOCIALS = [
-    { Icon: Instagram, href: 'https://instagram.com/esn.ukraine', label: 'Instagram' },
-    { Icon: Linkedin, href: 'https://linkedin.com/company/esn-ukraine', label: 'LinkedIn' },
-    { Icon: XSocialIcon, href: 'https://x.com/esnukraine', label: 'X / Twitter' },
-    { Icon: Youtube, href: 'https://youtube.com/@esnukraine', label: 'YouTube' },
-];
+import { SOCIAL_LINKS, FOOTER_QUICK_LINKS, FOOTER_POLICY_LINKS } from '@/lib/navigation';
 
 export default function Footer() {
     return (
@@ -78,7 +51,7 @@ export default function Footer() {
 
                         {/* Social Icons */}
                         <div className="flex items-center gap-3 pt-1 sm:mt-auto">
-                            {SOCIALS.map(({ Icon, href, label }) => (
+                            {SOCIAL_LINKS.filter(s => !s.href.startsWith('mailto:')).map(({ Icon, href, label }) => (
                                 <a
                                     key={label}
                                     href={href}
@@ -129,7 +102,7 @@ export default function Footer() {
                                 Quick Links
                             </h4>
                             <ul className="space-y-3">
-                                {QUICK_LINKS.map((link) => (
+                                {FOOTER_QUICK_LINKS.map((link) => (
                                     <li key={link.href}>
                                         <Link
                                             href={link.href}
@@ -148,7 +121,7 @@ export default function Footer() {
                                 Policies
                             </h4>
                             <ul className="space-y-3">
-                                {POLICY_LINKS.map((link) => (
+                                {FOOTER_POLICY_LINKS.map((link) => (
                                     <li key={link.href}>
                                         <Link
                                             href={link.href}

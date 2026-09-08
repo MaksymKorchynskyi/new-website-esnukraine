@@ -1,56 +1,37 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import {
-  ChevronDown,
-  Globe,
-  Instagram,
-  Linkedin,
-  Mail,
-  Menu,
-  X,
-  Youtube
-} from 'lucide-react';
+import { ChevronDown, Menu, X } from 'lucide-react';
 
-const XSocialIcon: React.FC<{ className?: string }> = ({ className = 'w-5 h-5' }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-  </svg>
-);
+import { MAIN_NAV, SOCIAL_LINKS } from '@/lib/navigation';
+import type { NavItem, NavItemMega, NavItemDropdown } from '@/lib/navigation';
+import LanguageSwitcher from './LanguageSwitcher';
 
-const SOCIAL_LINKS = [
-  { Icon: Instagram, href: 'https://instagram.com/esn.ukraine', label: 'Instagram' },
-  { Icon: Linkedin, href: 'https://linkedin.com/company/esn-ukraine', label: 'LinkedIn' },
-  { Icon: XSocialIcon, href: 'https://x.com/esnukraine', label: 'X / Twitter' },
-  { Icon: Youtube, href: 'https://youtube.com/@esnukraine', label: 'YouTube' },
-  { Icon: Mail, href: 'mailto:ukraine-nr@esn.org', label: 'Email' },
-];
-
-interface DropdownItem {
-  label: string;
-  href: string;
-}
-
-interface MenuItem {
-  label: string;
-  href?: string;
-  dropdown?: DropdownItem[];
-}
-
-const Header: React.FC = () => {
+const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [language, setLanguage] = useState<'EN' | 'UA'>('EN');
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close mobile menu when viewport reaches xl breakpoint (1280px)
+  // to prevent scroll-lock from persisting when menu is hidden by CSS
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1280px)');
+    const handler = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        setIsMobileMenuOpen(false);
+        setActiveDropdown(null);
+      }
+    };
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
   }, []);
 
   useEffect(() => {
@@ -67,67 +48,78 @@ const Header: React.FC = () => {
     };
   }, [isMobileMenuOpen]);
 
-  const menuItems: MenuItem[] = [
-    {
-      label: 'About Us',
-      href: '/about-us',
-      dropdown: [
-        { label: 'About Us', href: '/about-us' },
-        { label: 'National Board', href: '/national-board' },
-        { label: 'Sections', href: '/our-sections' },
-      ],
-    },
-    {
-      label: 'For Students',
-      dropdown: [
-        { label: 'Survival Guide', href: '/for-students/survival-guide' },
-        { label: 'Buddy System', href: '/for-students/buddy' },
-        { label: 'Erasmus+', href: '/for-students/erasmus' },
-        { label: 'ESNcard', href: '/for-students/esncard' },
-      ],
-    },
-    {
-      label: 'Projects',
-      href: '/projects',
-    },
-    {
-      label: 'Events',
-      href: '/events',
-    },
-    {
-      label: 'News',
-      href: '/news',
-    },
-    {
-      label: 'Contact',
-      href: '/contact',
-    },
-  ];
 
-  const toggleLanguage = () => {
-    setLanguage(prev => prev === 'EN' ? 'UA' : 'EN');
-  };
 
-  const handleDropdownToggle = (label: string) => {
-    setActiveDropdown(activeDropdown === label ? null : label);
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setActiveDropdown(null);
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => () => {
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+  }, []);
+
+  // -- Hover-intent --
+  const cancelClose = useCallback(() => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  }, []);
+
+  const scheduleClose = useCallback(() => {
+    cancelClose();
+    closeTimeoutRef.current = setTimeout(() => setActiveDropdown(null), 150);
+  }, [cancelClose]);
+
+  const openDropdown = useCallback((label: string) => {
+    cancelClose();
+    setActiveDropdown(label);
+  }, [cancelClose]);
+
+  // -- Mobile --
+  const handleMobileToggle = useCallback((label: string) => {
+    setActiveDropdown((prev) => (prev === label ? null : label));
+  }, []);
+
+  const closeMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false);
+    setActiveDropdown(null);
+  }, []);
+
+  // -- Helpers --
+  const hasSubItems = (item: NavItem): item is NavItemMega | NavItemDropdown =>
+    item.type === 'mega' || item.type === 'dropdown';
+
+  /** Flatten mega columns or dropdown items into a single link list */
+  const getLinks = (item: NavItem) => {
+    if (item.type === 'mega') return item.columns.flatMap((col) => col.items);
+    if (item.type === 'dropdown') return item.items;
+    return [];
   };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white transition-all duration-300">
-      {/* ESN Color Blocks Bar */}
+      {/* ESN Color Bar */}
       <div className="flex h-1">
-        <div className="flex-1 bg-esn-cyan"></div>
-        <div className="flex-1 bg-esn-magenta"></div>
-        <div className="flex-1 bg-esn-green"></div>
-        <div className="flex-1 bg-yellow-400"></div>
-        <div className="flex-1 bg-orange-500"></div>
+        <div className="flex-1 bg-esn-cyan" />
+        <div className="flex-1 bg-esn-magenta" />
+        <div className="flex-1 bg-esn-green" />
+        <div className="flex-1 bg-yellow-400" />
+        <div className="flex-1 bg-orange-500" />
       </div>
 
-      <nav className={`w-full transition-all duration-300 ${isScrolled
-        ? 'shadow-md border-b border-gray-100'
-        : 'border-b border-gray-100'
-        }`}>
+      <nav
+        className={`w-full transition-all duration-300 ${
+          isScrolled ? 'shadow-md border-b border-gray-100' : 'border-b border-gray-100'
+        }`}
+      >
         <div className="flex justify-between items-center h-[72px] sm:h-20 pl-2 pr-4 sm:px-6 lg:px-8">
+          {/* Logo */}
           <Link
             href="/"
             onClick={(e) => {
@@ -136,104 +128,122 @@ const Header: React.FC = () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }
             }}
-            className="flex items-center transition-opacity duration-200 hover:opacity-90 cursor-pointer"
+            className="flex items-center transition-opacity duration-200 hover:opacity-90 cursor-pointer shrink-0"
           >
             <div className="w-28 h-14 sm:w-32 sm:h-16 flex items-center justify-start sm:justify-center">
               <img src="/logo-esn-ukraine.png" alt="ESN Ukraine" className="w-full h-full object-contain object-left sm:object-center" />
             </div>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-8">
-            {menuItems.map((item) => (
-              <div
-                key={item.label}
-                className="relative"
-                onMouseEnter={() => item.dropdown && setActiveDropdown(item.label)}
-                onMouseLeave={() => item.dropdown && setActiveDropdown(null)}
-              >
-                {item.dropdown ? (
-                  <div className="flex items-center space-x-1 py-2">
-                    <Link
-                      href={item.href || '#'}
-                      className="text-sm font-bold tracking-wider uppercase text-esn-dark hover:text-esn-cyan transition-colors duration-200"
-                    >
-                      {item.label}
-                    </Link>
-                    <button
-                      onClick={() => handleDropdownToggle(item.label)}
-                      className="text-esn-dark hover:text-esn-cyan transition-colors duration-200"
-                      aria-label={`Toggle dropdown for ${item.label}`}
-                    >
-                      <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${activeDropdown === item.label ? 'rotate-180' : ''}`} />
-                    </button>
-                  </div>
-                ) : (
+          {/* ==================== Desktop Menu ==================== */}
+          <div className="hidden xl:flex items-center space-x-5 2xl:space-x-7">
+            {MAIN_NAV.map((item) => {
+              const isActive = activeDropdown === item.label;
+              const links = getLinks(item);
+
+              // Simple link (no dropdown)
+              if (item.type === 'link') {
+                return (
                   <Link
-                    href={item.href!}
-                    className="text-sm font-bold tracking-wider uppercase text-esn-dark hover:text-esn-cyan transition-colors duration-200 py-2 block"
+                    key={item.label}
+                    href={item.href}
+                    className="relative text-[13px] font-bold tracking-wider uppercase text-esn-dark hover:text-esn-cyan transition-colors duration-200 py-2 block whitespace-nowrap group"
+                    onMouseEnter={() => openDropdown('')}
                   >
                     {item.label}
+                    <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-esn-cyan transition-all duration-300 group-hover:w-full" />
                   </Link>
-                )}
+                );
+              }
 
-                {/* Dropdown Menu */}
-                {item.dropdown && activeDropdown === item.label && (
-                  <div className="absolute top-full left-0 pt-1 w-48 min-w-[200px]">
-                    <div className="bg-white rounded-lg shadow-lg py-2 border border-gray-100">
-                      {item.dropdown.map((dropdownItem) => (
-                        <Link
-                          key={dropdownItem.href}
-                          href={dropdownItem.href}
-                          className="block px-4 py-2 text-sm text-esn-dark hover:text-esn-cyan transition-colors duration-200"
-                        >
-                          {dropdownItem.label}
-                        </Link>
-                      ))}
+              // Dropdown item
+              return (
+                <div
+                  key={item.label}
+                  className="relative"
+                  onMouseEnter={() => openDropdown(item.label)}
+                  onMouseLeave={scheduleClose}
+                >
+                  <button
+                    onClick={() => setActiveDropdown(isActive ? null : item.label)}
+                    className={`relative flex items-center gap-1 py-2 text-[13px] font-bold tracking-wider uppercase transition-colors duration-200 whitespace-nowrap group ${
+                      isActive ? 'text-esn-cyan' : 'text-esn-dark hover:text-esn-cyan'
+                    }`}
+                    aria-expanded={isActive}
+                    aria-haspopup="true"
+                  >
+                    <span>{item.label}</span>
+                    <ChevronDown
+                      className={`w-3 h-3 transition-transform duration-200 ${isActive ? 'rotate-180' : ''}`}
+                    />
+                    <span
+                      className={`absolute bottom-0 left-0 h-[2px] bg-esn-cyan transition-all duration-300 ${
+                        isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                      }`}
+                    />
+                  </button>
+
+                  {/* Dropdown Panel */}
+                  {isActive && (
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-50">
+                      <div className="bg-white rounded-xl shadow-xl border border-gray-100/80 overflow-hidden animate-menu-slide-down min-w-[220px]">
+                        {/* ESN gradient stripe */}
+                        <div className="flex h-[3px]">
+                          <div className="flex-1 bg-esn-cyan" />
+                          <div className="flex-1 bg-esn-magenta" />
+                          <div className="flex-1 bg-esn-green" />
+                          <div className="flex-1 bg-yellow-400" />
+                          <div className="flex-1 bg-orange-500" />
+                        </div>
+
+                        <div className="py-2">
+                          {links.map((link) => (
+                            <Link
+                              key={link.href}
+                              href={link.href}
+                              onClick={() => setActiveDropdown(null)}
+                              className="block px-5 py-3 text-sm font-medium text-esn-dark hover:text-esn-cyan hover:bg-esn-cyan/5 transition-all duration-150"
+                            >
+                              {link.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              );
+            })}
           </div>
 
-          {/* Right Side Actions */}
-          <div className="flex items-center space-x-4">
-            {/* Language Toggle */}
-            <button
-              onClick={toggleLanguage}
-              className="hidden sm:flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium text-esn-dark hover:bg-esn-cyan/10 transition-all duration-200 border border-gray-200 hover:border-esn-cyan"
-              aria-label="Toggle language"
-            >
-              <Globe className="w-4 h-4" />
-              <span>{language}</span>
-            </button>
-
-            {/* Mobile Menu Button */}
+          {/* Right Side */}
+          <div className="flex items-center space-x-4 shrink-0">
+            <div className="hidden sm:block">
+              <LanguageSwitcher />
+            </div>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 rounded-md text-esn-dark hover:bg-esn-cyan/10 transition-colors duration-200"
-              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              className="xl:hidden p-2 rounded-md text-esn-dark hover:bg-esn-cyan/10 transition-colors duration-200"
+              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu Overlay */}
+        {/* ==================== Mobile Menu ==================== */}
         {isMobileMenuOpen && (
-          <div 
-            className="lg:hidden fixed inset-0 top-[76px] sm:top-[84px] bg-esn-dark/10 backdrop-blur-sm z-40 touch-none overscroll-none"
-            onClick={() => setIsMobileMenuOpen(false)}
+          <div
+            className="xl:hidden fixed inset-0 top-[76px] sm:top-[84px] bg-esn-dark/10 backdrop-blur-sm z-40 touch-none overscroll-none"
+            onClick={closeMobileMenu}
             aria-hidden="true"
           />
         )}
 
-        {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden bg-white border-t border-gray-100 relative z-50 shadow-xl max-h-[calc(100vh-76px)] sm:max-h-[calc(100vh-84px)] overflow-y-auto overscroll-contain">
+          <div className="xl:hidden bg-white border-t border-gray-100 relative z-50 shadow-xl max-h-[calc(100vh-76px)] sm:max-h-[calc(100vh-84px)] overflow-y-auto overscroll-contain">
             <div className="px-4 py-6 space-y-6">
-              {/* Top Bar inside Mobile Menu: Round Social Icons, Email & Language Toggle */}
+              {/* Social + Language */}
               <div className="flex items-center justify-between gap-2 pb-4 border-b border-gray-100">
                 <div className="flex items-center gap-2 flex-wrap">
                   {SOCIAL_LINKS.map(({ Icon, href, label }) => (
@@ -249,43 +259,37 @@ const Header: React.FC = () => {
                     </a>
                   ))}
                 </div>
-
-                <button
-                  onClick={toggleLanguage}
-                  className="flex items-center space-x-2 px-3.5 py-2 rounded-full text-xs font-bold text-esn-dark hover:bg-esn-cyan/10 transition-all duration-200 border border-gray-200 hover:border-esn-cyan shrink-0"
-                  aria-label="Toggle language"
-                >
-                  <Globe className="w-4 h-4" />
-                  <span>{language}</span>
-                </button>
+                <LanguageSwitcher />
               </div>
 
-              {/* Mobile Menu Items */}
+              {/* Menu Items */}
               <div className="space-y-4">
-                {menuItems.map((item) => (
+                {MAIN_NAV.map((item) => (
                   <div key={item.label}>
-                    {item.dropdown ? (
+                    {hasSubItems(item) ? (
                       <div>
                         <button
-                          onClick={() => handleDropdownToggle(item.label)}
+                          onClick={() => handleMobileToggle(item.label)}
                           className="flex items-center justify-between w-full text-left text-esn-dark font-bold text-sm tracking-wider uppercase hover:text-esn-cyan transition-colors duration-200"
-                          aria-label={`Toggle dropdown for ${item.label}`}
+                          aria-expanded={activeDropdown === item.label}
                         >
                           <span>{item.label}</span>
-                          <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === item.label ? 'rotate-180' : ''
-                            }`} />
+                          <ChevronDown
+                            className={`w-4 h-4 transition-transform duration-200 ${
+                              activeDropdown === item.label ? 'rotate-180' : ''
+                            }`}
+                          />
                         </button>
-
                         {activeDropdown === item.label && (
                           <div className="mt-2 ml-4 space-y-2">
-                            {item.dropdown.map((dropdownItem) => (
+                            {getLinks(item).map((link) => (
                               <Link
-                                key={dropdownItem.href}
-                                href={dropdownItem.href}
-                                onClick={() => setIsMobileMenuOpen(false)}
+                                key={link.href}
+                                href={link.href}
+                                onClick={closeMobileMenu}
                                 className="block py-2 text-sm text-esn-dark hover:text-esn-cyan transition-colors duration-200"
                               >
-                                {dropdownItem.label}
+                                {link.label}
                               </Link>
                             ))}
                           </div>
@@ -293,8 +297,8 @@ const Header: React.FC = () => {
                       </div>
                     ) : (
                       <Link
-                        href={item.href!}
-                        onClick={() => setIsMobileMenuOpen(false)}
+                        href={item.href}
+                        onClick={closeMobileMenu}
                         className="block text-esn-dark font-bold text-sm tracking-wider uppercase hover:text-esn-cyan transition-colors duration-200"
                       >
                         {item.label}
