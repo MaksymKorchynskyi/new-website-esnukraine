@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ChevronDown, Menu, X } from 'lucide-react';
 
 import { MAIN_NAV, SOCIAL_LINKS } from '@/lib/navigation';
@@ -131,7 +132,14 @@ const Header = () => {
             className="flex items-center transition-opacity duration-200 hover:opacity-90 cursor-pointer shrink-0"
           >
             <div className="w-28 h-14 sm:w-32 sm:h-16 flex items-center justify-start sm:justify-center">
-              <img src="/logo-esn-ukraine.png" alt="ESN Ukraine" className="w-full h-full object-contain object-left sm:object-center" />
+              <Image
+                src="/logo-esn-ukraine.png"
+                alt="ESN Ukraine"
+                width={128}
+                height={64}
+                loading="eager"
+                className="w-full h-full object-contain object-left sm:object-center"
+              />
             </div>
           </Link>
 

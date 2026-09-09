@@ -1,14 +1,33 @@
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {
   Calendar,
   ChevronRight,
   Mail
 } from 'lucide-react';
 import HeroSection from '@/components/sections/HeroSection.client';
-import EventsSection from '@/components/sections/EventsSection.client';
-import NetworkCollage from '@/components/sections/NetworkCollage.client';
-import NewsletterForm from '@/components/sections/NewsletterForm.client';
 import { NewsCard } from '@/components/ui/Card';
+
+// Lazy-load below-the-fold client components to reduce initial JS bundle (TBT optimization)
+const EventsSection = dynamic(() => import('@/components/sections/EventsSection.client'), {
+  loading: () => <div className="py-16 md:py-24" />,
+});
+const NetworkCollage = dynamic(() => import('@/components/sections/NetworkCollage.client'), {
+  loading: () => (
+    <div className="relative grid grid-cols-2 gap-3 sm:gap-4">
+      <div className="space-y-3 sm:space-y-4">
+        <div className="h-44 sm:h-64 w-full rounded-xl bg-gray-200 animate-pulse" />
+        <div className="h-32 sm:h-48 w-full rounded-xl bg-gray-200 animate-pulse" />
+      </div>
+      <div className="pt-6 sm:pt-8">
+        <div className="h-full w-full min-h-[220px] sm:min-h-[300px] rounded-xl bg-gray-200 animate-pulse" />
+      </div>
+    </div>
+  ),
+});
+const NewsletterForm = dynamic(() => import('@/components/sections/NewsletterForm.client'), {
+  loading: () => <div className="h-12" />,
+});
 
 import Image from 'next/image';
 import { sanityFetch } from "@/sanity/lib/fetch";

@@ -89,31 +89,49 @@ export default function HeroSection({ slides }: HeroSectionProps) {
       onTouchEnd={onTouchEnd}
     >
       {/* SLIDES RENDERING */}
-      {slides.map((slide, index) => (
-        <div
-          key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
-        >
-          {/* Background Image */}
-          <div className="absolute inset-0">
-            <Image
-              src={slide.image}
-              alt={slide.title}
-              fill={true}
-              priority={index === 0}
-              sizes="100vw"
-              className="object-cover"
-            />
+      {slides.map((slide, index) => {
+        // Only mount <Image> for the active slide and its immediate neighbors
+        // to prevent the browser from downloading all images at once
+        // (absolutely positioned elements intersect the viewport regardless of opacity)
+        const isActive = index === currentSlide;
+        const isAdjacent =
+          index === (currentSlide + 1) % slides.length ||
+          index === (currentSlide - 1 + slides.length) % slides.length;
+        const shouldRenderImage = isActive || isAdjacent;
+
+        return (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0'
+              }`}
+          >
+            {/* Background Image */}
+            <div className="absolute inset-0">
+              {shouldRenderImage ? (
+                <Image
+                  src={slide.image}
+                  alt={slide.title}
+                  fill={true}
+                  priority={index === 0}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  fetchPriority={index === 0 ? 'high' : 'auto'}
+                  quality={75}
+                  sizes="100vw"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-esn-dark" />
+              )}
+            </div>
+
+            {/* THE GRADIENT OVERLAY - Mobile */}
+            <div className="absolute inset-0 bg-gradient-to-t from-esn-dark via-esn-dark/95 via-65% to-esn-dark/70 md:hidden" />
+
+            {/* THE GRADIENT OVERLAY - Desktop */}
+            <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-esn-dark via-esn-dark/80 to-transparent" />
           </div>
-
-          {/* THE GRADIENT OVERLAY - Mobile */}
-          <div className="absolute inset-0 bg-gradient-to-t from-esn-dark via-esn-dark/95 via-65% to-esn-dark/70 md:hidden" />
-
-          {/* THE GRADIENT OVERLAY - Desktop */}
-          <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-esn-dark via-esn-dark/80 to-transparent" />
-        </div>
-      ))}
+        );
+      })}
 
       {/* CONTENT CONTAINER */}
       <div className="relative z-20 flex h-full items-center">

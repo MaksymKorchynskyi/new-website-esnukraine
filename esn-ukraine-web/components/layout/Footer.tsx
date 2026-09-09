@@ -26,6 +26,8 @@ export default function Footer() {
                             <img
                                 src="/logo-esn-ukraine-white.png"
                                 alt="ESN Ukraine"
+                                width={200}
+                                height={80}
                                 className="h-20 sm:h-24 lg:h-[90px] w-auto object-contain select-none"
                                 draggable={false}
                                 onError={(e) => {
