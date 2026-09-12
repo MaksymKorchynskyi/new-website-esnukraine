@@ -62,9 +62,20 @@ export default function HeroSection({ slides }: HeroSectionProps) {
         setMobileHeight(undefined);
       }
     };
+
+    const handleResize = () => {
+      // If we resize back to desktop, remove the fixed pixel height immediately
+      if (window.innerWidth >= 1024) {
+        setMobileHeight(undefined);
+      }
+    };
     
+    window.addEventListener('resize', handleResize);
     window.addEventListener('orientationchange', handleOrientationChange);
-    return () => window.removeEventListener('orientationchange', handleOrientationChange);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleOrientationChange);
+    };
   }, []);
 
   const nextSlide = () => {
