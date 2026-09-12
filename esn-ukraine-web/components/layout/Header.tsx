@@ -249,7 +249,7 @@ const Header = () => {
         )}
 
         {isMobileMenuOpen && (
-          <div className="xl:hidden bg-white border-t border-gray-100 relative z-50 shadow-xl max-h-[calc(100vh-76px)] sm:max-h-[calc(100vh-84px)] overflow-y-auto overscroll-contain">
+          <div className="xl:hidden bg-white border-t border-gray-100 relative z-50 shadow-xl max-h-[calc(100dvh-76px)] sm:max-h-[calc(100dvh-84px)] overflow-y-auto overscroll-contain">
             <div className="px-4 py-6 space-y-6">
               {/* Social + Language */}
               <div className="flex items-center justify-between gap-2 pb-4 border-b border-gray-100">

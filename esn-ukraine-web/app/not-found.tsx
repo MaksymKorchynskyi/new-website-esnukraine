@@ -4,7 +4,7 @@ export default function NotFoundRoot() {
   return (
     <html lang="en">
       <body style={{ margin: 0, padding: 0, fontFamily: 'sans-serif', backgroundColor: '#ffffff', color: '#111827' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '2rem', textAlign: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: "100dvh", padding: '2rem', textAlign: 'center' }}>
           <h1 style={{ fontSize: '4rem', fontWeight: 900, margin: '0 0 1rem 0', color: '#2E3192' }}>
             404
           </h1>

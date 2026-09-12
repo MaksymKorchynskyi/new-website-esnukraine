@@ -132,7 +132,7 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
           }}
           onWheel={(e) => e.stopPropagation()}
         >
-          <div className="bg-white w-full max-w-5xl h-[88vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-scale-up border border-gray-100">
+          <div className="bg-white w-full max-w-5xl h-[88dvh] rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-scale-up border border-gray-100">
             {/* Хедер модалки */}
             <div className="px-6 py-4 bg-gray-900 text-white flex items-center justify-between gap-4 shrink-0 border-b border-gray-800">
               <div className="flex items-center gap-3 min-w-0">
@@ -182,7 +182,7 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
                     ? `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(activeFile.fileUrl)}`
                     : `${activeFile.fileUrl}#view=Fit`
                 }
-                className="w-full min-h-[75vh] sm:min-h-0 sm:h-full border-0 flex-1 bg-white"
+                className="w-full min-h-[75dvh] sm:min-h-0 sm:h-full border-0 flex-1 bg-white"
                 title={activeFile.title || activeFile.originalFilename || 'Document'}
               />
               <div className="bg-gray-50 border-t border-gray-200 px-6 py-2.5 text-xs text-gray-500 flex items-center justify-between shrink-0">

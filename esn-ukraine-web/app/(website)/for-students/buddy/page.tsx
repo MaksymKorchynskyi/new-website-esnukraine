@@ -15,7 +15,7 @@ export default function BuddyPage() {
     };
 
     return (
-        <main className="min-h-screen bg-white flex items-center justify-center p-6 relative overflow-hidden">
+        <main className="min-h-dvh bg-white flex items-center justify-center p-6 relative overflow-hidden">
             {/* Very light subtle background effects */}
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-esn-cyan/5 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-esn-magenta/5 rounded-full blur-3xl pointer-events-none" />

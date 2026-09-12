@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="min-h-[60vh] flex items-center justify-center w-full">
+    <div className="min-h-[60dvh] flex items-center justify-center w-full">
       <div className="flex flex-col items-center gap-5">
         <div className="relative flex items-center justify-center w-14 h-14">
           <div className="absolute w-full h-full border-4 border-esn-magenta opacity-20 rounded-full"></div>
