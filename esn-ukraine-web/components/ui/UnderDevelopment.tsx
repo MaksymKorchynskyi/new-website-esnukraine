@@ -12,7 +12,7 @@ export default function UnderDevelopment() {
             <div className="relative z-10 w-full max-w-2xl mx-auto flex flex-col items-center text-center mt-10">
                 
                 {/* Mascot Image */}
-                <div className="relative w-64 h-64 sm:w-72 sm:h-72 mb-6">
+                <div className="relative w-72 h-72 sm:w-80 sm:h-80 mb-0 sm:-mb-4">
                     <Image
                         src="/images/mascot-builder.png"
                         alt="ESN Mascot Building"
@@ -22,12 +22,12 @@ export default function UnderDevelopment() {
                     />
                 </div>
 
-                <h1 className="text-3xl md:text-4xl font-black text-esn-dark mb-4 tracking-tight animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+                <h1 className="text-2xl md:text-3xl font-black text-esn-dark mb-3 tracking-tight animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                     Under Construction
                 </h1>
                 
-                <p className="text-base md:text-lg text-gray-500 mb-10 leading-relaxed max-w-sm mx-auto animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-                    Our mascot is hard at work building this page for you. Check back later!
+                <p className="text-sm md:text-base text-gray-500 mb-10 leading-relaxed max-w-sm mx-auto animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+                    Hard at work building this page for you. Check back later!
                 </p>
 
                 {/* Button matching ESN light theme style */}
