@@ -77,7 +77,7 @@ export default async function Home() {
     link: `/events/${item.slug.current}`
   }));
   return (
-    <main className="min-h-dvh bg-white text-esn-dark selection:bg-esn-cyan selection:text-white">
+    <main className="min-h-svh bg-white text-esn-dark selection:bg-esn-cyan selection:text-white">
 
       {/* =========================================
           1. HERO SECTION (SLIDER WITH GRADIENT)

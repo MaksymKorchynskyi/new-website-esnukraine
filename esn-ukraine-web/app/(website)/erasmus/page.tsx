@@ -36,7 +36,7 @@ export default function ErasmusPage() {
   ];
 
   return (
-    <main className="min-h-dvh bg-white">
+    <main className="min-h-svh bg-white">
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-esn-dark via-esn-dark to-esn-cyan/20 text-white pt-32 pb-20 px-6">
         <div className="max-w-5xl mx-auto">

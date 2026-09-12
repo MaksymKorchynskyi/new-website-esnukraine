@@ -16,7 +16,7 @@ export default function ErrorBoundary({
   }, [error]);
 
   return (
-    <div className="flex flex-col items-center justify-center px-4 w-full min-h-dvh py-20 font-sans bg-white">
+    <div className="flex flex-col items-center justify-center px-4 w-full min-h-svh py-20 font-sans bg-white">
       <div className="flex flex-col items-center text-center w-full max-w-2xl mx-auto">
         <div className="mb-6 text-esn-magenta">
           <AlertTriangle className="w-16 h-16 opacity-90" />

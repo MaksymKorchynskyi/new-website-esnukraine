@@ -3,7 +3,7 @@ import { Home } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center px-4 w-full min-h-dvh py-20 font-sans bg-white">
+    <div className="flex flex-col items-center justify-center px-4 w-full min-h-svh py-20 font-sans bg-white">
       <div className="flex flex-col items-center text-center w-full max-w-2xl mx-auto animate-fade-in">
         <h1 className="text-5xl md:text-6xl font-black text-esn-dark tracking-tight mb-4">
           404

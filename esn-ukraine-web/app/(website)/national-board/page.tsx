@@ -28,7 +28,7 @@ export default async function BoardPage() {
     const members = await getBoardMembers();
 
     return (
-        <main className="min-h-dvh bg-white">
+        <main className="min-h-svh bg-white">
             {/* Hero Section */}
             <section className="relative bg-esn-dark pt-40 pb-32 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-esn-dark via-esn-dark to-[#141B41]" />

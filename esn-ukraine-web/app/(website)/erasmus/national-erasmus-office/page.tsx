@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function NationalErasmusOfficePage() {
   return (
-    <main className="min-h-dvh bg-white">
+    <main className="min-h-svh bg-white">
       <section className="relative bg-gradient-to-br from-esn-dark via-esn-dark to-orange-500/20 text-white pt-32 pb-20 px-6">
         <div className="max-w-5xl mx-auto">
           <Link href="/" className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-6 transition-colors">
