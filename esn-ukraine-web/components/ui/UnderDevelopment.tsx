@@ -12,7 +12,7 @@ export default function UnderDevelopment() {
             <div className="relative z-10 w-full max-w-2xl mx-auto flex flex-col items-center text-center mt-10">
                 
                 {/* Mascot Image */}
-                <div className="relative w-72 h-72 sm:w-80 sm:h-80 mb-0 sm:-mb-4">
+                <div className="relative w-72 h-72 sm:w-80 sm:h-80 -mb-8 sm:-mb-14">
                     <Image
                         src="/images/mascot-builder.png"
                         alt="ESN Mascot Building"
