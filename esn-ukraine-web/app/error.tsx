@@ -16,7 +16,7 @@ export default function ErrorRoot({
   return (
     <html lang="en">
       <body style={{ margin: 0, padding: 0, fontFamily: 'sans-serif', backgroundColor: '#ffffff', color: '#111827' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: "100dvh", padding: '2rem', textAlign: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: "100svh", padding: '2rem', textAlign: 'center' }}>
           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 1rem 0' }}>
             Something went wrong
           </h2>

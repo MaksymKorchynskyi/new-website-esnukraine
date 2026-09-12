@@ -13,7 +13,7 @@ export default function StudioRootLayout({
 }>) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, padding: 0, height: "100dvh", overflow: "hidden" }}>
+      <body style={{ margin: 0, padding: 0, height: "100svh", overflow: "hidden" }}>
         {children}
       </body>
     </html>
