@@ -9,7 +9,7 @@ export default function UnderDevelopment() {
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-esn-cyan/5 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-esn-magenta/5 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="relative z-10 w-full max-w-2xl mx-auto flex flex-col items-center text-center mt-10">
+            <div className="relative z-10 w-full max-w-2xl mx-auto flex flex-col items-center text-center">
                 
                 {/* Mascot Image */}
                 <div className="relative w-72 h-72 sm:w-80 sm:h-80 -mb-8 sm:-mb-14">
