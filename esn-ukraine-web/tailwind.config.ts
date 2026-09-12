@@ -6,9 +6,6 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./sanity/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  future: {
-    hoverOnlyWhenSupported: true,
-  },
   // tailwind.config.ts (фрагмент)
   theme: {
     extend: {
