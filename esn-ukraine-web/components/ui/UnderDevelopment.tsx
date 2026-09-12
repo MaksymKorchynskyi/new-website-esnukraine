@@ -27,7 +27,7 @@ export default function UnderDevelopment() {
                 </h1>
                 
                 <p className="text-sm md:text-base text-gray-500 mb-10 leading-relaxed max-w-sm mx-auto animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-                    Hard at work building this page for you. Check back later!
+                    Still hammering out the last few pixels. Check back later!
                 </p>
 
                 {/* Button matching ESN light theme style */}
