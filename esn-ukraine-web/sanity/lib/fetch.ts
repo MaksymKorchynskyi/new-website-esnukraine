@@ -36,13 +36,16 @@ export async function sanityFetch<QueryResponse>({
         useCdn: false,
       };
 
+  // Sanitize tags to prevent Next.js/Vercel Data Cache from throwing 500 errors on invalid characters
+  const safeTags = tags.map(tag => tag.replace(/[^a-zA-Z0-9_\-:]/g, '-'));
+
   return client.fetch<QueryResponse>(query, params, {
     ...queryOptions,
     next: isDraftMode || isDev
       ? { revalidate: 0 }
       : {
           revalidate: 3600,
-          tags: ['sanity', ...tags], // Базовий тег 'sanity' для всіх запитів + специфічні теги
+          tags: ['sanity', ...safeTags], // Базовий тег 'sanity' для всіх запитів + специфічні теги
         },
   });
 }
