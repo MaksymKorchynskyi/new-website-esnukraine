@@ -37,6 +37,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
   const [touchEndY, setTouchEndY] = useState<number | null>(null);
+  const [mobileHeight, setMobileHeight] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (!isAutoPlaying) return;
@@ -45,6 +46,37 @@ export default function HeroSection({ slides }: HeroSectionProps) {
     }, 6000);
     return () => clearInterval(interval);
   }, [isAutoPlaying, slides.length]);
+
+  useEffect(() => {
+    // Only lock height in pixels on mobile/tablet to prevent iOS scroll jump bugs
+    if (window.innerWidth < 1024) {
+      setMobileHeight(`${window.innerHeight * 0.75}px`);
+    }
+    
+    const handleOrientationChange = () => {
+      if (window.innerWidth < 1024) {
+        setTimeout(() => {
+          setMobileHeight(`${window.innerHeight * 0.75}px`);
+        }, 150);
+      } else {
+        setMobileHeight(undefined);
+      }
+    };
+
+    const handleResize = () => {
+      // If we resize back to desktop, remove the fixed pixel height immediately
+      if (window.innerWidth >= 1024) {
+        setMobileHeight(undefined);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleOrientationChange);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleOrientationChange);
+    };
+  }, []);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
@@ -81,7 +113,10 @@ export default function HeroSection({ slides }: HeroSectionProps) {
 
   return (
     <section
-      className="relative h-[75svh] min-h-[500px] sm:h-svh sm:min-h-[580px] w-full overflow-hidden bg-esn-dark text-white"
+      style={{ height: mobileHeight }}
+      className={`relative min-h-[500px] sm:min-h-[580px] w-full overflow-hidden bg-esn-dark text-white ${
+        !mobileHeight ? 'h-[75svh] sm:h-svh' : ''
+      }`}
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
       onTouchStart={onTouchStart}

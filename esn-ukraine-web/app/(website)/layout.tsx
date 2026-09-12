@@ -50,11 +50,13 @@ export default async function WebsiteLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="uk" className={`${manrope.variable} overflow-x-hidden`}>
-      <body className="font-sans antialiased bg-white text-gray-900 overflow-x-hidden w-full max-w-full">
-        <Header />
-        {children}
-        <Footer />
+    <html lang="uk" className={`${manrope.variable}`}>
+      <body className="font-sans antialiased bg-white text-gray-900 w-full max-w-full">
+        <div className="overflow-x-hidden w-full min-h-svh flex flex-col">
+          <Header />
+          <div className="flex-grow">{children}</div>
+          <Footer />
+        </div>
         {(await draftMode()).isEnabled && <VisualEditing />}
       </body>
     </html>

@@ -28,7 +28,7 @@ export default function EventsSection({ events }: EventsSectionProps) {
 
       {/* Horizontal Scroll Gallery Container */}
       <div className="relative w-full">
-        <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-8 sm:pb-12 px-5 sm:px-12 lg:px-24 scrollbar-hide snap-x snap-mandatory" id="events-slider">
+        <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-8 sm:pb-12 px-5 sm:px-12 lg:px-24 scrollbar-hide snap-x snap-proximity md:snap-mandatory" id="events-slider">
           {events.map((event) => (
             <div key={event.id} className="relative flex-none w-[82vw] sm:w-[400px] snap-center group">
               <Link
