@@ -321,7 +321,7 @@ export default function BoardSection({ members }: BoardSectionProps) {
                 >
                     {/* Inline-block wrapper fitting exact image dimensions without black bars */}
                     <div
-                        className="relative inline-block w-auto max-w-[90vw] max-h-[90vh] rounded-2xl sm:rounded-3xl overflow-hidden bg-transparent shadow-2xl animate-in zoom-in-95 duration-200"
+                        className="relative inline-block w-auto max-w-[90vw] max-h-[90dvh] rounded-2xl sm:rounded-3xl overflow-hidden bg-transparent shadow-2xl animate-in zoom-in-95 duration-200"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Close Button */}
@@ -338,7 +338,7 @@ export default function BoardSection({ members }: BoardSectionProps) {
                             <img
                                 src={selectedMember.imageUrl}
                                 alt={selectedMember.imageAlt || `${selectedMember.name} - ${selectedMember.position}`}
-                                className="block w-auto h-auto max-w-[90vw] max-h-[85vh] object-contain rounded-2xl sm:rounded-3xl"
+                                className="block w-auto h-auto max-w-[90vw] max-h-[85dvh] object-contain rounded-2xl sm:rounded-3xl"
                             />
 
                             {/* Description slides up only on hover */}

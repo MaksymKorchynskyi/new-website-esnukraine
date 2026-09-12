@@ -426,7 +426,7 @@ export default async function EventPage({ params }: EventPageProps) {
     : mainImageUrl;
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-dvh bg-white">
       {/* ─── Hero Section ─── */}
       <section className="relative bg-esn-dark pt-40 pb-20 overflow-hidden">
         {/* Background gradient */}

@@ -155,7 +155,7 @@ export default function AboutPage() {
     const scrollRef = useScrollReveal();
 
     return (
-        <main className="min-h-screen bg-white" ref={scrollRef}>
+        <main className="min-h-dvh bg-white" ref={scrollRef}>
             <style jsx global>{`
                 @media (min-width: 768px) {
                     .reveal {

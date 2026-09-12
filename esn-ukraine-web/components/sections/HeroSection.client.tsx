@@ -81,7 +81,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
 
   return (
     <section
-      className="relative h-[75svh] min-h-[500px] sm:h-screen sm:min-h-[580px] w-full overflow-hidden bg-esn-dark text-white"
+      className="relative h-[75svh] min-h-[500px] sm:h-svh sm:min-h-[580px] w-full overflow-hidden bg-esn-dark text-white"
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
       onTouchStart={onTouchStart}
