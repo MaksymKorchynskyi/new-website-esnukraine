@@ -39,6 +39,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       priority: 0.8,
     },
+    {
+      url: 'https://esnukraine.org/privacy',
+      lastModified: new Date(),
+      priority: 0.3,
+    },
+    {
+      url: 'https://esnukraine.org/cookies',
+      lastModified: new Date(),
+      priority: 0.3,
+    },
   ];
 
   const dynamicUrls: MetadataRoute.Sitemap = dynamicItems.map((item) => ({

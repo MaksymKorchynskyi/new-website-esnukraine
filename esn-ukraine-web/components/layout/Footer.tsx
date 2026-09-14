@@ -138,11 +138,13 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Bottom Bar — Copyright Only */}
+                {/* Bottom Bar — Copyright */}
                 <div className="border-t border-white/10 pt-8">
-                    <p className="text-center text-xs text-gray-500 tracking-wide">
-                        © 2026 Erasmus Student Network Ukraine. All rights reserved.
-                    </p>
+                    <div className="flex items-center justify-center">
+                        <p className="text-xs text-gray-500 tracking-wide text-center">
+                            © 2026 Erasmus Student Network Ukraine. All rights reserved.
+                        </p>
+                    </div>
                 </div>
             </div>
         </footer>
