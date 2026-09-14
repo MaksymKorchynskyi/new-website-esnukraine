@@ -5,6 +5,7 @@ import { draftMode } from "next/headers";
 import "@/app/globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import CookieBanner from "@/components/layout/CookieBanner";
 
 const manrope = Manrope({
   subsets: ["latin", "cyrillic"],
@@ -56,6 +57,7 @@ export default async function WebsiteLayout({
           <Header />
           <div className="flex-grow">{children}</div>
           <Footer />
+          <CookieBanner />
         </div>
         {(await draftMode()).isEnabled && <VisualEditing />}
       </body>
