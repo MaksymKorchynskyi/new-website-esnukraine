@@ -53,7 +53,7 @@ export default function CookieBanner() {
           <motion.div
             initial={{ y: '100%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: '100%', opacity: 0 }}
+            exit={{ y: '120%', opacity: 0, transition: { type: 'tween', duration: 0.7, ease: 'easeInOut' } }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="fixed bottom-0 left-0 right-0 sm:right-auto sm:bottom-5 sm:left-5 z-[60] w-full sm:max-w-[420px]"
             role="dialog"
@@ -72,22 +72,13 @@ export default function CookieBanner() {
 
               <div className="p-5 sm:p-6">
                 {/* Header */}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-esn-cyan/10">
-                      <Cookie className="w-5 h-5 text-esn-cyan" />
-                    </div>
-                    <h2 className="text-lg font-black text-esn-dark tracking-tight">
-                      We use cookies
-                    </h2>
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-esn-cyan/10">
+                    <Cookie className="w-5 h-5 text-esn-cyan" />
                   </div>
-                  <button
-                    onClick={handleRejectAll}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-esn-dark hover:bg-gray-100 transition-colors"
-                    aria-label="Dismiss cookie banner"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  <h2 className="text-lg font-black text-esn-dark tracking-tight">
+                    We use cookies
+                  </h2>
                 </div>
 
                 {/* Description */}
@@ -95,8 +86,8 @@ export default function CookieBanner() {
                   id="cookie-banner-description"
                   className="text-sm text-gray-500 leading-relaxed mb-5"
                 >
-                  We use cookies to ensure our website works properly and to understand
-                  how it&apos;s used so we can keep improving it. Learn more in our{' '}
+                  We use cookies on this website to enhance your user experience and make
+                  sure everything works correctly. Learn more in our{' '}
                   <Link
                     href="/cookies"
                     className="text-esn-cyan hover:underline font-medium"
