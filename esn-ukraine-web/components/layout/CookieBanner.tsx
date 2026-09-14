@@ -51,10 +51,10 @@ export default function CookieBanner() {
       <AnimatePresence>
         {visible === true && (
           <motion.div
-            initial={{ y: '100%', opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: '120%', opacity: 0, transition: { type: 'tween', duration: 0.7, ease: 'easeInOut' } }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'tween', duration: 0.5, ease: 'easeInOut' }}
             className="fixed bottom-0 left-0 right-0 sm:right-auto sm:bottom-5 sm:left-5 z-[60] w-full sm:max-w-[420px]"
             role="dialog"
             aria-label="Cookie consent"

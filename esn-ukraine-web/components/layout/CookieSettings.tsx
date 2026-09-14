@@ -240,12 +240,12 @@ export default function CookieSettings({ isOpen, onClose, onSave }: CookieSettin
                             {CATEGORY_ICONS[cat.id] || null}
                           </div>
                           <div className="min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
+                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
                               <span className="text-sm font-bold text-esn-dark">
                                 {cat.label}
                               </span>
                               {isEssential && (
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded">
+                                <span className="shrink-0 whitespace-nowrap text-[10px] font-bold uppercase tracking-wider text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded">
                                   Always Active
                                 </span>
                               )}
@@ -268,7 +268,7 @@ export default function CookieSettings({ isOpen, onClose, onSave }: CookieSettin
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2.5 px-6 pb-6">
+              <div className="flex flex-col sm:flex-row gap-2.5 px-6 pb-6">
                 <button
                   onClick={handleSavePreferences}
                   className="flex-1 px-4 py-2.5 text-sm font-bold rounded-full bg-esn-dark text-white hover:bg-esn-cyan transition-colors duration-200 tracking-wide"

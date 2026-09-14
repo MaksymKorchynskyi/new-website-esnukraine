@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { SOCIAL_LINKS, FOOTER_QUICK_LINKS, FOOTER_POLICY_LINKS } from '@/lib/navigation';
-import { OPEN_SETTINGS_EVENT } from '@/lib/cookies';
 
 export default function Footer() {
     return (
@@ -139,18 +138,12 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Bottom Bar — Copyright + Cookie Settings */}
+                {/* Bottom Bar — Copyright */}
                 <div className="border-t border-white/10 pt-8">
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
-                        <p className="text-xs text-gray-500 tracking-wide">
+                    <div className="flex items-center justify-center">
+                        <p className="text-xs text-gray-500 tracking-wide text-center">
                             © 2026 Erasmus Student Network Ukraine. All rights reserved.
                         </p>
-                        <button
-                            onClick={() => window.dispatchEvent(new Event(OPEN_SETTINGS_EVENT))}
-                            className="text-xs text-gray-500 hover:text-white transition-colors duration-300 cursor-pointer"
-                        >
-                            Cookie Settings
-                        </button>
                     </div>
                 </div>
             </div>
