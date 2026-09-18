@@ -43,6 +43,11 @@ export const metadata: Metadata = {
     index: false,
     follow: false,
   },
+  icons: {
+    icon: '/esn_ukraine_star_logo.jpg',
+    shortcut: '/esn_ukraine_star_logo.jpg',
+    apple: '/esn_ukraine_star_logo.jpg',
+  },
 };
 
 export default async function WebsiteLayout({
