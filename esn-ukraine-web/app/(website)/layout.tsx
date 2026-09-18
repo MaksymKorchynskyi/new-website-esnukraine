@@ -14,7 +14,13 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://esnukraine.org"),
+  metadataBase: new URL(
+    process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "https://esnukraine.org"
+  ),
   title: "ESN Ukraine",
   description: "Erasmus Student Network Ukraine is a national-level student organization that represents local ESN sections. At the moment, we have a growing network of sections across Ukraine.",
   openGraph: {
@@ -24,10 +30,10 @@ export const metadata: Metadata = {
     siteName: "ESN Ukraine",
     images: [
       {
-        url: "/esn-ukraine-og-image.jpg",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "ESN Ukraine Default Image",
+        alt: "ESN Ukraine",
       },
     ],
     locale: "uk_UA",
@@ -37,7 +43,23 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ESN Ukraine",
     description: "Erasmus Student Network Ukraine is a national-level student organization that represents local ESN sections. At the moment, we have a growing network of sections across Ukraine.",
-    images: ["/esn-ukraine-og-image.jpg"],
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "ESN Ukraine",
+      },
+    ],
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", type: "image/png", sizes: "180x180" },
+    ],
   },
   robots: {
     index: false,
