@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     siteName: "ESN Ukraine",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/esn-ukraine-og-image.jpg",
         width: 1200,
         height: 630,
         alt: "ESN Ukraine Default Image",
@@ -37,16 +37,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ESN Ukraine",
     description: "Erasmus Student Network Ukraine is a national-level student organization that represents local ESN sections. At the moment, we have a growing network of sections across Ukraine.",
-    images: ["/og-image.jpg"],
+    images: ["/esn-ukraine-og-image.jpg"],
   },
   robots: {
     index: false,
     follow: false,
-  },
-  icons: {
-    icon: '/esn_ukraine_star_logo.jpg',
-    shortcut: '/esn_ukraine_star_logo.jpg',
-    apple: '/esn_ukraine_star_logo.jpg',
   },
 };
 
