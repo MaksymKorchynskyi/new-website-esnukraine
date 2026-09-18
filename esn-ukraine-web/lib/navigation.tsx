@@ -107,13 +107,13 @@ export const MAIN_NAV: NavItem[] = [
         items: [
           { label: 'Erasmus+', href: '/erasmus' },
           { label: 'Academic Mobility', href: '/erasmus/academic-mobility' },
-          { label: 'Erasmus Mundus', href: '/erasmus/erasmus-mundus' },
+          { label: 'Erasmus Mundus Master Programmes', href: '/erasmus/erasmus-mundus' },
         ],
       },
       {
         heading: 'Opportunities',
         items: [
-          { label: 'Trainings & Exchanges', href: '/erasmus/trainings-and-exchanges' },
+          { label: 'Erasmus Trainings and Exchanges', href: '/erasmus/trainings-and-exchanges' },
           { label: 'European Solidarity Corps', href: '/erasmus/european-solidarity-corps' },
           { label: 'National Erasmus+ Office', href: '/erasmus/national-erasmus-office' },
         ],

@@ -49,6 +49,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       priority: 0.3,
     },
+    {
+      url: 'https://esnukraine.org/erasmus',
+      lastModified: new Date(),
+      priority: 0.8,
+    },
+    {
+      url: 'https://esnukraine.org/erasmus/academic-mobility',
+      lastModified: new Date(),
+      priority: 0.7,
+    },
+    {
+      url: 'https://esnukraine.org/erasmus/erasmus-mundus',
+      lastModified: new Date(),
+      priority: 0.7,
+    },
+    {
+      url: 'https://esnukraine.org/erasmus/trainings-and-exchanges',
+      lastModified: new Date(),
+      priority: 0.7,
+    },
+    {
+      url: 'https://esnukraine.org/erasmus/european-solidarity-corps',
+      lastModified: new Date(),
+      priority: 0.7,
+    },
+    {
+      url: 'https://esnukraine.org/erasmus/national-erasmus-office',
+      lastModified: new Date(),
+      priority: 0.7,
+    },
   ];
 
   const dynamicUrls: MetadataRoute.Sitemap = dynamicItems.map((item) => ({

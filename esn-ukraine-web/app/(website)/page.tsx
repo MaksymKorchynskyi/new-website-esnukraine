@@ -35,6 +35,35 @@ import { getSpotlightItemsQuery, getLatestNewsQuery, getLatestEventsQuery, getNe
 import type { SpotlightItem, NewsArticlePreview, EventPreview } from "@/sanity/lib/types";
 import { formatDate } from "@/sanity/lib/utils";
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "ESN Ukraine",
+  description: "Erasmus Student Network Ukraine is a national-level student organization representing local ESN sections. Discover our network, news, and events.",
+  openGraph: {
+    title: "ESN Ukraine",
+    description: "Erasmus Student Network Ukraine is a national-level student organization representing local ESN sections. Discover our network, news, and events.",
+    url: "https://esnukraine.org",
+    siteName: "ESN Ukraine",
+    images: [
+      {
+        url: '/esn-ukraine-og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Erasmus Student Network Ukraine',
+        type: 'image/jpeg',
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ESN Ukraine",
+    description: "Erasmus Student Network Ukraine is a national-level student organization representing local ESN sections. Discover our network, news, and events.",
+    images: ['/esn-ukraine-og-image.jpg'],
+  },
+};
 
 
 export default async function Home() {
@@ -294,4 +323,4 @@ export default async function Home() {
       </section>
     </main>
   );
-}
+}// trigger vercel
