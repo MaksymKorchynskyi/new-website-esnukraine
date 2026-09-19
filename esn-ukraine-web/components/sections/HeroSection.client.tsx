@@ -163,7 +163,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-esn-dark via-esn-dark/95 via-65% to-esn-dark/70 md:hidden" />
 
             {/* THE GRADIENT OVERLAY - Desktop */}
-            <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-esn-dark via-esn-dark/80 to-transparent" />
+            <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-esn-dark via-esn-dark/80 to-esn-dark/0" />
           </div>
         );
       })}

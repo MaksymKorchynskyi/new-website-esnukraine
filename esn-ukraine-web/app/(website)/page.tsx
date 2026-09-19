@@ -153,7 +153,7 @@ export default async function Home() {
                 At the moment, we have a growing network of sections in Kyiv, Lviv, Chernivtsi, and Odesa.
               </p>
 
-              <div className="h-px w-full bg-gradient-to-r from-esn-dark to-transparent opacity-20" />
+              <div className="h-px w-full bg-gradient-to-r from-esn-dark to-esn-dark/0 opacity-20" />
 
               <div className="space-y-4 sm:space-y-5 text-base sm:text-xl leading-relaxed text-gray-600">
                 <p>
