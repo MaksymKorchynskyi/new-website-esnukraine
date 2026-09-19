@@ -160,9 +160,6 @@ export default function ErasmusPage() {
 
           <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-esn-cyan/20 rounded-2xl flex items-center justify-center">
-                <GraduationCap className="w-6 h-6 sm:w-7 sm:h-7 text-esn-cyan" />
-              </div>
               <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight">
                 Erasmus+
               </h1>

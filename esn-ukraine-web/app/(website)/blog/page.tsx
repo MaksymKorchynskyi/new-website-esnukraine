@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowLeft, BookOpen } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 export const metadata = {
   title: 'Blog | ESN Ukraine',
@@ -15,7 +15,6 @@ export default function BlogPage() {
             <ArrowLeft className="w-4 h-4" /> Back to Home
           </Link>
           <div className="flex items-center gap-3 mb-4">
-            <BookOpen className="w-8 h-8 text-esn-magenta" />
             <h1 className="text-4xl sm:text-5xl font-black tracking-tight">Blog</h1>
           </div>
           <p className="text-lg text-white/70 max-w-2xl leading-relaxed">

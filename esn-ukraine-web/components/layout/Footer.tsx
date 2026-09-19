@@ -52,13 +52,13 @@ export default function Footer() {
                         </p>
 
                         {/* Social Icons */}
-                        <div className="flex items-center gap-3 pt-1 sm:mt-auto">
-                            {SOCIAL_LINKS.filter(s => !s.href.startsWith('mailto:')).map(({ Icon, href, label }) => (
+                        <div className="flex items-center gap-3 pt-1 sm:mt-auto flex-wrap">
+                            {SOCIAL_LINKS.map(({ Icon, href, label }) => (
                                 <a
                                     key={label}
                                     href={href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    target={href.startsWith('mailto:') ? undefined : "_blank"}
+                                    rel={href.startsWith('mailto:') ? undefined : "noopener noreferrer"}
                                     aria-label={label}
                                     className="flex items-center justify-center w-9 h-9 rounded-full border border-white/15 text-gray-400 hover:bg-white hover:text-[#17194A] hover:border-white transition-all duration-300"
                                 >
