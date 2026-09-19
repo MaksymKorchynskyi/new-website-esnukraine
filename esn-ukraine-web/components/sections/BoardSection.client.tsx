@@ -342,7 +342,7 @@ export default function BoardSection({ members }: BoardSectionProps) {
                             />
 
                             {/* Description slides up only on hover */}
-                            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 bg-gradient-to-t from-black/90 via-black/60 to-transparent text-white z-10 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 rounded-b-2xl sm:rounded-b-3xl pointer-events-none">
+                            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 bg-gradient-to-t from-black/90 via-black/60 to-black/0 text-white z-10 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 rounded-b-2xl sm:rounded-b-3xl pointer-events-none">
                                 <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-white leading-tight">
                                     {selectedMember.name} <span className="font-normal text-white/80 text-base sm:text-lg lg:text-xl ml-1">({selectedMember.position})</span>
                                 </h3>
