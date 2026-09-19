@@ -6,6 +6,7 @@ import "@/app/globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CookieBanner from "@/components/layout/CookieBanner";
+import { Analytics } from "@vercel/analytics/react";
 
 const manrope = Manrope({
   subsets: ["latin", "cyrillic"],
@@ -71,6 +72,7 @@ export default async function WebsiteLayout({
           <div className="flex-grow">{children}</div>
           <Footer />
           <CookieBanner />
+          <Analytics />
         </div>
         {(await draftMode()).isEnabled && <VisualEditing />}
       </body>
