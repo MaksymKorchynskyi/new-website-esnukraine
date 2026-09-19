@@ -30,6 +30,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: 'https://esnukraine.org/national-board',
+      lastModified: new Date(),
+      priority: 0.8,
+    },
+    {
+      url: 'https://esnukraine.org/about-us/former-boards',
+      lastModified: new Date(),
+      priority: 0.6,
+    },
+    {
       url: 'https://esnukraine.org/contact',
       lastModified: new Date(),
       priority: 0.8,
@@ -40,14 +50,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
-      url: 'https://esnukraine.org/privacy',
+      url: 'https://esnukraine.org/news',
       lastModified: new Date(),
-      priority: 0.3,
+      priority: 0.9,
     },
     {
-      url: 'https://esnukraine.org/cookies',
+      url: 'https://esnukraine.org/events',
       lastModified: new Date(),
-      priority: 0.3,
+      priority: 0.8,
+    },
+    {
+      url: 'https://esnukraine.org/blog',
+      lastModified: new Date(),
+      priority: 0.6,
+    },
+    {
+      url: 'https://esnukraine.org/projects',
+      lastModified: new Date(),
+      priority: 0.7,
     },
     {
       url: 'https://esnukraine.org/erasmus',
@@ -78,6 +98,41 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: 'https://esnukraine.org/erasmus/national-erasmus-office',
       lastModified: new Date(),
       priority: 0.7,
+    },
+    {
+      url: 'https://esnukraine.org/for-students/erasmus',
+      lastModified: new Date(),
+      priority: 0.7,
+    },
+    {
+      url: 'https://esnukraine.org/for-students/housing',
+      lastModified: new Date(),
+      priority: 0.6,
+    },
+    {
+      url: 'https://esnukraine.org/for-students/buddy',
+      lastModified: new Date(),
+      priority: 0.6,
+    },
+    {
+      url: 'https://esnukraine.org/for-students/survival-guide',
+      lastModified: new Date(),
+      priority: 0.6,
+    },
+    {
+      url: 'https://esnukraine.org/for-students/esncard',
+      lastModified: new Date(),
+      priority: 0.6,
+    },
+    {
+      url: 'https://esnukraine.org/privacy',
+      lastModified: new Date(),
+      priority: 0.3,
+    },
+    {
+      url: 'https://esnukraine.org/cookies',
+      lastModified: new Date(),
+      priority: 0.3,
     },
   ];
 
