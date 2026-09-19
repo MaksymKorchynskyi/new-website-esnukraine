@@ -68,6 +68,7 @@ export const MAIN_NAV: NavItem[] = [
         items: [
           { label: 'About Us', href: '/about-us' },
           { label: 'National Board', href: '/national-board' },
+          { label: 'Former Boards', href: '/about-us/former-boards' },
         ],
       },
       {
