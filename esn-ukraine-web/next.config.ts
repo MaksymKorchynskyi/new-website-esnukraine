@@ -23,6 +23,16 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['@sanity/icons', '@sanity/ui', '@sanity/util', 'sanity', 'lucide-react', 'framer-motion'],
   },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/ingest/posthog/:path*',
+          destination: 'https://eu.i.posthog.com/:path*', 
+        },
+      ],
+    };
+  },
   async redirects() {
     return [
       // =============================================
