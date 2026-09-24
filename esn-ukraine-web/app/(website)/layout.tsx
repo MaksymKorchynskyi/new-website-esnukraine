@@ -7,6 +7,8 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CookieBanner from "@/components/layout/CookieBanner";
 import { Analytics } from "@vercel/analytics/react";
+import { PostHogProvider } from "@/components/analytics/PostHogProvider";
+import PostHogPageView from "@/components/analytics/PostHogPageView";
 
 const manrope = Manrope({
   subsets: ["latin", "cyrillic"],
@@ -67,14 +69,17 @@ export default async function WebsiteLayout({
   return (
     <html lang="uk" className={`${manrope.variable}`}>
       <body className="font-sans antialiased bg-white text-gray-900 w-full max-w-full">
-        <div className="overflow-x-hidden w-full min-h-svh flex flex-col">
-          <Header />
-          <div className="flex-grow">{children}</div>
-          <Footer />
-          <CookieBanner />
-          <Analytics />
-        </div>
-        {(await draftMode()).isEnabled && <VisualEditing />}
+        <PostHogProvider>
+          <div className="overflow-x-hidden w-full min-h-svh flex flex-col">
+            <Header />
+            <div className="flex-grow">{children}</div>
+            <Footer />
+            <CookieBanner />
+            <PostHogPageView />
+            <Analytics />
+          </div>
+          {(await draftMode()).isEnabled && <VisualEditing />}
+        </PostHogProvider>
       </body>
     </html>
   );
