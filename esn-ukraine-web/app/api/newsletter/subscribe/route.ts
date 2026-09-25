@@ -3,6 +3,7 @@ import { Resend } from 'resend';
 import { z } from 'zod';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
+import { ipAddress } from '@vercel/functions';
 
 export const runtime = 'edge';
 
@@ -72,8 +73,8 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Secure IP Extraction
-    // NextRequest properly handles Vercel's trust proxy to provide the real client IP.
-    const ip = req.ip ?? '127.0.0.1';
+    // Using official @vercel/functions to securely extract the client IP.
+    const ip = ipAddress(req) ?? '127.0.0.1';
 
     // 3. Upstash Redis Rate Limiting
     if (ratelimit) {
