@@ -11,7 +11,6 @@ interface SubscribeResponse {
   success: boolean;
   message?: string;
   error?: string;
-  alreadySubscribed?: boolean;
 }
 
 export default function NewsletterForm() {
@@ -19,7 +18,6 @@ export default function NewsletterForm() {
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<FormStatus>('idle');
   const [message, setMessage] = useState('');
-  const [alreadySubscribed, setAlreadySubscribed] = useState(false);
   const honeypotRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,7 +45,6 @@ export default function NewsletterForm() {
 
     setStatus('loading');
     setMessage('');
-    setAlreadySubscribed(false);
 
     try {
       const res = await fetch('/api/newsletter/subscribe', {
@@ -60,12 +57,14 @@ export default function NewsletterForm() {
         }),
       });
 
-      const data: SubscribeResponse = await res.json();
+      const data: SubscribeResponse = await res.json().catch(() => ({ 
+        success: false, 
+        error: res.status === 429 ? 'You are sending too many requests. Please wait a minute before trying again.' : 'Invalid response from server.' 
+      }));
 
       if (data.success) {
         setStatus('success');
         setMessage(data.message || 'You\'ve been subscribed!');
-        setAlreadySubscribed(data.alreadySubscribed || false);
       } else {
         setStatus('error');
         setMessage(data.error || 'Something went wrong. Please try again.');
@@ -80,7 +79,6 @@ export default function NewsletterForm() {
     setStatus('idle');
     setEmail('');
     setMessage('');
-    setAlreadySubscribed(false);
   };
 
   return (
@@ -107,12 +105,10 @@ export default function NewsletterForm() {
 
             <div className="text-center">
               <p className="text-base sm:text-lg font-bold text-esn-dark">
-                {alreadySubscribed ? 'You\'re already on the list!' : 'You\'re subscribed!'}
+                You're subscribed!
               </p>
               <p className="mt-1 text-sm text-gray-500 max-w-sm">
-                {alreadySubscribed
-                  ? 'This email is already subscribed to our newsletter.'
-                  : 'Thank you for subscribing. You\'ll receive our latest news and updates.'}
+                Thank you for subscribing. You'll receive our latest news and updates.
               </p>
             </div>
 
@@ -137,7 +133,7 @@ export default function NewsletterForm() {
               {/* Honeypot — invisible to real users, attracts bots */}
               <input
                 ref={honeypotRef}
-                type="text"
+                type="url"
                 name="website"
                 tabIndex={-1}
                 autoComplete="off"
@@ -159,6 +155,7 @@ export default function NewsletterForm() {
                 }}
                 placeholder="Enter your email address"
                 disabled={status === 'loading'}
+                aria-invalid={status === 'error' ? 'true' : 'false'}
                 className="w-full sm:flex-1 rounded-full border border-gray-200 bg-white px-5 py-3 sm:px-6 sm:py-3.5 text-base sm:text-sm text-esn-dark focus:ring-4 focus:ring-esn-cyan/20 focus:border-esn-cyan outline-none placeholder:text-gray-400 font-medium shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               />
 
@@ -203,8 +200,15 @@ export default function NewsletterForm() {
                   type="checkbox"
                   required
                   checked={consent}
-                  onChange={(e) => setConsent(e.target.checked)}
+                  onChange={(e) => {
+                    setConsent(e.target.checked);
+                    if (status === 'error') {
+                      setStatus('idle');
+                      setMessage('');
+                    }
+                  }}
                   disabled={status === 'loading'}
+                  aria-invalid={status === 'error' && !consent ? 'true' : 'false'}
                   className="mt-0.5 h-4 w-4 rounded border-gray-300 text-esn-dark focus:ring-esn-cyan cursor-pointer transition-colors accent-esn-dark shrink-0 disabled:opacity-60"
                 />
                 <label htmlFor="privacy-consent" className="text-xs text-gray-500 leading-normal cursor-pointer select-none">
