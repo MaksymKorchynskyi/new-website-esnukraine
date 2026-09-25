@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
       const isDuplicate = error.name === 'validation_error' || error.message?.toLowerCase().includes('already exists');
       
       if (isDuplicate) {
-        console.log(`[Newsletter] Duplicate subscription attempt for: ${normalizedEmail}`);
+        console.log('[Newsletter] Duplicate subscription attempt blocked.');
         return NextResponse.json({
           success: true,
           message: "Welcome aboard! You've been subscribed to our newsletter.",

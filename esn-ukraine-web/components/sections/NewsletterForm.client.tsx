@@ -133,8 +133,8 @@ export default function NewsletterForm() {
               {/* Honeypot — invisible to real users, attracts bots */}
               <input
                 ref={honeypotRef}
-                type="text"
-                name="b_esn_trap_field"
+                type="url"
+                name="website"
                 tabIndex={-1}
                 autoComplete="off"
                 aria-hidden="true"
