@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, ExternalLink, MessageCircle, Send } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Mail } from 'lucide-react';
 
 export default function ESNcardPage() {
     return (
@@ -8,8 +8,8 @@ export default function ESNcardPage() {
             {/* Hero Section */}
             <section className="relative bg-esn-dark pt-40 pb-32 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-esn-dark via-esn-dark to-[#141B41]" />
-                <div className="absolute top-0 right-0 w-96 h-96 bg-esn-magenta/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-esn-cyan/10 rounded-full blur-3xl" />
+                <div className="absolute top-0 right-0 w-72 h-72 sm:w-96 sm:h-96 bg-esn-magenta/10 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-72 h-72 sm:w-96 sm:h-96 bg-esn-cyan/10 rounded-full blur-3xl" />
 
                 <div className="relative z-10 mx-auto max-w-7xl px-6 sm:px-12 lg:px-24">
                     <Link
@@ -32,9 +32,9 @@ export default function ESNcardPage() {
             </section>
 
             {/* ESNcard Photo + Description */}
-            <section className="py-24 px-6 sm:px-12 lg:px-24">
+            <section className="py-12 sm:py-16 md:py-24 px-6 sm:px-12 lg:px-24">
                 <div className="mx-auto max-w-7xl">
-                    <div className="grid gap-16 lg:grid-cols-2 items-center">
+                    <div className="grid gap-8 sm:gap-12 lg:gap-16 lg:grid-cols-2 items-center">
                         {/* ESNcard Image */}
                         <div className="relative flex items-center justify-center p-2 sm:p-4">
                             <div className="relative w-full max-w-[540px]">
@@ -48,14 +48,14 @@ export default function ESNcardPage() {
                                 />
                             </div>
                         </div>
-                                                       
+
                         {/* Text Content */}
                         <div>
-                            <h2 className="text-3xl md:text-4xl font-black text-esn-dark mb-8">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-esn-dark mb-5 sm:mb-8">
                                 What is the ESNcard?
                             </h2>
-                            <div className="space-y-5 text-gray-700 text-lg leading-[1.8]">
-                                <p className="text-xl font-semibold text-esn-dark">
+                            <div className="space-y-4 sm:space-y-5 text-gray-700 text-base sm:text-lg leading-[1.8]">
+                                <p className="text-lg sm:text-xl font-semibold text-esn-dark">
                                     The ESNcard is a membership card of the Erasmus Student Network.
                                 </p>
                                 <p>
@@ -71,16 +71,16 @@ export default function ESNcardPage() {
             </section>
 
             {/* Who Can Get an ESNcard */}
-            <section className="py-24 px-6 sm:px-12 lg:px-24 bg-gray-50">
+            <section className="py-12 sm:py-16 md:py-24 px-6 sm:px-12 lg:px-24 bg-gray-50">
                 <div className="mx-auto max-w-7xl">
                     <div className="max-w-3xl mx-auto">
-                        <h2 className="text-3xl md:text-4xl font-black text-esn-dark mb-8">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-esn-dark mb-5 sm:mb-8">
                             Who can get the ESNcard?
                         </h2>
-                        <p className="text-gray-700 mb-8 text-lg leading-[1.8]">
+                        <p className="text-gray-700 mb-6 sm:mb-8 text-base sm:text-lg leading-[1.8]">
                             You can get the ESNcard, if you belong to one of the following groups:
                         </p>
-                        <ul className="space-y-3 mb-10">
+                        <ul className="space-y-2.5 sm:space-y-3 mb-8 sm:mb-10">
                             {[
                                 'Erasmus+ students.',
                                 'Erasmus+ trainees.',
@@ -114,18 +114,18 @@ export default function ESNcardPage() {
             </section>
 
             {/* Benefits Photos - 3 in a row */}
-            <section className="py-24 px-6 sm:px-12 lg:px-24">
+            <section className="py-12 sm:py-16 md:py-24 px-6 sm:px-12 lg:px-24">
                 <div className="mx-auto max-w-7xl">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-black text-esn-dark mb-4">
+                    <div className="text-center mb-8 sm:mb-12 md:mb-16">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-esn-dark mb-3 sm:mb-4">
                             ESNcard Benefits
                         </h2>
-                        <p className="text-gray-600 max-w-2xl mx-auto">
+                        <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
                             Enjoy exclusive discounts and perks across Europe with your ESNcard.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6 md:gap-8">
                         {[
                             {
                                 title: 'Travel Discounts',
@@ -147,7 +147,7 @@ export default function ESNcardPage() {
                                 key={index}
                                 className="group rounded-3xl overflow-hidden border border-gray-100 shadow-sm transition-shadow duration-300 hover:shadow-xl"
                             >
-                                <div className="relative h-56 overflow-hidden">
+                                <div className="relative h-44 sm:h-48 md:h-56 overflow-hidden">
                                     <Image
                                         src={benefit.imageUrl}
                                         alt={benefit.title}
@@ -155,8 +155,8 @@ export default function ESNcardPage() {
                                         className="object-cover"
                                     />
                                 </div>
-                                <div className="p-6">
-                                    <h3 className="text-xl font-bold text-esn-dark mb-2">{benefit.title}</h3>
+                                <div className="p-5 sm:p-6">
+                                    <h3 className="text-lg sm:text-xl font-bold text-esn-dark mb-1.5 sm:mb-2">{benefit.title}</h3>
                                     <p className="text-gray-600 text-sm leading-relaxed">{benefit.description}</p>
                                 </div>
                             </div>
@@ -166,33 +166,22 @@ export default function ESNcardPage() {
             </section>
 
             {/* How to Get - CTA */}
-            <section className="py-24 px-6 sm:px-12 lg:px-24 bg-esn-dark text-white">
+            <section className="py-16 sm:py-20 md:py-24 px-6 sm:px-12 lg:px-24 bg-esn-dark text-white">
                 <div className="mx-auto max-w-4xl text-center">
-                    <h2 className="text-3xl md:text-4xl font-black mb-6">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-black mb-4 sm:mb-6">
                         How to Get Your ESNcard
                     </h2>
-                    <p className="text-lg text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-                        In order to get your ESNcard, get in touch with us via Messenger or Telegram.
+                    <p className="text-base sm:text-lg text-gray-300 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed">
+                        In order to get your ESNcard, get in touch with us via email.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <div className="flex justify-center">
                         <a
-                            href="https://m.me/esnukraine"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-3 bg-[#0084FF] px-8 py-4 text-sm font-bold uppercase tracking-widest text-white rounded-full hover:bg-[#0073E6] transition-colors shadow-lg"
+                            href="mailto:treasurer@esnukraine.org"
+                            className="group inline-flex items-center justify-center gap-2.5 bg-white text-esn-dark px-6 sm:px-10 py-3.5 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full hover:bg-esn-cyan hover:text-white transition-all duration-300"
                         >
-                            <MessageCircle className="w-5 h-5" />
-                            Messenger
-                        </a>
-                        <a
-                            href="https://t.me/esnukraine"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-3 bg-[#26A5E4] px-8 py-4 text-sm font-bold uppercase tracking-widest text-white rounded-full hover:bg-[#1E96D1] transition-colors shadow-lg"
-                        >
-                            <Send className="w-5 h-5" />
-                            Telegram
+                            <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <span className="truncate">treasurer@esnukraine.org</span>
                         </a>
                     </div>
 

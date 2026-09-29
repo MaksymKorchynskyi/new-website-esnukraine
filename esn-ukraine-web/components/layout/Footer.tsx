@@ -82,18 +82,30 @@ export default function Footer() {
                                 className="hover:text-white transition-colors duration-300 block"
                             >
                                 Erasmus Student Network Ukraine<br />
-                                58 Volodymyrska str., r. 45a<br />
-                                01601 Kyiv<br />
-                                Ukraine
+                                Kyiv, Ukraine
                             </a>
                         </address>
 
-                        <a
-                            href="mailto:ukraine-nr@esn.org"
-                            className="inline-block text-sm text-gray-400 hover:text-white transition-colors duration-300"
-                        >
-                            ukraine-nr@esn.org
-                        </a>
+                        <div className="space-y-3">
+                            <div>
+                                <a
+                                    href="mailto:ukraine-nr@esn.org"
+                                    className="text-sm text-gray-400 hover:text-white transition-colors duration-300"
+                                >
+                                    ukraine-nr@esn.org
+                                </a>
+                                <p className="text-xs text-gray-500 mt-0.5">General inquiries</p>
+                            </div>
+                            <div>
+                                <a
+                                    href="mailto:web-master@esnukraine.org"
+                                    className="text-sm text-gray-400 hover:text-white transition-colors duration-300"
+                                >
+                                    web-master@esnukraine.org
+                                </a>
+                                <p className="text-xs text-gray-500 mt-0.5">Technical issues</p>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Columns 3 & 4 — Quick Links & Policies (Side-by-side on mobile & tablet) */}
@@ -123,16 +135,30 @@ export default function Footer() {
                                 Policies
                             </h4>
                             <ul className="space-y-3">
-                                {FOOTER_POLICY_LINKS.map((link) => (
+                                {FOOTER_POLICY_LINKS.map((link) => {
+                                    const isExternal = link.href.startsWith('http');
+                                    return (
                                     <li key={link.href}>
-                                        <Link
-                                            href={link.href}
-                                            className="text-sm text-gray-400 hover:text-white transition-colors duration-300 block"
-                                        >
-                                            {link.label}
-                                        </Link>
+                                        {isExternal ? (
+                                            <a
+                                                href={link.href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-sm text-gray-400 hover:text-white transition-colors duration-300 block"
+                                            >
+                                                {link.label}
+                                            </a>
+                                        ) : (
+                                            <Link
+                                                href={link.href}
+                                                className="text-sm text-gray-400 hover:text-white transition-colors duration-300 block"
+                                            >
+                                                {link.label}
+                                            </Link>
+                                        )}
                                     </li>
-                                ))}
+                                    );
+                                })}
                             </ul>
                         </div>
                     </div>
