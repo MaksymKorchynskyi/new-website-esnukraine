@@ -100,11 +100,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
-      url: 'https://esnukraine.org/for-students/erasmus',
-      lastModified: new Date(),
-      priority: 0.7,
-    },
-    {
       url: 'https://esnukraine.org/for-students/housing',
       lastModified: new Date(),
       priority: 0.6,

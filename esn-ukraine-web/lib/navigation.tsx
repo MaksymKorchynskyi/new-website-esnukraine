@@ -168,6 +168,6 @@ export const FOOTER_QUICK_LINKS: NavLink[] = [
 
 export const FOOTER_POLICY_LINKS: NavLink[] = [
   { label: 'Privacy Policy', href: '/privacy' },
-  { label: 'Code of Conduct', href: '/code-of-conduct' },
+  { label: 'Code of Conduct', href: 'https://docs.google.com/document/d/1E4-IKdU49DTWz00hBMOvqSKbOcx4Vyi2/edit?usp=sharing&ouid=102221963495734523968&rtpof=true&sd=true' },
   { label: 'Cookie Policy', href: '/cookies' },
 ];

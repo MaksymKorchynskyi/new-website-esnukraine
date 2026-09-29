@@ -115,10 +115,10 @@ export default function ContactPage() {
                                     <div>
                                         <p className="text-sm font-medium text-gray-500">Email</p>
                                         <a
-                                            href="mailto:contact@esn.org.ua"
+                                            href="mailto:ukraine-nr@esn.org"
                                             className="text-lg font-bold text-esn-dark hover:text-esn-cyan transition-colors"
                                         >
-                                            contact@esn.org.ua
+                                            ukraine-nr@esn.org
                                         </a>
                                     </div>
                                 </div>
@@ -131,13 +131,13 @@ export default function ContactPage() {
                                     <div>
                                         <p className="text-sm font-medium text-gray-500">Address</p>
                                         <a
-                                            href="https://maps.google.com/?q=Volodymyrska+St,+58,+Kyiv,+Ukraine,+01601"
+                                            href="https://maps.app.goo.gl/cMbvbYobajVy4uEm8"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="group block"
                                         >
-                                            <p className="text-lg font-bold text-esn-dark group-hover:text-esn-cyan transition-colors">58 Volodymyrska str., r. 45a</p>
-                                            <p className="text-sm text-gray-500 group-hover:text-esn-cyan/80 transition-colors">01601 Kyiv, Ukraine</p>
+                                            <p className="text-lg font-bold text-esn-dark group-hover:text-esn-cyan transition-colors">Erasmus Student Network Ukraine</p>
+                                            <p className="text-sm text-gray-500 group-hover:text-esn-cyan/80 transition-colors">Kyiv, Ukraine</p>
                                         </a>
                                     </div>
                                 </div>
@@ -195,7 +195,7 @@ export default function ContactPage() {
                                         Send a Message
                                     </h2>
                                     <p className="text-gray-500 mb-8">
-                                        Fill out the form below and we'll respond within 48 hours.
+                                        Fill out the form below and we'll get back to you as soon as possible.
                                     </p>
 
                                     <form onSubmit={handleSubmit} className="space-y-6">
