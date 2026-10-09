@@ -167,7 +167,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
                   fetchPriority={index === 0 ? 'high' : 'auto'}
                   quality={75}
                   sizes="100vw"
-                  className="object-cover md:object-center object-[center_25%]"
+                  className="object-cover md:object-center object-[center_20%]"
                 />
               ) : (
                 <div className="absolute inset-0 bg-esn-dark" />
@@ -175,12 +175,13 @@ export default function HeroSection({ slides }: HeroSectionProps) {
             </div>
 
             {/* ─── GRADIENT OVERLAY — Mobile (<md) ─── */}
-            {/* Photo-first: top is almost clear, bottom fades to dark where text sits */}
+            {/* Subtle blue tint over entire photo + strong fade only at the bottom for text */}
+            <div className="absolute inset-0 md:hidden bg-esn-dark/[0.12]" />
             <div
               className="absolute inset-0 md:hidden"
               style={{
                 background:
-                  'linear-gradient(to bottom, transparent 0%, rgba(46,49,146,0.05) 25%, rgba(46,49,146,0.25) 45%, rgba(46,49,146,0.75) 62%, rgba(46,49,146,0.92) 78%, rgba(46,49,146,1) 100%)',
+                  'linear-gradient(to bottom, transparent 0%, transparent 40%, rgba(46,49,146,0.35) 55%, rgba(46,49,146,0.78) 68%, rgba(46,49,146,0.94) 82%, rgba(46,49,146,1) 100%)',
               }}
             />
 
@@ -232,8 +233,8 @@ export default function HeroSection({ slides }: HeroSectionProps) {
                 {slides[currentSlide].title}
               </h1>
 
-              {/* Description — compact on mobile, 2 lines on sm, full on md+ */}
-              <p className="mb-3 text-[13px] sm:text-sm font-medium leading-snug text-gray-200 max-w-md line-clamp-2 drop-shadow-md md:hidden">
+              {/* Description — 3 lines on mobile, full on md+ */}
+              <p className="mb-3 text-sm font-medium leading-relaxed text-gray-200 max-w-md line-clamp-3 drop-shadow-md md:hidden">
                 {slides[currentSlide].description}
               </p>
               <p className="hidden md:block mb-8 text-lg md:text-xl font-medium leading-relaxed text-gray-200 max-w-lg">
