@@ -232,21 +232,21 @@ export default function HeroSection({ slides }: HeroSectionProps) {
                 {slides[currentSlide].title}
               </h1>
 
-              {/* Description — hidden on smallest screens, 2 lines on sm, full on md+ */}
-              <p className="hidden sm:block md:hidden mb-5 text-base font-medium leading-relaxed text-gray-100 max-w-lg line-clamp-2 drop-shadow-md">
+              {/* Description — compact on mobile, 2 lines on sm, full on md+ */}
+              <p className="mb-3 text-[13px] sm:text-sm font-medium leading-snug text-gray-200 max-w-md line-clamp-2 drop-shadow-md md:hidden">
                 {slides[currentSlide].description}
               </p>
               <p className="hidden md:block mb-8 text-lg md:text-xl font-medium leading-relaxed text-gray-200 max-w-lg">
                 {slides[currentSlide].description}
               </p>
 
-              {/* CTA Button */}
+              {/* CTA Button — compact on mobile, full-size on md+ */}
               <Link
                 href={slides[currentSlide].link}
-                className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 sm:px-8 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-widest text-esn-dark transition-all hover:bg-esn-magenta hover:text-white shadow-md w-auto max-w-fit"
+                className="group inline-flex items-center gap-1.5 md:gap-2 rounded-full bg-white px-4 py-2 sm:px-5 sm:py-2.5 md:px-8 md:py-4 text-[10px] sm:text-[11px] md:text-sm font-bold uppercase tracking-widest text-esn-dark transition-all hover:bg-esn-magenta hover:text-white shadow-md w-auto max-w-fit"
               >
                 Read Full Story
-                <ArrowUpRight className="h-3.5 w-3.5 sm:h-5 sm:w-5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                <ArrowUpRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-5 md:w-5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
             </div>
 
