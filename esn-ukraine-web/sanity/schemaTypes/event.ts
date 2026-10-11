@@ -65,8 +65,8 @@ export default defineType({
       title: 'Прев\'ю зображення (для карточки)',
       type: 'image',
       options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-      description: 'Це фото буде показано у карточці події на сторінці "Events". Ліміти Sanity Free: макс. 2 МБ, формати JPG/PNG/WebP. Стискайте фото перед завантаженням.',
-      validation: (rule) => rule.required().custom(validateImageSize(2, 3500, 3500)),
+      description: 'Це фото буде показано у карточці події на сторінці "Events". Ліміти Sanity: макс. 2 МБ (до 10000px), формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото перед завантаженням.',
+      validation: (rule) => rule.required().custom(validateImageSize(2, 10000, 10000)),
     }),
     defineField({
       name: 'isSpotlight',
@@ -80,8 +80,8 @@ export default defineType({
       title: 'Банер (задній фон)',
       type: 'image',
       options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-      description: 'Фото для заднього фону на сторінці події та в Spotlight. Ліміти Sanity Free: макс. 2.5 МБ, формати JPG/PNG/WebP. Рекомендуємо стискати фото.',
-      validation: (rule) => rule.custom(validateImageSize(2.5, 4000, 4000)),
+      description: 'Фото для заднього фону на сторінці події та в Spotlight. Ліміти Sanity: макс. 2 МБ (до 10000px), формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото перед завантаженням.',
+      validation: (rule) => rule.custom(validateImageSize(2, 10000, 10000)),
     }),
     defineField({
       name: 'body',
@@ -200,7 +200,7 @@ export default defineType({
           type: 'image',
           title: 'Фото у тексті',
           options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-          validation: (rule) => rule.custom(validateImageSize(2, 3500, 3500)),
+          validation: (rule) => rule.custom(validateImageSize(2, 10000, 10000)),
           fields: [
             defineField({
               name: 'caption',
@@ -269,7 +269,7 @@ export default defineType({
                 {
                   type: 'image',
                   options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-                  validation: (rule) => rule.custom(validateImageSize(2, 3500, 3500)),
+                  validation: (rule) => rule.custom(validateImageSize(2, 10000, 10000)),
                   fields: [
                     defineField({
                       name: 'caption',
@@ -370,7 +370,7 @@ export default defineType({
           type: 'image',
           title: 'Фото',
           options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-          validation: (rule) => rule.custom(validateImageSize(2, 3500, 3500)),
+          validation: (rule) => rule.custom(validateImageSize(2, 10000, 10000)),
           fields: [
             defineField({
               name: 'caption',
@@ -380,7 +380,7 @@ export default defineType({
           ],
         },
       ],
-      description: 'Додаткові фото, які будуть відображені як галерея під описом. Ліміти Sanity Free: макс. 2 МБ на фото.',
+      description: 'Додаткові фото, які будуть відображені як галерея під описом. Ліміти Sanity: макс. 2 МБ (до 10000px) на фото.',
     }),
   ],
   preview: {
