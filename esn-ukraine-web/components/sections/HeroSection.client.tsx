@@ -65,13 +65,13 @@ export default function HeroSection({ slides }: HeroSectionProps) {
   useEffect(() => {
     // Only lock height in pixels on mobile/tablet to prevent iOS scroll jump bugs
     if (window.innerWidth < 1024) {
-      setMobileHeight(`${window.innerHeight * 0.85}px`);
+      setMobileHeight(`${window.innerHeight * 0.70}px`);
     }
     
     const handleOrientationChange = () => {
       if (window.innerWidth < 1024) {
         setTimeout(() => {
-          setMobileHeight(`${window.innerHeight * 0.85}px`);
+          setMobileHeight(`${window.innerHeight * 0.70}px`);
         }, 150);
       } else {
         setMobileHeight(undefined);
@@ -130,7 +130,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
     <section
       style={{ height: mobileHeight }}
       className={`relative min-h-[500px] sm:min-h-[580px] w-full overflow-hidden bg-esn-dark text-white ${
-        !mobileHeight ? 'h-[85svh] md:h-[75svh] lg:h-svh' : ''
+        !mobileHeight ? 'h-[70svh] md:h-[75svh] lg:h-svh' : ''
       }`}
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
@@ -155,7 +155,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0'
               }`}
           >
-            {/* Background Image */}
+            {/* Background Image — full bleed, gradient overlays it */}
             <div className="absolute inset-0">
               {shouldRenderImage ? (
                 <Image
@@ -167,7 +167,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
                   fetchPriority={index === 0 ? 'high' : 'auto'}
                   quality={75}
                   sizes="100vw"
-                  className="object-cover md:object-center object-[center_20%]"
+                  className="object-cover object-center"
                 />
               ) : (
                 <div className="absolute inset-0 bg-esn-dark" />
@@ -175,13 +175,12 @@ export default function HeroSection({ slides }: HeroSectionProps) {
             </div>
 
             {/* ─── GRADIENT OVERLAY — Mobile (<md) ─── */}
-            {/* Subtle blue tint over entire photo + strong fade only at the bottom for text */}
-            <div className="absolute inset-0 md:hidden bg-esn-dark/[0.12]" />
+            {/* Gradient never fully solid — photo always peeks through */}
             <div
               className="absolute inset-0 md:hidden"
               style={{
                 background:
-                  'linear-gradient(to bottom, transparent 0%, transparent 40%, rgba(46,49,146,0.35) 55%, rgba(46,49,146,0.78) 68%, rgba(46,49,146,0.94) 82%, rgba(46,49,146,1) 100%)',
+                  'linear-gradient(to bottom, transparent 0%, transparent 15%, rgba(46,49,146,0.25) 30%, rgba(46,49,146,0.55) 45%, rgba(46,49,146,0.75) 60%, rgba(46,49,146,0.88) 80%, rgba(46,49,146,0.92) 100%)',
               }}
             />
 
@@ -201,10 +200,9 @@ export default function HeroSection({ slides }: HeroSectionProps) {
       })}
 
       {/* ─── CONTENT CONTAINER ─── */}
-      {/* Mobile: content pushed to bottom (items-end) so photo is visible at top */}
-      {/* Desktop: vertically centered (lg:items-center) — unchanged behavior */}
-      <div className="relative z-20 flex h-full items-end md:items-center">
-        <div className="mx-auto w-full max-w-7xl px-5 sm:px-12 lg:px-24 pb-24 sm:pb-28 md:pb-20 md:pt-16 lg:pt-0 lg:pb-0">
+      {/* Mobile: content pushed to bottom but higher up; Desktop: original centered layout */}
+      <div className="relative z-20 flex h-full items-end lg:items-center">
+        <div className="mx-auto w-full max-w-7xl px-5 sm:px-12 lg:px-24 pb-[6.5rem] sm:pb-28 md:pb-24 lg:pt-16 lg:pb-0">
           <div className="max-w-2xl">
 
             {/* Animated text block */}
@@ -234,7 +232,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
               </h1>
 
               {/* Description — 3 lines on mobile, full on md+ */}
-              <p className="mb-3 text-sm font-medium leading-relaxed text-gray-200 max-w-md line-clamp-3 drop-shadow-md md:hidden">
+              <p className="mb-5 text-sm font-medium leading-relaxed text-gray-200 max-w-md line-clamp-3 drop-shadow-md md:hidden">
                 {slides[currentSlide].description}
               </p>
               <p className="hidden md:block mb-8 text-lg md:text-xl font-medium leading-relaxed text-gray-200 max-w-lg">
