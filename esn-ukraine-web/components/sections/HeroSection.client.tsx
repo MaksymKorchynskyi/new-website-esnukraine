@@ -65,13 +65,13 @@ export default function HeroSection({ slides }: HeroSectionProps) {
   useEffect(() => {
     // Only lock height in pixels on mobile/tablet to prevent iOS scroll jump bugs
     if (window.innerWidth < 1024) {
-      setMobileHeight(`${window.innerHeight * 0.70}px`);
+      setMobileHeight(`${window.innerHeight * 0.78}px`);
     }
     
     const handleOrientationChange = () => {
       if (window.innerWidth < 1024) {
         setTimeout(() => {
-          setMobileHeight(`${window.innerHeight * 0.70}px`);
+          setMobileHeight(`${window.innerHeight * 0.78}px`);
         }, 150);
       } else {
         setMobileHeight(undefined);
