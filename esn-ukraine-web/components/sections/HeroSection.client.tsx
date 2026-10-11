@@ -30,6 +30,21 @@ function getTitleSizeClass(title: string): string {
   }
 }
 
+/**
+ * Mobile-specific title sizing — slightly smaller to leave more room for the photo.
+ * Only used below the `md` breakpoint; desktop keeps getTitleSizeClass().
+ */
+function getMobileTitleSizeClass(title: string): string {
+  const length = title?.length || 0;
+  if (length < 28) {
+    return "text-[1.75rem] sm:text-4xl";
+  } else if (length <= 48) {
+    return "text-2xl sm:text-[1.75rem]";
+  } else {
+    return "text-xl sm:text-2xl";
+  }
+}
+
 export default function HeroSection({ slides }: HeroSectionProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -50,13 +65,13 @@ export default function HeroSection({ slides }: HeroSectionProps) {
   useEffect(() => {
     // Only lock height in pixels on mobile/tablet to prevent iOS scroll jump bugs
     if (window.innerWidth < 1024) {
-      setMobileHeight(`${window.innerHeight * 0.75}px`);
+      setMobileHeight(`${window.innerHeight * 0.78}px`);
     }
     
     const handleOrientationChange = () => {
       if (window.innerWidth < 1024) {
         setTimeout(() => {
-          setMobileHeight(`${window.innerHeight * 0.75}px`);
+          setMobileHeight(`${window.innerHeight * 0.78}px`);
         }, 150);
       } else {
         setMobileHeight(undefined);
@@ -115,7 +130,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
     <section
       style={{ height: mobileHeight }}
       className={`relative min-h-[500px] sm:min-h-[580px] w-full overflow-hidden bg-esn-dark text-white ${
-        !mobileHeight ? 'h-[75svh] sm:h-svh' : ''
+        !mobileHeight ? 'h-[70svh] md:h-[75svh] lg:h-svh' : ''
       }`}
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
@@ -140,7 +155,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0'
               }`}
           >
-            {/* Background Image */}
+            {/* Background Image — full bleed, gradient overlays it */}
             <div className="absolute inset-0">
               {shouldRenderImage ? (
                 <Image
@@ -152,32 +167,49 @@ export default function HeroSection({ slides }: HeroSectionProps) {
                   fetchPriority={index === 0 ? 'high' : 'auto'}
                   quality={75}
                   sizes="100vw"
-                  className="object-cover"
+                  className="object-cover object-center"
                 />
               ) : (
                 <div className="absolute inset-0 bg-esn-dark" />
               )}
             </div>
 
-            {/* THE GRADIENT OVERLAY - Mobile */}
-            <div className="absolute inset-0 bg-gradient-to-t from-esn-dark via-esn-dark/95 via-65% to-esn-dark/70 md:hidden" />
+            {/* ─── GRADIENT OVERLAY — Mobile (<md) ─── */}
+            {/* Gradient never fully solid — photo always peeks through */}
+            <div
+              className="absolute inset-0 md:hidden"
+              style={{
+                background:
+                  'linear-gradient(to bottom, transparent 0%, transparent 15%, rgba(46,49,146,0.25) 30%, rgba(46,49,146,0.55) 45%, rgba(46,49,146,0.75) 60%, rgba(46,49,146,0.88) 80%, rgba(46,49,146,0.92) 100%)',
+              }}
+            />
 
-            {/* THE GRADIENT OVERLAY - Desktop */}
-            <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-esn-dark via-esn-dark/80 to-esn-dark/0" />
+            {/* ─── GRADIENT OVERLAY — Tablet (md to lg) ─── */}
+            <div
+              className="hidden md:block lg:hidden absolute inset-0"
+              style={{
+                background:
+                  'linear-gradient(to right, rgba(46,49,146,0.85) 0%, rgba(46,49,146,0.55) 45%, rgba(46,49,146,0.15) 75%, transparent 100%)',
+              }}
+            />
+
+            {/* ─── GRADIENT OVERLAY — Desktop (lg+) — UNCHANGED ─── */}
+            <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-esn-dark via-esn-dark/80 to-esn-dark/0" />
           </div>
         );
       })}
 
-      {/* CONTENT CONTAINER */}
-      <div className="relative z-20 flex h-full items-center">
-        <div className="mx-auto w-full max-w-7xl px-5 sm:px-12 lg:px-24 pt-20 pb-20 sm:pt-16 sm:pb-0">
+      {/* ─── CONTENT CONTAINER ─── */}
+      {/* Mobile: content pushed to bottom but higher up; Desktop: original centered layout */}
+      <div className="relative z-20 flex h-full items-end lg:items-center">
+        <div className="mx-auto w-full max-w-7xl px-5 sm:px-12 lg:px-24 pb-[6.5rem] sm:pb-28 md:pb-24 lg:pt-16 lg:pb-0">
           <div className="max-w-2xl">
 
-            {/* Анімований текстовий блок */}
+            {/* Animated text block */}
             <div key={currentSlide} className="animate-fade-in-up">
 
               {/* Meta Info */}
-              <div className="mb-3 sm:mb-4 flex flex-wrap items-center gap-2 sm:gap-3">
+              <div className="mb-2 sm:mb-3 md:mb-4 flex flex-wrap items-center gap-2 sm:gap-3">
                 <span className="bg-esn-cyan px-2.5 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white shadow-sm sm:shadow-none">
                   {slides[currentSlide].type}
                 </span>
@@ -187,23 +219,33 @@ export default function HeroSection({ slides }: HeroSectionProps) {
                 </span>
               </div>
 
-              {/* Title */}
-              <h1 className={`mb-4 sm:mb-6 font-sans font-black leading-tight tracking-tight text-white drop-shadow-md sm:drop-shadow-none break-words ${getTitleSizeClass(slides[currentSlide].title)}`}>
+              {/* Title — smaller on mobile to save vertical space for the photo */}
+              <h1
+                className={`mb-3 sm:mb-4 md:mb-6 font-sans font-black leading-tight tracking-tight text-white drop-shadow-md sm:drop-shadow-none break-words ${getMobileTitleSizeClass(slides[currentSlide].title)} md:hidden`}
+              >
+                {slides[currentSlide].title}
+              </h1>
+              <h1
+                className={`mb-6 font-sans font-black leading-tight tracking-tight text-white break-words hidden md:block ${getTitleSizeClass(slides[currentSlide].title)}`}
+              >
                 {slides[currentSlide].title}
               </h1>
 
-              {/* Description */}
-              <p className="mb-6 sm:mb-8 text-base sm:text-lg font-medium leading-relaxed text-gray-100 sm:text-gray-200 md:text-xl max-w-lg line-clamp-3 sm:line-clamp-none drop-shadow-md sm:drop-shadow-none">
+              {/* Description — 3 lines on mobile, full on md+ */}
+              <p className="mb-5 text-sm font-medium leading-relaxed text-gray-200 max-w-md line-clamp-3 drop-shadow-md md:hidden">
+                {slides[currentSlide].description}
+              </p>
+              <p className="hidden md:block mb-8 text-lg md:text-xl font-medium leading-relaxed text-gray-200 max-w-lg">
                 {slides[currentSlide].description}
               </p>
 
-              {/* CTA Button */}
+              {/* CTA Button — compact on mobile, full-size on md+ */}
               <Link
                 href={slides[currentSlide].link}
-                className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 sm:px-8 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-widest text-esn-dark transition-all hover:bg-esn-magenta hover:text-white shadow-md w-auto max-w-fit"
+                className="group inline-flex items-center gap-1.5 md:gap-2 rounded-full bg-white px-4 py-2 sm:px-5 sm:py-2.5 md:px-8 md:py-4 text-[10px] sm:text-[11px] md:text-sm font-bold uppercase tracking-widest text-esn-dark transition-all hover:bg-esn-magenta hover:text-white shadow-md w-auto max-w-fit"
               >
                 Read Full Story
-                <ArrowUpRight className="h-3.5 w-3.5 sm:h-5 sm:w-5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                <ArrowUpRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-5 md:w-5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
             </div>
 
@@ -211,7 +253,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
         </div>
       </div>
 
-      {/* CONTROLS & NAVIGATION */}
+      {/* ─── CONTROLS & NAVIGATION ─── */}
       <div className="absolute bottom-5 sm:bottom-10 left-0 z-30 w-full px-5 sm:px-12 lg:px-24">
         <div className="mx-auto flex max-w-7xl items-end justify-between border-t border-white/20 pt-4 sm:pt-6">
 
