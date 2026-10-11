@@ -4,7 +4,7 @@ import { CustomValidator } from 'sanity'
  * Дозволені формати для завантаження зображень у Sanity Studio.
  * Відсікає важкі нестиснені формати (TIFF, BMP, PSD, RAW тощо).
  */
-export const ACCEPTED_IMAGE_TYPES = 'image/jpeg,image/png,image/webp'
+export const ACCEPTED_IMAGE_TYPES = 'image/jpeg,image/png,image/webp,image/avif'
 
 /**
  * Дозволені формати для завантаження прикріплених документів.
@@ -13,12 +13,13 @@ export const ACCEPTED_FILE_TYPES = '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx'
 
 /**
  * Валідатор для перевірки розміру та роздільної здатності зображень.
- * Допомагає вкладатися в ліміти безкоштовного тарифу Sanity (Free Tier).
+ * Дозволяє повнорозмірні фото з сучасних смартфонів та камер (до 10000px),
+ * обмежуючи вагу файлу (за замовчуванням до 2 МБ) для збереження лімітів Sanity.
  */
 export function validateImageSize(
   maxSizeMB: number = 2,
-  maxWidth: number = 3500,
-  maxHeight: number = 3500
+  maxWidth: number = 10000,
+  maxHeight: number = 10000
 ): CustomValidator {
   return async (value: any, context) => {
     if (!value || !value.asset || !value.asset._ref) {
@@ -34,10 +35,10 @@ export function validateImageSize(
       const width = parseInt(match[1], 10)
       const height = parseInt(match[2], 10)
       if (maxWidth && width > maxWidth) {
-        return `Ширина зображення (${width}px) перевищує максимально допустиму (${maxWidth}px). Будь ласка, зменшіть роздільну здатність фото перед завантаженням для економії лімітів Sanity.`
+        return `Ширина зображення (${width}px) перевищує максимально допустиму (${maxWidth}px). Будь ласка, зменшіть роздільну здатність фото перед завантаженням.`
       }
       if (maxHeight && height > maxHeight) {
-        return `Висота зображення (${height}px) перевищує максимально допустиму (${maxHeight}px). Будь ласка, зменшіть роздільну здатність фото перед завантаженням для економії лімітів Sanity.`
+        return `Висота зображення (${height}px) перевищує максимально допустиму (${maxHeight}px). Будь ласка, зменшіть роздільну здатність фото перед завантаженням.`
       }
     }
 
@@ -52,7 +53,7 @@ export function validateImageSize(
         const maxBytes = maxSizeMB * 1024 * 1024
         if (asset.size > maxBytes) {
           const currentSizeMB = (asset.size / (1024 * 1024)).toFixed(2)
-          return `Розмір фото (${currentSizeMB} МБ) перевищує ліміт у ${maxSizeMB} МБ для безкоштовного тарифу Sanity. Будь ласка, стисніть зображення (наприклад, через tinypng.com або squoosh.app) та завантажте знову.`
+          return `Розмір фото (${currentSizeMB} МБ) перевищує ліміт у ${maxSizeMB} МБ для Sanity. Будь ласка, стисніть зображення (наприклад, через tinypng.com або squoosh.app) та завантажте знову.`
         }
       }
     } catch (err) {
