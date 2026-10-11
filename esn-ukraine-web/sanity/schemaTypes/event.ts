@@ -65,8 +65,8 @@ export default defineType({
       title: 'Прев\'ю зображення (для карточки)',
       type: 'image',
       options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-      description: 'Це фото буде показано у карточці події на сторінці "Events". Ліміти Sanity: макс. 2 МБ (до 10000px), формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото перед завантаженням.',
-      validation: (rule) => rule.required().custom(validateImageSize(2, 10000, 10000)),
+      description: 'Це фото буде показано у карточці події на сторінці "Events". Ліміти Sanity: макс. 12 МБ (до 10000px), формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото перед завантаженням.',
+      validation: (rule) => rule.required().custom(validateImageSize(12, 10000, 10000)),
     }),
     defineField({
       name: 'isSpotlight',
