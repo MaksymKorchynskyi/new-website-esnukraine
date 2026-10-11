@@ -80,8 +80,8 @@ export default defineType({
       title: 'Банер (задній фон)',
       type: 'image',
       options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-      description: 'Фото для заднього фону на сторінці події та в Spotlight. Ліміти Sanity: макс. 2 МБ (до 10000px), формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото перед завантаженням.',
-      validation: (rule) => rule.custom(validateImageSize(2, 10000, 10000)),
+      description: 'Фото для заднього фону на сторінці події та в Spotlight. Ліміти Sanity: макс. 12 МБ (до 10000px), формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото перед завантаженням.',
+      validation: (rule) => rule.custom(validateImageSize(12, 10000, 10000)),
     }),
     defineField({
       name: 'body',
