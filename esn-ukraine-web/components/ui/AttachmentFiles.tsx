@@ -162,50 +162,51 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
         </div>
       </div>
 
-      {/* Модальне вікно перегляду документу прямо на сайті (оригінальний дизайн) */}
+      {/* Модальне вікно перегляду документу прямо на сайті */}
       {activeFile && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4 animate-fade-in overscroll-none"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-0 sm:p-3 md:p-4 animate-fade-in overscroll-none"
           onClick={(e) => {
             if (e.target === e.currentTarget) setActiveFile(null);
           }}
           onWheel={(e) => e.stopPropagation()}
         >
-          <div className="bg-white w-full max-w-7xl h-[93dvh] rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-scale-up border border-gray-100">
-            {/* Хедер модалки */}
-            <div className="px-6 py-4 bg-gray-900 text-white flex items-center justify-between gap-4 shrink-0 border-b border-gray-800">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-esn-cyan/20 text-esn-cyan flex items-center justify-center shrink-0">
-                  <FileText className="w-4 h-4" />
+          {/* Modal container: full-screen on mobile, rounded card on desktop */}
+          <div className="bg-white w-full sm:max-w-6xl md:max-w-7xl h-[100dvh] sm:h-[93dvh] rounded-none sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-scale-up sm:border sm:border-gray-100">
+            {/* Хедер модалки — компактний на мобільних */}
+            <div className="px-4 py-3 sm:px-6 sm:py-4 bg-gray-900 text-white flex items-center justify-between gap-3 sm:gap-4 shrink-0 border-b border-gray-800">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-esn-cyan/20 text-esn-cyan flex items-center justify-center shrink-0">
+                  <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="font-bold text-white text-base sm:text-lg truncate">
+                  <h4 className="font-bold text-white text-sm sm:text-base md:text-lg truncate leading-tight">
                     {activeFile.title || activeFile.originalFilename || 'Document Preview'}
                   </h4>
-                  <p className="text-xs text-gray-400 truncate">
+                  <p className="text-[11px] sm:text-xs text-gray-400 truncate hidden sm:block">
                     {activeFile.originalFilename} {formatFileSize(activeFile.size) && `(${formatFileSize(activeFile.size)})`}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <a
                   href={activeFile.fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-esn-cyan hover:bg-[#0095cc] text-white text-xs sm:text-sm font-semibold rounded-xl transition-colors shadow-sm shrink-0"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-esn-cyan hover:bg-[#0095cc] text-white text-xs sm:text-sm font-semibold rounded-lg sm:rounded-xl transition-colors shadow-sm shrink-0"
                   title="Open in new tab or download"
                 >
-                  <ExternalLink className="w-4 h-4 shrink-0" />
-                  <span className="inline font-bold">Open</span>
+                  <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                  <span className="font-bold">Open</span>
                 </a>
 
                 <button
                   onClick={() => setActiveFile(null)}
-                  className="w-9 h-9 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
                   aria-label="Close"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
             </div>
@@ -225,7 +226,7 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
 
               {/* Error / timeout fallback */}
               {iframeError && (
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-50 gap-4">
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-50 gap-4 px-6">
                   <div className="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center">
                     <AlertCircle className="w-7 h-7 text-amber-500" />
                   </div>
@@ -250,11 +251,12 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
               {/* Direct URL — no Google Docs Viewer */}
               <iframe
                 src={`${activeFile.fileUrl}#view=Fit`}
-                className="w-full min-h-[75dvh] sm:min-h-0 sm:h-full border-0 flex-1 bg-white"
+                className="w-full h-full border-0 flex-1 bg-white"
                 title={activeFile.title || activeFile.originalFilename || 'Document'}
                 onLoad={() => setIframeLoaded(true)}
               />
-              <div className="bg-gray-50 border-t border-gray-200 px-6 py-2.5 text-xs text-gray-500 flex items-center justify-between shrink-0">
+              {/* Footer — hidden on mobile to maximize reading area */}
+              <div className="hidden sm:flex bg-gray-50 border-t border-gray-200 px-6 py-2.5 text-xs text-gray-500 items-center justify-between shrink-0">
                 <span>Document preview embedded directly on ESN Ukraine website</span>
                 <button
                   onClick={(e) => activeFile && handleDownload(e, activeFile)}
