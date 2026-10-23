@@ -42,28 +42,6 @@ function isPreviewable(ext: string): boolean {
   return ['PDF'].includes(ext);
 }
 
-/** Extension → accent color mapping for file badges */
-function getExtColor(ext: string): string {
-  switch (ext) {
-    case 'PDF':
-      return 'bg-red-500/10 text-red-600 border-red-200';
-    case 'DOC':
-    case 'DOCX':
-      return 'bg-blue-500/10 text-blue-600 border-blue-200';
-    case 'XLS':
-    case 'XLSX':
-      return 'bg-emerald-500/10 text-emerald-600 border-emerald-200';
-    case 'PPT':
-    case 'PPTX':
-      return 'bg-orange-500/10 text-orange-600 border-orange-200';
-    case 'ZIP':
-    case 'RAR':
-      return 'bg-amber-500/10 text-amber-700 border-amber-200';
-    default:
-      return 'bg-gray-100 text-gray-600 border-gray-200';
-  }
-}
-
 export default function AttachmentFiles({ files }: AttachmentFilesProps) {
   const [activeFile, setActiveFile] = useState<AttachmentFile | null>(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -77,7 +55,7 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
     }
   }, [activeFile]);
 
-  // Close modal on Escape + lock body scroll
+  // Закриття модального вікна по Escape
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setActiveFile(null);
@@ -112,21 +90,10 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
     window.open(file.fileUrl, '_blank', 'noopener,noreferrer');
   }, []);
 
-  const handlePreviewClick = useCallback((file: AttachmentFile) => {
-    const ext = getFileExtension(file.originalFilename, file.fileUrl);
-    if (isPreviewable(ext)) {
-      // Open inline preview modal for PDFs
-      setActiveFile(file);
-    } else {
-      // Non-previewable: open directly in new tab
-      window.open(file.fileUrl, '_blank', 'noopener,noreferrer');
-    }
-  }, []);
-
   if (!files || files.length === 0) return null;
 
   return (
-    <section className="py-6 px-6 sm:px-12">
+    <section className="pt-2 pb-6 px-6 sm:px-12">
       <div className="mx-auto max-w-5xl">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-1.5 h-6 bg-esn-cyan rounded-full" />
@@ -135,8 +102,7 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
           </h3>
         </div>
 
-        {/* ─── File Cards Grid ─── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {files.map((file) => {
             if (!file.fileUrl) return null;
             const displayTitle = file.title || file.originalFilename || 'Document';
@@ -147,56 +113,48 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
             return (
               <div
                 key={file._key || file.fileUrl}
-                className="group relative bg-white rounded-xl border border-gray-200/80 hover:border-esn-dark/20 transition-all duration-200 overflow-hidden"
+                onClick={() => previewable ? setActiveFile(file) : window.open(file.fileUrl, '_blank', 'noopener,noreferrer')}
+                className="group bg-white rounded-2xl p-4 border border-gray-100 hover:border-esn-cyan shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4 cursor-pointer"
               >
-                <div className="flex items-stretch">
-                  {/* Left accent bar */}
-                  <div className="w-1 bg-esn-dark/10 group-hover:bg-esn-dark transition-colors duration-200 shrink-0" />
+                <div className="w-11 h-11 rounded-xl bg-esn-cyan/10 group-hover:bg-esn-cyan text-esn-cyan group-hover:text-white transition-colors flex items-center justify-center shrink-0">
+                  <FileText className="w-5 h-5" />
+                </div>
 
-                  {/* Content area */}
-                  <div className="flex-1 flex items-center gap-3.5 px-4 py-3.5 min-w-0">
-                    {/* File type badge */}
-                    <div className={`w-10 h-10 rounded-lg border flex items-center justify-center shrink-0 ${getExtColor(ext)}`}>
-                      <span className="text-[10px] font-black tracking-wider leading-none">{ext}</span>
-                    </div>
-
-                    {/* File info */}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-bold text-gray-900 leading-snug truncate">
-                        {displayTitle}
-                      </h4>
-                      {(formattedSize || file.description) && (
-                        <p className="text-xs text-gray-400 mt-0.5 truncate">
-                          {file.description || formattedSize}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Action buttons */}
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {/* Download / Open in new tab */}
-                      <button
-                        onClick={(e) => handleDownload(e, file)}
-                        className="w-8 h-8 rounded-lg bg-gray-50 hover:bg-esn-dark hover:text-white text-gray-400 flex items-center justify-center transition-colors duration-150"
-                        aria-label={`Download ${displayTitle}`}
-                        title="Download / Open in new tab"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                      </button>
-
-                      {/* Preview (only for previewable types) */}
-                      {previewable && (
-                        <button
-                          onClick={() => handlePreviewClick(file)}
-                          className="w-8 h-8 rounded-lg bg-gray-50 hover:bg-esn-cyan hover:text-white text-gray-400 flex items-center justify-center transition-colors duration-150"
-                          aria-label={`Preview ${displayTitle}`}
-                          title="Preview"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
+                <div className="flex-1 min-w-0 pr-2">
+                  <h4 className="text-sm sm:text-base font-bold text-gray-900 group-hover:text-esn-cyan transition-colors truncate">
+                    {displayTitle}
+                  </h4>
+                  <div className="flex items-center gap-2 mt-1 text-xs font-medium text-gray-400">
+                    <span className="font-extrabold uppercase text-esn-magenta">{ext}</span>
+                    {formattedSize && (
+                      <>
+                        <span>•</span>
+                        <span>{formattedSize}</span>
+                      </>
+                    )}
                   </div>
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={(e) => handleDownload(e, file)}
+                    className="w-9 h-9 rounded-xl border border-gray-200 bg-gray-50 hover:bg-esn-dark hover:border-esn-dark text-gray-500 hover:text-white flex items-center justify-center transition-all duration-200"
+                    aria-label={`Download ${displayTitle}`}
+                    title="Download"
+                  >
+                    <Download className="w-4 h-4" />
+                  </button>
+                  {previewable && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setActiveFile(file); }}
+                      className="w-9 h-9 rounded-xl border border-gray-200 bg-gray-50 hover:bg-esn-cyan hover:border-esn-cyan text-gray-500 hover:text-white flex items-center justify-center transition-all duration-200"
+                      aria-label={`Preview ${displayTitle}`}
+                      title="Preview"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
             );
@@ -204,108 +162,112 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
         </div>
       </div>
 
-      {/* ─── Preview Modal ─── */}
-      {activeFile && (() => {
-        const ext = getFileExtension(activeFile.originalFilename, activeFile.fileUrl);
-        const formattedSize = formatFileSize(activeFile.size);
-
-        return (
-          <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-6"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) setActiveFile(null);
-            }}
-          >
-            <div className="bg-white w-full max-w-5xl h-[88dvh] rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200/50">
-              {/* Header */}
-              <div className="px-5 py-3.5 bg-esn-dark flex items-center justify-between gap-4 shrink-0">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 ${getExtColor(ext)} border-white/20`}>
-                    <span className="text-[9px] font-black tracking-wider">{ext}</span>
-                  </div>
-                  <div className="min-w-0">
-                    <h4 className="font-bold text-white text-sm sm:text-base truncate leading-tight">
-                      {activeFile.title || activeFile.originalFilename || 'Document Preview'}
-                    </h4>
-                    {formattedSize && (
-                      <p className="text-[11px] text-white/50 truncate mt-0.5">
-                        {activeFile.originalFilename} · {formattedSize}
-                      </p>
-                    )}
-                  </div>
+      {/* Модальне вікно перегляду документу прямо на сайті (оригінальний дизайн) */}
+      {activeFile && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4 animate-fade-in overscroll-none"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setActiveFile(null);
+          }}
+          onWheel={(e) => e.stopPropagation()}
+        >
+          <div className="bg-white w-full max-w-7xl h-[93dvh] rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-scale-up border border-gray-100">
+            {/* Хедер модалки */}
+            <div className="px-6 py-4 bg-gray-900 text-white flex items-center justify-between gap-4 shrink-0 border-b border-gray-800">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-esn-cyan/20 text-esn-cyan flex items-center justify-center shrink-0">
+                  <FileText className="w-4 h-4" />
                 </div>
+                <div className="min-w-0">
+                  <h4 className="font-bold text-white text-base sm:text-lg truncate">
+                    {activeFile.title || activeFile.originalFilename || 'Document Preview'}
+                  </h4>
+                  <p className="text-xs text-gray-400 truncate">
+                    {activeFile.originalFilename} {formatFileSize(activeFile.size) && `(${formatFileSize(activeFile.size)})`}
+                  </p>
+                </div>
+              </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
+                <a
+                  href={activeFile.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-esn-cyan hover:bg-[#0095cc] text-white text-xs sm:text-sm font-semibold rounded-xl transition-colors shadow-sm shrink-0"
+                  title="Open in new tab or download"
+                >
+                  <ExternalLink className="w-4 h-4 shrink-0" />
+                  <span className="inline font-bold">Open</span>
+                </a>
+
+                <button
+                  onClick={() => setActiveFile(null)}
+                  className="w-9 h-9 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Content: Iframe / PDF Viewer */}
+            <div
+              className="flex-1 w-full bg-gray-100 relative overflow-auto flex flex-col"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
+              {/* Loading spinner overlay */}
+              {!iframeLoaded && !iframeError && (
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-50 gap-3">
+                  <Loader2 className="w-8 h-8 text-esn-dark animate-spin" />
+                  <p className="text-sm text-gray-500 font-medium">Loading document…</p>
+                </div>
+              )}
+
+              {/* Error / timeout fallback */}
+              {iframeError && (
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-50 gap-4">
+                  <div className="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center">
+                    <AlertCircle className="w-7 h-7 text-amber-500" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-bold text-gray-700 mb-1">Preview unavailable</p>
+                    <p className="text-xs text-gray-400 max-w-xs">
+                      The document is taking too long to load. You can open it directly instead.
+                    </p>
+                  </div>
                   <a
                     href={activeFile.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-lg transition-colors"
-                    title="Open in new tab"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-esn-cyan hover:bg-[#0095cc] text-white text-sm font-bold rounded-xl transition-colors shadow-sm"
                   >
-                    <ExternalLink className="w-3.5 h-3.5 shrink-0" />
-                    <span className="hidden sm:inline">Open</span>
+                    <ExternalLink className="w-4 h-4" />
+                    Open document
                   </a>
-
-                  <button
-                    onClick={() => setActiveFile(null)}
-                    className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
-                    aria-label="Close"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
                 </div>
-              </div>
+              )}
 
-              {/* iframe content */}
-              <div
-                className="flex-1 w-full bg-gray-100 relative overflow-auto flex flex-col"
-                style={{ WebkitOverflowScrolling: 'touch' }}
-              >
-                {/* Loading spinner overlay */}
-                {!iframeLoaded && !iframeError && (
-                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-50 gap-3">
-                    <Loader2 className="w-8 h-8 text-esn-dark animate-spin" />
-                    <p className="text-sm text-gray-500 font-medium">Loading document…</p>
-                  </div>
-                )}
-
-                {/* Error / timeout fallback */}
-                {iframeError && (
-                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-50 gap-4">
-                    <div className="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center">
-                      <AlertCircle className="w-7 h-7 text-amber-500" />
-                    </div>
-                    <div className="text-center">
-                      <p className="text-sm font-bold text-gray-700 mb-1">Preview unavailable</p>
-                      <p className="text-xs text-gray-400 max-w-xs">
-                        The document is taking too long to load. You can open it directly instead.
-                      </p>
-                    </div>
-                    <a
-                      href={activeFile.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-esn-dark hover:bg-esn-dark/90 text-white text-sm font-bold rounded-xl transition-colors shadow-sm"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      Open document
-                    </a>
-                  </div>
-                )}
-
-                {/* Direct URL for all platforms — no Google Docs Viewer */}
-                <iframe
-                  src={`${activeFile.fileUrl}#view=Fit`}
-                  className="w-full min-h-[75dvh] sm:min-h-0 sm:h-full border-0 flex-1 bg-white"
-                  title={activeFile.title || activeFile.originalFilename || 'Document'}
-                  onLoad={() => setIframeLoaded(true)}
-                />
+              {/* Direct URL — no Google Docs Viewer */}
+              <iframe
+                src={`${activeFile.fileUrl}#view=Fit`}
+                className="w-full min-h-[75dvh] sm:min-h-0 sm:h-full border-0 flex-1 bg-white"
+                title={activeFile.title || activeFile.originalFilename || 'Document'}
+                onLoad={() => setIframeLoaded(true)}
+              />
+              <div className="bg-gray-50 border-t border-gray-200 px-6 py-2.5 text-xs text-gray-500 flex items-center justify-between shrink-0">
+                <span>Document preview embedded directly on ESN Ukraine website</span>
+                <button
+                  onClick={(e) => activeFile && handleDownload(e, activeFile)}
+                  className="text-esn-dark hover:text-esn-cyan font-semibold inline-flex items-center gap-1 underline transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download file
+                </button>
               </div>
             </div>
           </div>
-        );
-      })()}
+        </div>
+      )}
     </section>
   );
 }
