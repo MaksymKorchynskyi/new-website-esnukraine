@@ -46,6 +46,19 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
   const [activeFile, setActiveFile] = useState<AttachmentFile | null>(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [iframeError, setIframeError] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile/touch devices
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(
+        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768
+      );
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Reset loading state when switching files
   useEffect(() => {
@@ -86,9 +99,19 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
 
   const handleDownload = useCallback((e: React.MouseEvent, file: AttachmentFile) => {
     e.stopPropagation();
-    // Cross-origin: download attribute doesn't work, open in new tab instead
     window.open(file.fileUrl, '_blank', 'noopener,noreferrer');
   }, []);
+
+  const handleFileClick = useCallback((file: AttachmentFile) => {
+    const ext = getFileExtension(file.originalFilename, file.fileUrl);
+    // On mobile: always open directly in browser (native PDF viewer handles touch/scroll/zoom)
+    // On desktop: open inline preview for PDFs, direct for others
+    if (isMobile || !isPreviewable(ext)) {
+      window.open(file.fileUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      setActiveFile(file);
+    }
+  }, [isMobile]);
 
   if (!files || files.length === 0) return null;
 
@@ -113,7 +136,7 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
             return (
               <div
                 key={file._key || file.fileUrl}
-                onClick={() => previewable ? setActiveFile(file) : window.open(file.fileUrl, '_blank', 'noopener,noreferrer')}
+                onClick={() => handleFileClick(file)}
                 className="group bg-white rounded-2xl p-4 border border-gray-100 hover:border-esn-cyan shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4 cursor-pointer"
               >
                 <div className="w-11 h-11 rounded-xl bg-esn-cyan/10 group-hover:bg-esn-cyan text-esn-cyan group-hover:text-white transition-colors flex items-center justify-center shrink-0">
@@ -147,7 +170,7 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
                   </button>
                   {previewable && (
                     <button
-                      onClick={(e) => { e.stopPropagation(); setActiveFile(file); }}
+                      onClick={(e) => { e.stopPropagation(); handleFileClick(file); }}
                       className="w-9 h-9 rounded-xl border border-gray-200 bg-gray-50 hover:bg-esn-cyan hover:border-esn-cyan text-gray-500 hover:text-white flex items-center justify-center transition-all duration-200"
                       aria-label={`Preview ${displayTitle}`}
                       title="Preview"
