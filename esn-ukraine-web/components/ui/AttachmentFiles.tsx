@@ -93,7 +93,7 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
   if (!files || files.length === 0) return null;
 
   return (
-    <section className="pt-2 pb-6 px-6 sm:px-12">
+    <section className="pb-6 px-6 sm:px-12">
       <div className="mx-auto max-w-5xl">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-1.5 h-6 bg-esn-cyan rounded-full" />

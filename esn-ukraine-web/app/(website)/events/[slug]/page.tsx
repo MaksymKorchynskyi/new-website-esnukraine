@@ -493,7 +493,7 @@ export default async function EventPage({ params }: EventPageProps) {
       )}
 
       {/* ─── Article Content ─── */}
-      <section className="py-16 md:py-20 px-6 sm:px-12">
+      <section className="pt-16 pb-8 md:pt-20 md:pb-10 px-6 sm:px-12">
         <div className="mx-auto max-w-5xl">
           {event.body && (
             <div className="prose prose-lg max-w-none break-words [word-break:break-word] [overflow-wrap:anywhere] overflow-hidden sm:overflow-visible">
