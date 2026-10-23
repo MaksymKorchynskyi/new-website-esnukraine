@@ -1,13 +1,17 @@
 import React from 'react';
+import Image from 'next/image';
 
 export default function UkraineMap() {
     return (
-        <div className="w-full max-w-5xl mx-auto overflow-hidden select-none" style={{ aspectRatio: '1.85/1' }}>
-            <img 
-                src="/ESN_Ukraine_Map.svg" 
-                alt="ESN Ukraine Map" 
+        <div className="w-full max-w-5xl mx-auto overflow-hidden select-none">
+            <Image
+                src="/ESN Ukraine section map.webp"
+                alt="ESN Ukraine Section Map"
+                width={1536}
+                height={1024}
+                className="w-full h-auto object-contain pointer-events-none select-none"
                 draggable={false}
-                className="w-full h-full object-cover pointer-events-none select-none scale-105"
+                priority
             />
         </div>
     );

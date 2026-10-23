@@ -9,6 +9,7 @@ import { sanityFetch } from "@/sanity/lib/fetch";
 import { getNewsBySlugQuery, getAllNewsSlugsQuery } from "@/sanity/lib/queries";
 import type { NewsArticleDetail } from "@/sanity/lib/types";
 import AttachmentFiles from "@/components/ui/AttachmentFiles";
+import PhotoGalleryLightbox, { type LightboxGalleryImage } from "@/components/ui/PhotoGalleryLightbox";
 import { formatDate } from "@/sanity/lib/utils";
 
 // ==========================================
@@ -279,52 +280,16 @@ const portableTextComponents: PortableTextComponents = {
 };
 
 // ==========================================
-// GALLERY COMPONENT
+// GALLERY HELPER — maps raw Sanity images to lightbox-ready format
 // ==========================================
-function PhotoGallery({ images }: { images: GalleryImage[] }) {
-  if (!images || images.length === 0) return null;
-
-  return (
-    <section className="py-16 px-6 sm:px-12 lg:px-24 bg-gray-50">
-      <div className="mx-auto max-w-6xl">
-        <div className="flex items-center gap-3 mb-10">
-          <div className="w-1.5 h-8 bg-esn-cyan rounded-full shadow-sm" />
-          <h2 className="text-2xl md:text-3xl font-black text-esn-dark tracking-tight">
-            Photo Gallery
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {images.map((img, idx) => {
-            const imageUrl = img.asset?.url || urlFor(img).width(800).url();
-            return (
-              <figure
-                key={img._key || idx}
-                className="group relative overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300"
-              >
-                <div className="aspect-[4/3] relative">
-                  <Image
-                    src={imageUrl}
-                    alt={img.caption || `Фото ${idx + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    placeholder={img.asset?.metadata?.lqip ? "blur" : "empty"}
-                    blurDataURL={img.asset?.metadata?.lqip}
-                  />
-                </div>
-                {img.caption && (
-                  <figcaption className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-black/0 p-4 pt-10 opacity-100">
-                    <p className="text-white text-sm font-medium">{img.caption}</p>
-                  </figcaption>
-                )}
-              </figure>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
+function buildLightboxImages(images: GalleryImage[]): LightboxGalleryImage[] {
+  return images.map((img) => ({
+    _key: img._key,
+    thumbUrl: img.asset?.url || urlFor(img).width(800).url(),
+    fullUrl: img.asset?.url || urlFor(img).width(1920).quality(85).url(),
+    lqip: img.asset?.metadata?.lqip,
+    caption: img.caption,
+  }));
 }
 
 // ==========================================
@@ -445,7 +410,7 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
 
 
       {/* ─── Article Content ─── */}
-      <section className="py-16 md:py-20 px-6 sm:px-12">
+      <section className="pt-16 pb-8 md:pt-20 md:pb-10 px-6 sm:px-12">
         <div className="mx-auto max-w-5xl">
           {article.body && (
             <div className="prose prose-lg prose-blue max-w-none break-words [word-break:break-word] [overflow-wrap:anywhere] overflow-hidden sm:overflow-visible">
@@ -460,7 +425,7 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
 
       {/* ─── Photo Gallery ─── */}
       {article.gallery && article.gallery.length > 0 && (
-        <PhotoGallery images={article.gallery} />
+        <PhotoGalleryLightbox images={buildLightboxImages(article.gallery)} />
       )}
 
       {/* ─── Navigation ─── */}
