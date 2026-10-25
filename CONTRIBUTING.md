@@ -115,3 +115,7 @@ The repository is public, so never include secrets, environment variable values 
 
 - **Bugs and ideas:** open a GitHub issue. Describe what you expected, what happened, and the page URL and device.
 - **Security vulnerabilities:** do **not** open a public issue. Follow [SECURITY.md](SECURITY.md).
+
+## Licence
+
+By contributing, you agree that your contributions are released under the [MIT License](LICENSE). Brand assets, photos and other media are not covered by the licence, as explained in the [README](README.md#licence). Add such files only if ESN Ukraine has permission to use them.
