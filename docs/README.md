@@ -101,14 +101,3 @@ Documentation lives next to the code and changes in the same pull request. Use t
 | External services (added, removed or moved to another account) | [Services and accounts](operations/services-and-accounts.md) |
 | The deployment process or Vercel settings | [Deployment and environments](guides/deployment-and-environments.md) |
 | A significant technical decision | Add an [architecture decision record](adr/README.md) |
-
-## Writing conventions
-
-- **Language:** British English, matching the official spelling used by the EU and ESN ("Erasmus+ Programme", "organisation"). Keep code identifiers and quoted UI labels exactly as they are.
-- **Style:** short sentences, second person ("you"), imperative mood for steps ("Open the Studio…"), sentence-case headings.
-- **Links:** use relative links between pages and to source files, for example `../esn-ukraine-web/sanity/lib/fetch.ts`, so that they work on GitHub and in forks. Do not reference line numbers; they go out of date quickly.
-- **Versions:** mention major versions only (for example "Next.js 16") and link to `package.json` for exact versions.
-- **Unknowns:** never guess. Mark facts that cannot be verified from the repository with a note that starts with **To confirm:**, so the next maintainer can fill them in.
-- **Alerts:** use GitHub alerts (`> [!NOTE]`, `> [!IMPORTANT]`, `> [!WARNING]`) sparingly, for information the reader must not miss.
-- **Diagrams:** use [Mermaid](https://mermaid.js.org/), which GitHub renders natively. Add `accTitle` and `accDescr` to every diagram and explain it in the text.
-- **Public repository:** this repository is public. Never include secrets, environment variable values, tokens, project IDs or personal data. Refer to roles ("the webmaster") instead of names.

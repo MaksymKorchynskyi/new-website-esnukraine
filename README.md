@@ -15,6 +15,17 @@ The site publishes news, events, information about the National Board and local 
 
 Exact dependency versions are in [`esn-ukraine-web/package.json`](esn-ukraine-web/package.json).
 
+## Features
+
+- **Editor-friendly content management.** Volunteers manage news, events, the National Board, former boards, sections and homepage photos in Sanity Studio. The Studio uses Ukrainian labels and checks uploads automatically. See the [content editing guide](docs/content-editing/README.md).
+- **Pre-rendered pages with quick content updates.** Pages are rendered in advance and cached on Vercel. A publish webhook refreshes them, usually within seconds. See [Rendering and data flow](docs/architecture/rendering-and-data-flow.md).
+- **Rich articles and event pages.** Formatted text, inline photos and photo rows, file attachments with a PDF preview, and photo galleries with a full-screen viewer. See the [content model](docs/reference/content-model.md).
+- **Homepage Spotlight.** Editors choose which news and events appear in the homepage slider. See [Homepage, people and sections](docs/content-editing/homepage-people-and-sections.md).
+- **Newsletter sign-up.** Subscribers are stored in Resend. The form is protected by an origin check, rate limiting and a honeypot field. See the [API reference](docs/reference/api.md#post-apinewslettersubscribe).
+- **Cookie consent and opt-in analytics.** The consent banner shows "Accept All" and "Reject All" side by side. PostHog (EU Cloud) tracks only after consent. See [Privacy and analytics](docs/architecture/privacy-and-analytics.md).
+- **Search engine support.** Metadata, a sitemap, structured data, and 43 permanent redirects from the previous Drupal website. See [SEO](docs/architecture/seo.md).
+- **Erasmus+ information hub.** Six pages explain Erasmus+ opportunities for Ukrainian students. See [Routes](docs/reference/routes.md).
+
 ## Quick start
 
 Requirements: Node.js 22.12 or newer (20.19+ also works), npm, and the Sanity project ID and dataset name. See [Getting started](docs/getting-started.md) for details.
@@ -28,6 +39,25 @@ npm run dev
 ```
 
 Open <http://localhost:3000> for the website and <http://localhost:3000/studio> for Sanity Studio.
+
+## Architecture at a glance
+
+```mermaid
+flowchart LR
+    accTitle: ESN Ukraine website at a glance
+    accDescr: Editors publish content in Sanity Studio. Sanity notifies the Next.js website on Vercel through a webhook, and the website reads content from Sanity. Developers deliver code through GitHub, which triggers Vercel deployments. Visitors open esnukraine.org. The website uses Resend and Upstash for the newsletter and PostHog for analytics after consent.
+
+    editor["Editors<br/>Sanity Studio at /studio"] -->|"publish"| sanity[("Sanity<br/>content and images")]
+    sanity -->|"webhook"| site["Next.js website<br/>on Vercel"]
+    site -->|"reads content"| sanity
+    dev["Developers"] -->|"pull requests"| github["GitHub"]
+    github -->|"deploys"| site
+    visitor["Visitors"] -->|"esnukraine.org"| site
+    site -->|"newsletter"| newsletter["Resend and Upstash"]
+    site -->|"after consent"| analytics["PostHog EU"]
+```
+
+The website is a single Next.js application. Content comes from Sanity, and there is no database or server of our own to maintain. For the full picture, read the [architecture overview](docs/architecture/overview.md).
 
 ## Repository structure
 

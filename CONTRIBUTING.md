@@ -109,7 +109,7 @@ npm run build      # Production build; needs the Sanity variables and network ac
 
 Documentation is part of the change. Update it in the same pull request. The [maintenance map](docs/README.md#keeping-the-documentation-up-to-date) lists which page to update for each kind of change. For significant technical decisions, add an [architecture decision record](docs/adr/README.md).
 
-Follow the [writing conventions](docs/README.md#writing-conventions). In short: British English, sentence-case headings, relative links, and no secrets or personal data. The repository is public.
+The repository is public, so never include secrets, environment variable values or personal data in documentation.
 
 ## Reporting problems
 
