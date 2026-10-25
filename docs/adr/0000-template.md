@@ -1,6 +1,6 @@
 # ADR-XXXX: Short title in the imperative mood
 
-- **Status:** Proposed | Accepted | Deprecated | Superseded by [ADR-XXXX](XXXX-title.md)
+- **Status:** Proposed | Accepted | Deprecated | Superseded by ADR-XXXX (link the newer ADR)
 - **Date:** YYYY-MM-DD
 - **Deciders:** roles, for example "Webmaster, IT team" (no personal names; this repository is public)
 

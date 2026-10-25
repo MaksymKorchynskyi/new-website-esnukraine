@@ -102,7 +102,7 @@ The PostHog project API key for the EU Cloud. This key is public by design. If i
 
 ## Variables set by Vercel
 
-These variables are provided automatically by [Vercel](https://vercel.com/docs/projects/environment-variables/system-environment-variables). Do not define them yourself.
+These are Vercel's system environment variables, which Vercel provides automatically. Do not define them yourself.
 
 | Variable | Used for |
 |---|---|
