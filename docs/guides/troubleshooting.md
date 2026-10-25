@@ -55,7 +55,7 @@ Without a working webhook, CMS pages still refresh **within an hour**. To refres
 - **The document is not published,** or the slug in the URL differs from the slug in the Studio.
 - **The slug was changed.** Old URLs are not redirected automatically. Add a redirect if the old URL was shared ([Common tasks](common-tasks.md#add-or-change-a-redirect)).
 - **The slug collides with a redirect.** `next.config.ts` redirects some old `/news/...` paths to `/news`. Choose another slug.
-- **The slug contains special characters,** such as apostrophes or non-Latin letters. Regenerate the slug with lowercase Latin letters, digits and hyphens. See [Images and files → Slugs](../content-editing/images-and-files.md#slugs).
+- **The slug contains special characters,** such as apostrophes or non-Latin letters. This usually happens when a slug is typed by hand; the Studio's **Generate** button produces safe slugs. Change it to lowercase Latin letters, digits and hyphens, and add a redirect if the old address was shared. See [Images and files → Slugs](../content-editing/images-and-files.md#slugs).
 
 ## Homepage fails without Spotlight items
 
