@@ -1,5 +1,16 @@
 # ESN Ukraine website
 
+[![Website status](https://img.shields.io/website?url=https%3A%2F%2Fesnukraine.org&label=esnukraine.org&up_message=online&down_message=offline)](https://esnukraine.org)
+[![Deployed on Vercel](https://img.shields.io/badge/deployed%20on-Vercel-000000?logo=vercel&logoColor=white)](docs/guides/deployment-and-environments.md)
+[![Last commit on main](https://img.shields.io/github/last-commit/MaksymKorchynskyi/new-website-esnukraine/main?label=last%20commit)](https://github.com/MaksymKorchynskyi/new-website-esnukraine/commits/main)
+
+[![Next.js version](https://img.shields.io/github/package-json/dependency-version/MaksymKorchynskyi/new-website-esnukraine/next?filename=esn-ukraine-web%2Fpackage.json&label=Next.js&logo=nextdotjs&color=000000)](esn-ukraine-web/package.json)
+[![React version](https://img.shields.io/github/package-json/dependency-version/MaksymKorchynskyi/new-website-esnukraine/react?filename=esn-ukraine-web%2Fpackage.json&label=React&logo=react&color=149ECA)](esn-ukraine-web/package.json)
+[![TypeScript version](https://img.shields.io/github/package-json/dependency-version/MaksymKorchynskyi/new-website-esnukraine/dev/typescript?filename=esn-ukraine-web%2Fpackage.json&label=TypeScript&logo=typescript&logoColor=white&color=3178C6)](esn-ukraine-web/package.json)
+[![Sanity version](https://img.shields.io/github/package-json/dependency-version/MaksymKorchynskyi/new-website-esnukraine/sanity?filename=esn-ukraine-web%2Fpackage.json&label=Sanity&logo=sanity&logoColor=white&color=F03E2F)](esn-ukraine-web/package.json)
+[![Tailwind CSS version](https://img.shields.io/github/package-json/dependency-version/MaksymKorchynskyi/new-website-esnukraine/dev/tailwindcss?filename=esn-ukraine-web%2Fpackage.json&label=Tailwind%20CSS&logo=tailwindcss&logoColor=white&color=06B6D4)](esn-ukraine-web/package.json)
+[![Node.js version](https://img.shields.io/badge/Node.js-20.19%2B%20%7C%2022.12%2B-5FA04E?logo=nodedotjs&logoColor=white)](docs/getting-started.md#prerequisites)
+
 Source code of [esnukraine.org](https://esnukraine.org), the official website of **Erasmus Student Network Ukraine** — the national student organisation that represents ESN sections in Ukraine and supports international students under the motto *Students Helping Students*.
 
 The site publishes news, events, information about the National Board and local sections, Erasmus+ opportunities and the ESNcard. Editors manage most dynamic content in **Sanity Studio**, which is embedded in the website at `/studio`.
