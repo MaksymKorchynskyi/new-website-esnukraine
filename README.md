@@ -12,6 +12,7 @@
 [![Website status](https://img.shields.io/website?url=https%3A%2F%2Fesnukraine.org&label=esnukraine.org&up_message=online&down_message=offline)](https://esnukraine.org)
 [![Deployed on Vercel](https://img.shields.io/badge/deployed%20on-Vercel-000000?logo=vercel&logoColor=white)](docs/guides/deployment-and-environments.md)
 [![Last commit on main](https://img.shields.io/github/last-commit/MaksymKorchynskyi/new-website-esnukraine/main?label=last%20commit)](https://github.com/MaksymKorchynskyi/new-website-esnukraine/commits/main)
+[![Licence: MIT](https://img.shields.io/badge/licence-MIT-blue)](LICENSE)
 
 [![Next.js version](https://img.shields.io/github/package-json/dependency-version/MaksymKorchynskyi/new-website-esnukraine/next?filename=esn-ukraine-web%2Fpackage.json&label=Next.js&logo=nextdotjs&color=000000)](esn-ukraine-web/package.json)
 [![React version](https://img.shields.io/github/package-json/dependency-version/MaksymKorchynskyi/new-website-esnukraine/react?filename=esn-ukraine-web%2Fpackage.json&label=React&logo=react&color=149ECA)](esn-ukraine-web/package.json)
@@ -90,6 +91,7 @@ The website is a single Next.js application. Content comes from Sanity, and ther
 ├── README.md                 ← you are here
 ├── CONTRIBUTING.md           ← how to propose changes
 ├── SECURITY.md               ← how to report a vulnerability
+├── LICENSE                   ← MIT License
 ├── docs/                     ← project documentation
 └── esn-ukraine-web/          ← the Next.js application (Vercel builds this folder)
     ├── app/                  ← routes: public website, /studio, API routes, sitemap, robots
@@ -124,3 +126,13 @@ Start with the [documentation home](docs/README.md). It has reading paths for ea
 - Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 - Report security issues privately as described in [SECURITY.md](SECURITY.md). Do not open public issues for them.
 - Technical questions about the website: <web-master@esnukraine.org>. General enquiries about ESN Ukraine: <ukraine-nr@esn.org>.
+
+## Licence
+
+The source code and documentation are released under the [MIT License](LICENSE). The licence does not cover:
+
+- the ESN and ESN Ukraine names, logos, icons and other brand assets, which may only be used in line with ESN's brand guidelines;
+- photos, videos and other media files, such as those in [`esn-ukraine-web/public/`](esn-ukraine-web/public/);
+- content published in Sanity Studio, which is stored in Sanity, not in this repository.
+
+These remain the property of their respective owners. Do not reuse them without permission. Third-party dependencies are distributed under their own licences.
