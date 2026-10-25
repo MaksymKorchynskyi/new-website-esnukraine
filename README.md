@@ -1,4 +1,13 @@
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MaksymKorchynskyi/new-website-esnukraine/main/esn-ukraine-web/public/logo-esn-ukraine-white.png">
+  <img src="https://raw.githubusercontent.com/MaksymKorchynskyi/new-website-esnukraine/main/esn-ukraine-web/public/logo-esn-ukraine.png" alt="ESN Ukraine logo" width="260">
+</picture>
+
 # ESN Ukraine website
+
+**Erasmus Student Network Ukraine** · *Students Helping Students*
 
 [![Website status](https://img.shields.io/website?url=https%3A%2F%2Fesnukraine.org&label=esnukraine.org&up_message=online&down_message=offline)](https://esnukraine.org)
 [![Deployed on Vercel](https://img.shields.io/badge/deployed%20on-Vercel-000000?logo=vercel&logoColor=white)](docs/guides/deployment-and-environments.md)
@@ -10,6 +19,10 @@
 [![Sanity version](https://img.shields.io/github/package-json/dependency-version/MaksymKorchynskyi/new-website-esnukraine/sanity?filename=esn-ukraine-web%2Fpackage.json&label=Sanity&logo=sanity&logoColor=white&color=F03E2F)](esn-ukraine-web/package.json)
 [![Tailwind CSS version](https://img.shields.io/github/package-json/dependency-version/MaksymKorchynskyi/new-website-esnukraine/dev/tailwindcss?filename=esn-ukraine-web%2Fpackage.json&label=Tailwind%20CSS&logo=tailwindcss&logoColor=white&color=06B6D4)](esn-ukraine-web/package.json)
 [![Node.js version](https://img.shields.io/badge/Node.js-20.19%2B%20%7C%2022.12%2B-5FA04E?logo=nodedotjs&logoColor=white)](docs/getting-started.md#prerequisites)
+
+[Website](https://esnukraine.org) · [Documentation](docs/README.md) · [Getting started](docs/getting-started.md) · [Content editing](docs/content-editing/README.md) · [Contributing](CONTRIBUTING.md)
+
+</div>
 
 Source code of [esnukraine.org](https://esnukraine.org), the official website of **Erasmus Student Network Ukraine** — the national student organisation that represents ESN sections in Ukraine and supports international students under the motto *Students Helping Students*.
 
