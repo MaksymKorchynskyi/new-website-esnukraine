@@ -24,6 +24,7 @@ This page explains how the website supports search engines and social sharing: m
 | `openGraph` | Title, description, `url: https://esnukraine.org`, site name, `/og-image.jpg` (1200 × 630), `locale: uk_UA`, `type: website` |
 | `twitter` | `summary_large_image` card with the same image |
 | `robots` | `index: true, follow: true` |
+| `verification` | `google`: the Google Search Console verification token, rendered as `<meta name="google-site-verification">` (see [Google Search Console](#google-search-console)) |
 
 No `title.template` is configured, so every page sets its full title.
 
@@ -80,6 +81,18 @@ When you add, rename or remove a public page, update the static list in `app/sit
 ## robots.txt
 
 `app/robots.ts` allows all crawlers, disallows `/studio` and `/api`, and points to `https://esnukraine.org/sitemap.xml`. The Studio layout also sets `noindex, nofollow`.
+
+## Google Search Console
+
+The website is registered in [Google Search Console](https://search.google.com/search-console) as a **URL-prefix property** for `https://esnukraine.org/`. It shows how Google indexes the website, crawl and indexing errors, and the search queries that lead to it.
+
+- **Verification method:** HTML tag. The token is set in `verification.google` of the root layout metadata, so every public page renders `<meta name="google-site-verification" content="…">`. The token is not a secret: it is visible in the page source.
+- **Sitemap:** submit `https://esnukraine.org/sitemap.xml` in Search Console under **Sitemaps**. Google re-reads it automatically afterwards.
+
+> [!WARNING]
+> Do not remove the `verification` field. Google re-checks the tag periodically, and the property loses its verified status when the tag disappears from the homepage. If the property is re-created or another owner verifies with a new token, replace the token in `app/(website)/layout.tsx`.
+
+Access to the property is managed in Search Console under **Settings → Users and permissions**. See [Services and accounts](../operations/services-and-accounts.md#google-search-console).
 
 ## Language
 

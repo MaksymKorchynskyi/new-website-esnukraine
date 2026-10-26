@@ -18,6 +18,7 @@ An inventory of every external service the website depends on: what it is used f
 | [Resend](#resend) | Newsletter audience | Newsletter subscriptions fail |
 | [Upstash Redis](#upstash-redis) | Rate limiting for the newsletter | Newsletter subscriptions fail in production |
 | [PostHog](#posthog) | Product analytics (EU Cloud) | No analytics; the website is not affected |
+| [Google Search Console](#google-search-console) | Search indexing reports, sitemap submission | No search reports; the website and its ranking are not affected |
 | [Email](#domain-dns-and-email) | `web-master@esnukraine.org` (technical contact), `ukraine-nr@esn.org` (general contact) | Visitors cannot reach the team |
 
 ## Vercel
@@ -78,6 +79,16 @@ An inventory of every external service the website depends on: what it is used f
 | **Connected through** | `NEXT_PUBLIC_POSTHOG_KEY`; the rewrite in `next.config.ts` |
 | **Dashboard** | [eu.posthog.com](https://eu.posthog.com/) |
 | **Plan, owner and admins** | To confirm |
+
+## Google Search Console
+
+| | |
+|---|---|
+| **Used for** | Indexing and crawl reports, search performance, submitting the sitemap |
+| **Connected through** | The `<meta name="google-site-verification">` tag set by `verification.google` in `app/(website)/layout.tsx` (URL-prefix property `https://esnukraine.org/`). See [SEO](../architecture/seo.md#google-search-console) |
+| **Dashboard** | [search.google.com/search-console](https://search.google.com/search-console) |
+| **Plan** | Free |
+| **Owner and users** | To confirm. Add users under **Settings → Users and permissions** |
 
 ## Domain, DNS and email
 
