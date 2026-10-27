@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
+import { buildMetadata } from '@/lib/seo';
 import Link from 'next/link';
 import PolicyPageLayout from '@/components/ui/PolicyPageLayout';
 
-export const metadata: Metadata = {
-  title: 'Privacy Policy — ESN Ukraine',
+export const metadata: Metadata = buildMetadata({
+  title: 'Privacy Policy',
   description:
     'Learn how Erasmus Student Network Ukraine collects, uses, and protects your personal data in compliance with GDPR.',
-};
+  path: '/privacy',
+});
 
 const TABLE_OF_CONTENTS = [
   { id: 'introduction', label: 'Introduction' },

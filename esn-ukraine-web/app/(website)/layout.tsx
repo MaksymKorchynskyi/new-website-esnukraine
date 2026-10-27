@@ -24,12 +24,14 @@ export const metadata: Metadata = {
         ? `https://${process.env.VERCEL_URL}`
         : "https://esnukraine.org"
   ),
-  title: "ESN Ukraine",
+  title: {
+    default: "ESN Ukraine",
+    template: "%s | ESN Ukraine",
+  },
   description: "Erasmus Student Network Ukraine is a national-level student organization that represents local ESN sections. At the moment, we have a growing network of sections across Ukraine.",
   openGraph: {
     title: "ESN Ukraine",
     description: "Erasmus Student Network Ukraine is a national-level student organization that represents local ESN sections. At the moment, we have a growing network of sections across Ukraine.",
-    url: "https://esnukraine.org",
     siteName: "ESN Ukraine",
     images: [
       {
@@ -39,7 +41,7 @@ export const metadata: Metadata = {
         alt: "ESN Ukraine",
       },
     ],
-    locale: "uk_UA",
+    locale: "en_US",
     type: "website",
   },
   twitter: {
@@ -70,7 +72,7 @@ export default async function WebsiteLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="uk" className={`${manrope.variable}`}>
+    <html lang="en" className={`${manrope.variable}`}>
       <body className="font-sans antialiased bg-white text-gray-900 w-full max-w-full">
         <PostHogProvider>
           <div className="overflow-x-hidden w-full min-h-svh flex flex-col">

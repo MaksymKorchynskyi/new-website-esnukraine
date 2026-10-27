@@ -1,9 +1,17 @@
+import type { Metadata } from 'next';
+import { buildMetadata } from '@/lib/seo';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-export const metadata = {
-  title: 'Blog | ESN Ukraine',
-  description: 'Stories, insights, and updates from the ESN Ukraine community.',
+export const metadata: Metadata = {
+  ...buildMetadata({
+    title: 'Blog',
+    description:
+      'Stories, insights, and updates from the ESN Ukraine community.',
+    path: '/blog',
+  }),
+  // Placeholder page: keep it out of the index until real content ships.
+  robots: { index: false, follow: true },
 };
 
 export default function BlogPage() {

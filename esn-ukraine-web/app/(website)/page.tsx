@@ -35,42 +35,15 @@ import { getSpotlightItemsQuery, getLatestNewsQuery, getLatestEventsQuery, getNe
 import type { SpotlightItem, NewsArticlePreview, EventPreview } from "@/sanity/lib/types";
 import { formatDate } from "@/sanity/lib/utils";
 
-import type { Metadata } from 'next';
+import { buildMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: "ESN Ukraine",
-  description: "Erasmus Student Network Ukraine is a national-level student organization representing local ESN sections. Discover our network, news, and events.",
-  openGraph: {
-    title: "ESN Ukraine",
-    description: "Erasmus Student Network Ukraine is a national-level student organization representing local ESN sections. Discover our network, news, and events.",
-    url: "https://esnukraine.org",
-    siteName: "ESN Ukraine",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "ESN Ukraine",
-        type: "image/jpeg",
-      },
-    ],
-    locale: "uk_UA",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "ESN Ukraine",
-    description: "Erasmus Student Network Ukraine is a national-level student organization representing local ESN sections. Discover our network, news, and events.",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "ESN Ukraine",
-      },
-    ],
-  },
-};
+export const metadata = buildMetadata({
+  title: 'ESN Ukraine',
+  description:
+    'Erasmus Student Network Ukraine is a national-level student organization representing local ESN sections. Discover our network, news, and events.',
+  path: '/',
+  absoluteTitle: true,
+});
 
 
 export default async function Home() {

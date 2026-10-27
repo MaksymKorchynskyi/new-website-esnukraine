@@ -3,12 +3,15 @@ import { ArrowLeft } from 'lucide-react';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { groq } from 'next-sanity';
 import FormerBoardsClient, { FormerBoardItem } from './FormerBoardsClient';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import { buildMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-    title: 'Former Boards - ESN Ukraine',
-    description: 'Meet the former board members of ESN Ukraine who have shaped our organization over the years.',
-};
+export const metadata: Metadata = buildMetadata({
+  title: 'Former Boards',
+  description:
+    'Meet the former board members of ESN Ukraine who have shaped our organization over the years.',
+  path: '/about-us/former-boards',
+});
 
 // ==========================================
 // DATA FETCHING FROM SANITY CMS

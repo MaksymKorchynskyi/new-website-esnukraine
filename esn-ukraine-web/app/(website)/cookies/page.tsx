@@ -1,13 +1,15 @@
 import type { Metadata } from 'next';
+import { buildMetadata } from '@/lib/seo';
 import Link from 'next/link';
 import PolicyPageLayout from '@/components/ui/PolicyPageLayout';
 import CookieSettingsButton from './CookieSettingsButton';
 
-export const metadata: Metadata = {
-  title: 'Cookie Policy — ESN Ukraine',
+export const metadata: Metadata = buildMetadata({
+  title: 'Cookie Policy',
   description:
     'Learn about the cookies used on the ESN Ukraine website, how we use them, and how you can manage your preferences.',
-};
+  path: '/cookies',
+});
 
 const TABLE_OF_CONTENTS = [
   { id: 'what-are-cookies', label: 'What Are Cookies' },

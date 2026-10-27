@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { buildMetadata } from '@/lib/seo';
 import {
   ArrowLeft,
   ArrowRight,
@@ -15,22 +16,12 @@ import {
   Briefcase,
 } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: 'Academic Mobility — Erasmus+ Study & Internship Abroad | ESN Ukraine',
+export const metadata: Metadata = buildMetadata({
+  title: 'Academic Mobility: Study & Intern Abroad',
   description:
     'Learn about Erasmus+ academic mobility for Ukrainian students: study or intern abroad for 3–12 months at partner universities across Europe with EU grants.',
-  alternates: {
-    canonical: 'https://esnukraine.org/erasmus/academic-mobility',
-  },
-  openGraph: {
-    title: 'Academic Mobility — Erasmus+ Study & Internship Abroad',
-    description:
-      'Learn about Erasmus+ academic mobility for Ukrainian students: study or intern abroad for 3–12 months at partner universities across Europe with EU grants.',
-    url: 'https://esnukraine.org/erasmus/academic-mobility',
-    siteName: 'ESN Ukraine',
-    type: 'website',
-  },
-};
+  path: '/erasmus/academic-mobility',
+});
 
 const mobilityTypes = [
   {

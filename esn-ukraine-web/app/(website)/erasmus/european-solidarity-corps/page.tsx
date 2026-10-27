@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { buildMetadata } from '@/lib/seo';
 import {
   ArrowLeft,
   ArrowRight,
@@ -19,22 +20,12 @@ import {
   Languages,
 } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: 'European Solidarity Corps — Volunteering & Solidarity Projects in Europe | ESN Ukraine',
+export const metadata: Metadata = buildMetadata({
+  title: 'European Solidarity Corps: Volunteer in Europe',
   description:
-    'Discover the European Solidarity Corps: volunteer, work, or run solidarity projects across Europe. Open to young people aged 18–30 with all costs covered by the EU.',
-  alternates: {
-    canonical: 'https://esnukraine.org/erasmus/european-solidarity-corps',
-  },
-  openGraph: {
-    title: 'European Solidarity Corps — Volunteering & Solidarity Projects in Europe',
-    description:
-      'Volunteer, work, or run solidarity projects across Europe. Open to young people aged 18–30 with all costs covered by the EU.',
-    url: 'https://esnukraine.org/erasmus/european-solidarity-corps',
-    siteName: 'ESN Ukraine',
-    type: 'website',
-  },
-};
+    'Discover the European Solidarity Corps: volunteer, work or run solidarity projects across Europe. Open to ages 18–30, with costs covered by the EU.',
+  path: '/erasmus/european-solidarity-corps',
+});
 
 const activityTypes = [
   {

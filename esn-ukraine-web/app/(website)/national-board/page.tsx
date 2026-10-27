@@ -3,6 +3,14 @@ import { ArrowLeft } from 'lucide-react';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { groq } from 'next-sanity';
 import BoardSection, { BoardMemberItem } from '@/components/sections/BoardSection.client';
+import { buildMetadata } from '@/lib/seo';
+
+export const metadata = buildMetadata({
+  title: 'National Board',
+  description:
+    'Meet the volunteers who lead ESN Ukraine: the National Board members who support student mobility and coordinate our network of local sections.',
+  path: '/national-board',
+});
 
 // ==========================================
 // DATA FETCHING FROM SANITY CMS

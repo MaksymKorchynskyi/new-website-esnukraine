@@ -1,6 +1,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, ExternalLink, Mail } from 'lucide-react';
+import { buildMetadata } from '@/lib/seo';
+
+export const metadata = buildMetadata({
+  title: 'ESNcard',
+  description:
+    'The ESNcard is the Erasmus Student Network membership card, valid for 12 months. See who can get it, what it offers and how to get yours in Ukraine.',
+  path: '/for-students/esncard',
+});
 
 export default function ESNcardPage() {
     return (

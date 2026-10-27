@@ -3,6 +3,14 @@ import { groq } from "next-sanity";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { EventCard } from "@/components/ui/Card";
+import { buildMetadata } from '@/lib/seo';
+
+export const metadata = buildMetadata({
+  title: 'Events',
+  description:
+    'From national platforms to local meetups: discover upcoming ESN Ukraine events and relive the best moments of our student community.',
+  path: '/events',
+});
 
 // ==========================================
 // INTERFACES (CMS-ready structure)
