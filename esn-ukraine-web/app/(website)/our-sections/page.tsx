@@ -32,6 +32,14 @@ async function getSections(): Promise<SectionCard[]> {
 }
 
 import UkraineMap from '@/components/ui/UkraineMap';
+import { buildMetadata } from '@/lib/seo';
+
+export const metadata = buildMetadata({
+  title: 'Our Sections',
+  description:
+    'Find your local ESN section in Ukraine. Explore the map of Erasmus Student Network sections, see their cities and Instagram pages, and join your local community.',
+  path: '/our-sections',
+});
 
 // ==========================================
 // PAGE COMPONENT

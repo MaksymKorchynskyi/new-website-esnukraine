@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { buildMetadata } from '@/lib/seo';
 import {
   ArrowLeft,
   ArrowRight,
@@ -18,22 +19,12 @@ import {
   Search,
 } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: 'Erasmus Trainings and Exchanges — Youth Mobility Opportunities | ESN Ukraine',
+export const metadata: Metadata = buildMetadata({
+  title: 'Erasmus+ Trainings and Youth Exchanges',
   description:
-    'Discover Erasmus+ youth exchanges, training courses, and capacity-building activities for young people and youth workers. Fully-funded opportunities for Ukrainian participants.',
-  alternates: {
-    canonical: 'https://esnukraine.org/erasmus/trainings-and-exchanges',
-  },
-  openGraph: {
-    title: 'Erasmus Trainings and Exchanges — Youth Mobility Opportunities',
-    description:
-      'Discover Erasmus+ youth exchanges, training courses, and capacity-building activities for young people and youth workers. Fully-funded opportunities.',
-    url: 'https://esnukraine.org/erasmus/trainings-and-exchanges',
-    siteName: 'ESN Ukraine',
-    type: 'website',
-  },
-};
+    'Erasmus+ youth exchanges, training courses and capacity-building activities for young people and youth workers. Funded opportunities for Ukrainian participants.',
+  path: '/erasmus/trainings-and-exchanges',
+});
 
 const activityTypes = [
   {

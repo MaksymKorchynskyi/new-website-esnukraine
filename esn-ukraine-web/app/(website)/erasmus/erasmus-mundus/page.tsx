@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { buildMetadata } from '@/lib/seo';
 import {
   ArrowLeft,
   ArrowRight,
@@ -17,22 +18,12 @@ import {
   CalendarDays,
 } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: 'Erasmus Mundus Master Programmes — Full Scholarships for Master\'s Degrees | ESN Ukraine',
+export const metadata: Metadata = buildMetadata({
+  title: 'Erasmus Mundus Master Programmes',
   description:
-    'Explore Erasmus Mundus Joint Master Programmes: fully-funded Master\'s degrees at top European universities. Study in 2+ countries with a full EU scholarship covering tuition, travel, and living costs.',
-  alternates: {
-    canonical: 'https://esnukraine.org/erasmus/erasmus-mundus',
-  },
-  openGraph: {
-    title: 'Erasmus Mundus Master Programmes — Full Scholarships for Master\'s Degrees',
-    description:
-      'Explore Erasmus Mundus Joint Master Programmes: fully-funded Master\'s degrees at top European universities. Study in 2+ countries with a full EU scholarship.',
-    url: 'https://esnukraine.org/erasmus/erasmus-mundus',
-    siteName: 'ESN Ukraine',
-    type: 'website',
-  },
-};
+    'Explore Erasmus Mundus Joint Master Programmes: fully funded Master\'s degrees in 2+ European countries with EU scholarships covering tuition, travel and living.',
+  path: '/erasmus/erasmus-mundus',
+});
 
 const scholarshipDetails = [
   {

@@ -60,16 +60,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
-      url: 'https://esnukraine.org/blog',
-      lastModified: new Date(),
-      priority: 0.6,
-    },
-    {
-      url: 'https://esnukraine.org/projects',
-      lastModified: new Date(),
-      priority: 0.7,
-    },
-    {
       url: 'https://esnukraine.org/erasmus',
       lastModified: new Date(),
       priority: 0.8,
@@ -98,21 +88,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: 'https://esnukraine.org/erasmus/national-erasmus-office',
       lastModified: new Date(),
       priority: 0.7,
-    },
-    {
-      url: 'https://esnukraine.org/for-students/housing',
-      lastModified: new Date(),
-      priority: 0.6,
-    },
-    {
-      url: 'https://esnukraine.org/for-students/buddy',
-      lastModified: new Date(),
-      priority: 0.6,
-    },
-    {
-      url: 'https://esnukraine.org/for-students/survival-guide',
-      lastModified: new Date(),
-      priority: 0.6,
     },
     {
       url: 'https://esnukraine.org/for-students/esncard',

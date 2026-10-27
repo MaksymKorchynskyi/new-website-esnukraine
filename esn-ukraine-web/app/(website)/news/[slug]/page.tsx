@@ -1,3 +1,4 @@
+import { buildMetadata, truncate } from "@/lib/seo";
 import { urlFor } from "@/sanity/lib/image";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -67,26 +68,17 @@ export async function generateMetadata({ params }: NewsPageProps): Promise<Metad
   if (!article) return { title: "Article Not Found" };
 
   const ogImage = article.mainImage
-    ? urlFor(article.mainImage).width(1200).height(630).url()
+    ? { url: urlFor(article.mainImage).width(1200).height(630).url(), width: 1200, height: 630 }
     : undefined;
 
-  return {
-    title: `${article.title} — ESN Ukraine`,
-    description: article.excerpt,
-    openGraph: {
-      title: article.title,
-      description: article.excerpt,
-      type: "article",
-      publishedTime: article.publishedAt,
-      images: ogImage ? [{ url: ogImage, width: 1200, height: 630 }] : [],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: article.title,
-      description: article.excerpt,
-      images: ogImage ? [ogImage] : [],
-    },
-  };
+  return buildMetadata({
+    title: article.title,
+    description: truncate(article.excerpt),
+    path: `/news/${slug}`,
+    image: ogImage,
+    type: "article",
+    publishedTime: article.publishedAt,
+  });
 }
 
 // ==========================================

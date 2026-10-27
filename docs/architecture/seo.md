@@ -19,34 +19,52 @@ This page explains how the website supports search engines and social sharing: m
 | Field | Value |
 |---|---|
 | `metadataBase` | `https://` + `VERCEL_PROJECT_PRODUCTION_URL`, else `VERCEL_URL`, else `https://esnukraine.org`. Used to turn relative URLs, such as image paths, into absolute ones. |
-| `title` | `ESN Ukraine` |
+| `title` | `default: "ESN Ukraine"`, `template: "%s \| ESN Ukraine"`. A page sets only its own part, for example `Our Sections`, and the template adds the site name |
 | `description` | A one-sentence description of ESN Ukraine |
-| `openGraph` | Title, description, `url: https://esnukraine.org`, site name, `/og-image.jpg` (1200 × 630), `locale: uk_UA`, `type: website` |
+| `openGraph` | Title, description, site name, `/og-image.jpg` (1200 × 630), `locale: en_US`, `type: website`. There is no `url`: each page sets its own |
 | `twitter` | `summary_large_image` card with the same image |
 | `robots` | `index: true, follow: true` |
 | `verification` | `google`: the Google Search Console verification token, rendered as `<meta name="google-site-verification">` (see [Google Search Console](#google-search-console)) |
 
-No `title.template` is configured, so every page sets its full title.
+The homepage is the only page that skips the template (`absoluteTitle: true`), so its title stays plain "ESN Ukraine".
+
+### The `buildMetadata` helper
+
+Pages do not write `openGraph` and `twitter` by hand. They call `buildMetadata()` from `lib/seo.ts`:
+
+```ts
+import { buildMetadata } from '@/lib/seo';
+
+export const metadata = buildMetadata({
+  title: 'Our Sections',            // the template adds " | ESN Ukraine"
+  description: 'Find your local ESN section in Ukraine…',
+  path: '/our-sections',            // canonical URL and og:url, resolved with metadataBase
+});
+```
+
+It returns the title, description, canonical URL, and complete Open Graph and Twitter data (site name, `/og-image.jpg` unless `image` is given, `locale: en_US`). This matters because metadata objects are merged **shallowly**: a page that defines `openGraph` itself replaces the whole default object, including the image. `lib/seo.ts` also exports `truncate()`, which shortens CMS text to about 155 characters on a word boundary.
 
 ### Page-level metadata
 
 | Pages | Metadata |
 |---|---|
-| `/` | Own title, description, Open Graph and Twitter data |
-| `/news/[slug]`, `/events/[slug]` | `generateMetadata`: `<title> — ESN Ukraine`, the excerpt as description, Open Graph type `article` with the publication time, and a 1200 × 630 image cropped from the card image |
-| `/erasmus` and its 5 subpages | Own title and description, a canonical URL, Open Graph data **without an image**, JSON-LD |
-| `/privacy`, `/cookies`, `/about-us/former-boards`, `/blog`, `/for-students/buddy`, `/for-students/housing`, `/for-students/survival-guide` | Own title and description |
-| `/about-us`, `/contact`, `/news`, `/events`, `/national-board`, `/our-sections`, `/projects`, `/for-students/esncard` | **Inherit the defaults** (title "ESN Ukraine") |
+| `/` | Title "ESN Ukraine" (no template), own description |
+| Every other static page | Own title and description through `buildMetadata`, plus canonical URL and full Open Graph data |
+| `/about-us`, `/contact` | Client Components, so the metadata lives in a `layout.tsx` next to the page (`about-us/layout.tsx`, `contact/layout.tsx`) |
+| `/news/[slug]`, `/events/[slug]` | `generateMetadata`: the document title, the excerpt shortened to about 155 characters as description, a canonical URL, Open Graph type `article` with the publication time, and a 1200 × 630 image cropped from the card image (default image if the document has none) |
+| `/erasmus` and its 5 subpages | The same, plus JSON-LD |
+| `/projects`, `/blog`, `/for-students/buddy`, `/for-students/housing`, `/for-students/survival-guide` | Placeholder pages: own title and description, but `robots: noindex` and no entry in the sitemap, until real content is added |
 
 > [!NOTE]
-> `/about-us` and `/contact` are Client Components (`'use client'`). A Client Component cannot export `metadata`. To give these pages their own metadata, move the interactive parts into separate client components, or add a `layout.tsx` next to the page that exports the metadata.
+> A `string` title in a **layout** resets the title template for all routes below it. `about-us/layout.tsx` therefore declares `title: { default: 'About Us', template: '%s | ESN Ukraine' }`, so that `/about-us/former-boards` still gets the suffix. Do the same if you add a layout with metadata above other pages.
 
 ### Conventions for new pages
 
-- **Title:** `<Page title> | ESN Ukraine`. This format is already used by most pages that set a title, such as the Erasmus+, Blog and For Students pages.
-- **Description:** one or two sentences, about 150 characters, specific to the page.
-- **Open Graph:** metadata objects are merged **shallowly**. If a page defines `openGraph`, it replaces the whole default object, including the default image. Specify `images` (and `locale`, if needed) in the page's own `openGraph`.
-- **Canonical URL:** set `alternates: { canonical: 'https://esnukraine.org/<path>' }` for important content pages, as the Erasmus+ pages do.
+- **Title:** the page's own name only, for example `Housing`. The root template adds ` | ESN Ukraine`, so do not write the suffix yourself. Keep the page name short: the whole title should stay under about 60 characters, or Google truncates it.
+- **Uniqueness:** every indexable page needs its own title and description. Do not copy the homepage text.
+- **Description:** one or two sentences, 120–160 characters, specific to the page, in English.
+- **Canonical URL and Open Graph:** use `buildMetadata`, which sets both and keeps the default image.
+- **Placeholder pages:** add `robots: { index: false, follow: true }` and leave the page out of `app/sitemap.ts` until it has real content.
 
 ## Social sharing images
 
@@ -71,12 +89,12 @@ The data is a constant object in each page file and is serialised with `JSON.str
 
 `app/sitemap.ts` generates `/sitemap.xml`:
 
-- **22 static URLs**, listed by hand with priorities between 0.3 and 1.0. Their `lastModified` is the time the sitemap was generated.
+- **16 static URLs**, listed by hand with priorities between 0.3 and 1.0. Their `lastModified` is the time the sitemap was generated.
 - **Every news item and event** with a slug, with `lastModified` taken from the document's `_updatedAt`.
 - The base URL `https://esnukraine.org` is hard-coded.
 - The sitemap uses `sanityFetch` with the `news` and `event` tags, so it refreshes together with the content (at least hourly).
 
-When you add, rename or remove a public page, update the static list in `app/sitemap.ts`.
+The placeholder pages (Projects, Blog, Buddy, Housing, Survival Guide) are deliberately not listed because they are `noindex`. When you add, rename or remove a public page, update the static list in `app/sitemap.ts`.
 
 ## robots.txt
 
@@ -96,7 +114,7 @@ Access to the property is managed in Search Console under **Settings → Users a
 
 ## Language
 
-The website copy is in English. The root layout sets `<html lang="uk">` and the Open Graph locale `uk_UA`. The language switcher in the header shows "UA" as "coming soon". If you add translated content, keep `lang` in line with the language of each page, and declare the language versions with `alternates.languages`, which renders `hreflang` links.
+The website copy is in English. The root layout sets `<html lang="en">` and the Open Graph locale `en_US`. The language switcher in the header shows "UA" as "coming soon". If you add translated content, keep `lang` in line with the language of each page, and declare the language versions with `alternates.languages`, which renders `hreflang` links.
 
 ## Redirects from the previous website
 

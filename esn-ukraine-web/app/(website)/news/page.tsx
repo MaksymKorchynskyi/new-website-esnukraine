@@ -4,6 +4,14 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { NewsCard } from "@/components/ui/Card";
 import NewsletterForm from "@/components/sections/NewsletterForm.client";
+import { buildMetadata } from '@/lib/seo';
+
+export const metadata = buildMetadata({
+  title: 'News',
+  description:
+    'The latest updates from ESN Ukraine: announcements, events and stories from the Erasmus Student Network community across Ukraine.',
+  path: '/news',
+});
 
 // ==========================================
 // INTERFACES (CMS-ready structure)

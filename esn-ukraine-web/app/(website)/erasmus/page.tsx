@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { buildMetadata } from '@/lib/seo';
 import {
   ArrowLeft,
   ArrowRight,
@@ -17,22 +18,12 @@ import {
   ExternalLink,
 } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: 'Erasmus+ Programme — Opportunities for Ukrainian Students | ESN Ukraine',
+export const metadata: Metadata = buildMetadata({
+  title: 'Erasmus+ Programme for Ukrainian Students',
   description:
-    'Discover Erasmus+ programmes and opportunities for Ukrainian students — academic mobility, Erasmus Mundus Master Programmes, trainings, exchanges, volunteering, and more.',
-  alternates: {
-    canonical: 'https://esnukraine.org/erasmus',
-  },
-  openGraph: {
-    title: 'Erasmus+ Programme — Opportunities for Ukrainian Students',
-    description:
-      'Discover Erasmus+ programmes and opportunities for Ukrainian students — academic mobility, Erasmus Mundus Master Programmes, trainings, exchanges, volunteering, and more.',
-    url: 'https://esnukraine.org/erasmus',
-    siteName: 'ESN Ukraine',
-    type: 'website',
-  },
-};
+    'Discover Erasmus+ opportunities for Ukrainian students: academic mobility, Erasmus Mundus Master Programmes, trainings, exchanges, volunteering and more.',
+  path: '/erasmus',
+});
 
 const programmes = [
   {

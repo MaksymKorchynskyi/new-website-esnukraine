@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { buildMetadata } from '@/lib/seo';
 import {
   ArrowLeft,
   ArrowRight,
@@ -21,22 +22,12 @@ import {
   Lightbulb,
 } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: 'National Erasmus+ Office in Ukraine — Support & Information | ESN Ukraine',
+export const metadata: Metadata = buildMetadata({
+  title: 'National Erasmus+ Office in Ukraine',
   description:
-    'Learn about the National Erasmus+ Office (NEO) in Ukraine: its role in supporting Erasmus+ programme implementation, services for universities and students, and contact information.',
-  alternates: {
-    canonical: 'https://esnukraine.org/erasmus/national-erasmus-office',
-  },
-  openGraph: {
-    title: 'National Erasmus+ Office in Ukraine — Support & Information',
-    description:
-      'Learn about the National Erasmus+ Office (NEO) in Ukraine: its role in supporting Erasmus+ programme implementation, services for universities and students.',
-    url: 'https://esnukraine.org/erasmus/national-erasmus-office',
-    siteName: 'ESN Ukraine',
-    type: 'website',
-  },
-};
+    'The National Erasmus+ Office (NEO) in Ukraine: its role in Erasmus+ implementation, services for universities and students, and contact information.',
+  path: '/erasmus/national-erasmus-office',
+});
 
 const keyFunctions = [
   {

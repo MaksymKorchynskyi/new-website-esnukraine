@@ -7,7 +7,7 @@ A complete inventory of the routes in `esn-ukraine-web/app/`: every page, API ro
 Legend:
 
 - **Rendering:** *Static* = rendered at build time. *ISR* = incremental static regeneration: cached, refreshed hourly or by the publish webhook (see [Rendering and data flow](../architecture/rendering-and-data-flow.md#rendering-strategies)). *Dynamic* = executed per request.
-- **Metadata:** *Own* = the page sets its own title and description. *Default* = the page inherits "ESN Ukraine" from the root layout.
+- **Metadata:** *Own* = the page sets its own title, description, canonical URL and Open Graph data through `buildMetadata` (`lib/seo.ts`). *noindex* = the page asks search engines not to index it.
 - **Status:** *Live* = complete page. *Placeholder* = shows a "coming soon" or "under construction" message. *UI only* = the interface exists but is not connected to a backend.
 
 ## Public pages
@@ -16,28 +16,28 @@ All public pages are under `app/(website)/` and share the root layout `app/(webs
 
 | Path | Source | Rendering | Data | Metadata | Status |
 |---|---|---|---|---|---|
-| `/` | `page.tsx` | ISR | Sanity: Spotlight items, the 3 newest news items, the 4 events with the latest dates, "Our Network" photos. Other texts in code | Own | Live |
-| `/about-us` | `about-us/page.tsx` (Client Component) | Static | Code: texts, statistics, history photos, video | Default | Live |
+| `/` | `page.tsx` | ISR | Sanity: Spotlight items, the 3 newest news items, the 4 events with the latest dates, "Our Network" photos. Other texts in code | Own (title "ESN Ukraine") | Live |
+| `/about-us` | `about-us/page.tsx` (Client Component) | Static | Code: texts, statistics, history photos, video | Own (via `about-us/layout.tsx`) | Live |
 | `/about-us/former-boards` | `about-us/former-boards/page.tsx`, `FormerBoardsClient.tsx` | ISR | Sanity: `formerBoard` | Own | Live |
-| `/national-board` | `national-board/page.tsx`, `components/sections/BoardSection.client.tsx` | ISR | Sanity: `boardMember`. Built-in placeholder profiles when there are none | Default | Live |
-| `/our-sections` | `our-sections/page.tsx`, `components/ui/UkraineMap.tsx` | ISR | Sanity: `section`. Static map image | Default | Live |
-| `/news` | `news/page.tsx` | ISR | Sanity: all `news`, newest first | Default | Live |
+| `/national-board` | `national-board/page.tsx`, `components/sections/BoardSection.client.tsx` | ISR | Sanity: `boardMember`. Built-in placeholder profiles when there are none | Own | Live |
+| `/our-sections` | `our-sections/page.tsx`, `components/ui/UkraineMap.tsx` | ISR | Sanity: `section`. Static map image | Own | Live |
+| `/news` | `news/page.tsx` | ISR | Sanity: all `news`, newest first | Own | Live |
 | `/news/[slug]` | `news/[slug]/page.tsx` | ISR; all slugs pre-rendered at build | Sanity: one `news` document | Own (`generateMetadata`) | Live |
-| `/events` | `events/page.tsx` | ISR | Sanity: all `event`, latest date first. Built-in sample events when there are none or the fetch fails | Default | Live |
+| `/events` | `events/page.tsx` | ISR | Sanity: all `event`, latest date first. Built-in sample events when there are none or the fetch fails | Own | Live |
 | `/events/[slug]` | `events/[slug]/page.tsx` | ISR; all slugs pre-rendered at build | Sanity: one `event` document | Own (`generateMetadata`) | Live |
-| `/erasmus` | `erasmus/page.tsx` | Static | Code | Own, canonical, JSON-LD | Live |
-| `/erasmus/academic-mobility` | `erasmus/academic-mobility/page.tsx` | Static | Code | Own, canonical, JSON-LD | Live |
-| `/erasmus/erasmus-mundus` | `erasmus/erasmus-mundus/page.tsx` | Static | Code | Own, canonical, JSON-LD | Live |
-| `/erasmus/trainings-and-exchanges` | `erasmus/trainings-and-exchanges/page.tsx` | Static | Code | Own, canonical, JSON-LD | Live |
-| `/erasmus/european-solidarity-corps` | `erasmus/european-solidarity-corps/page.tsx` | Static | Code | Own, canonical, JSON-LD | Live |
-| `/erasmus/national-erasmus-office` | `erasmus/national-erasmus-office/page.tsx` | Static | Code | Own, canonical, JSON-LD | Live |
-| `/for-students/esncard` | `for-students/esncard/page.tsx` | Static | Code; links to esncard.org | Default | Live |
-| `/for-students/buddy` | `for-students/buddy/page.tsx` | Static | — | Own | Placeholder |
-| `/for-students/housing` | `for-students/housing/page.tsx` | Static | — | Own | Placeholder |
-| `/for-students/survival-guide` | `for-students/survival-guide/page.tsx` | Static | — | Own | Placeholder |
-| `/projects` | `projects/page.tsx` | Static | — | Default | Placeholder |
-| `/blog` | `blog/page.tsx` | Static | — | Own | Placeholder ("Content coming soon") |
-| `/contact` | `contact/page.tsx` (Client Component) | Static | Code: email, address, social links, and a contact form with name, email, topic and message fields | Default | Live. The contact form is **UI only**: submitting it shows a confirmation but sends nothing |
+| `/erasmus` | `erasmus/page.tsx` | Static | Code | Own, JSON-LD | Live |
+| `/erasmus/academic-mobility` | `erasmus/academic-mobility/page.tsx` | Static | Code | Own, JSON-LD | Live |
+| `/erasmus/erasmus-mundus` | `erasmus/erasmus-mundus/page.tsx` | Static | Code | Own, JSON-LD | Live |
+| `/erasmus/trainings-and-exchanges` | `erasmus/trainings-and-exchanges/page.tsx` | Static | Code | Own, JSON-LD | Live |
+| `/erasmus/european-solidarity-corps` | `erasmus/european-solidarity-corps/page.tsx` | Static | Code | Own, JSON-LD | Live |
+| `/erasmus/national-erasmus-office` | `erasmus/national-erasmus-office/page.tsx` | Static | Code | Own, JSON-LD | Live |
+| `/for-students/esncard` | `for-students/esncard/page.tsx` | Static | Code; links to esncard.org | Own | Live |
+| `/for-students/buddy` | `for-students/buddy/page.tsx` | Static | — | Own, noindex | Placeholder |
+| `/for-students/housing` | `for-students/housing/page.tsx` | Static | — | Own, noindex | Placeholder |
+| `/for-students/survival-guide` | `for-students/survival-guide/page.tsx` | Static | — | Own, noindex | Placeholder |
+| `/projects` | `projects/page.tsx` | Static | — | Own, noindex | Placeholder |
+| `/blog` | `blog/page.tsx` | Static | — | Own, noindex | Placeholder ("Content coming soon") |
+| `/contact` | `contact/page.tsx` (Client Component) | Static | Code: email, address, social links, and a contact form with name, email, topic and message fields | Own (via `contact/layout.tsx`) | Live. The contact form is **UI only**: submitting it shows a confirmation but sends nothing |
 | `/privacy` | `privacy/page.tsx`, `components/ui/PolicyPageLayout.tsx` | Static | Code | Own | Live |
 | `/cookies` | `cookies/page.tsx`, `cookies/CookieSettingsButton.tsx` | Static | Code | Own | Live |
 
@@ -73,7 +73,7 @@ Requests, responses and errors are documented in the [API reference](api.md).
 
 | Path | Source | Rendering | Content |
 |---|---|---|---|
-| `/sitemap.xml` | `app/sitemap.ts` | ISR | 22 static URLs plus every news item and event. See [SEO](../architecture/seo.md#sitemap) |
+| `/sitemap.xml` | `app/sitemap.ts` | ISR | 16 static URLs plus every news item and event. See [SEO](../architecture/seo.md#sitemap) |
 | `/robots.txt` | `app/robots.ts` | Static | Allows everything except `/studio` and `/api`, and links the sitemap |
 | `/icon.png`, `/apple-icon.png`, `/favicon.ico` | `app/icon.png`, `app/apple-icon.png`, `app/favicon.ico` | Static | Browser and home-screen icons, detected through the Next.js file conventions |
 

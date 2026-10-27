@@ -1,3 +1,4 @@
+import { buildMetadata, truncate } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { urlFor } from "@/sanity/lib/image";
 import { notFound } from "next/navigation";
@@ -130,26 +131,17 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
   if (!event) return { title: "Event Not Found" };
 
   const ogImage = event.mainImage
-    ? urlFor(event.mainImage).width(1200).height(630).url()
+    ? { url: urlFor(event.mainImage).width(1200).height(630).url(), width: 1200, height: 630 }
     : undefined;
 
-  return {
-    title: `${event.title} — ESN Ukraine`,
-    description: event.excerpt,
-    openGraph: {
-      title: event.title,
-      description: event.excerpt,
-      type: "article",
-      publishedTime: event.publishedAt,
-      images: ogImage ? [{ url: ogImage, width: 1200, height: 630 }] : [],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: event.title,
-      description: event.excerpt,
-      images: ogImage ? [ogImage] : [],
-    },
-  };
+  return buildMetadata({
+    title: event.title,
+    description: truncate(event.excerpt),
+    path: `/events/${slug}`,
+    image: ogImage,
+    type: "article",
+    publishedTime: event.publishedAt,
+  });
 }
 
 // ==========================================

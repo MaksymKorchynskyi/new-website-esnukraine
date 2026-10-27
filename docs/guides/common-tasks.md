@@ -23,15 +23,16 @@ This example adds a static page at `/volunteer`.
 1. **Create the page file** `app/(website)/volunteer/page.tsx`. Keep it a Server Component, without `'use client'`, so it can export metadata:
 
    ```tsx
-   import type { Metadata } from 'next';
    import Link from 'next/link';
    import { ArrowLeft } from 'lucide-react';
+   import { buildMetadata } from '@/lib/seo';
 
-   export const metadata: Metadata = {
-     title: 'Volunteer | ESN Ukraine',
+   // The root layout adds " | ESN Ukraine" to the title. Every page needs its own title and description.
+   export const metadata = buildMetadata({
+     title: 'Volunteer',
      description: 'Join ESN Ukraine as a volunteer and help international students in Ukraine.',
-     alternates: { canonical: 'https://esnukraine.org/volunteer' },
-   };
+     path: '/volunteer',
+   });
 
    export default function VolunteerPage() {
      return (
@@ -80,7 +81,7 @@ Some content cannot be edited in Sanity Studio. Change it in these files and dep
 | Homepage texts ("This is ESN Ukraine", "Our Network", "Stay Connected", hashtag ticker) | `app/(website)/page.tsx` | The intro paragraph lists the section cities; update it when sections change |
 | About Us texts and statistics | `app/(website)/about-us/page.tsx` | Statistics are an array of `{ value, label, color }` objects. History photos are listed in `HistorySlider` |
 | About Us video | `public/This is ESN Ukraine.mp4` | Referenced by its file name in `about-us/page.tsx` |
-| Erasmus+ pages | `app/(website)/erasmus/**/page.tsx` | Most texts are constants at the top of each file. Keep `metadata`, the canonical URL and the JSON-LD object consistent with the content |
+| Erasmus+ pages | `app/(website)/erasmus/**/page.tsx` | Most texts are constants at the top of each file. Keep the `buildMetadata` call (title, description, path) and the JSON-LD object consistent with the content |
 | ESNcard page | `app/(website)/for-students/esncard/page.tsx` | The benefit cards are an inline array |
 | Contact details | `app/(website)/contact/page.tsx` and `components/layout/Footer.tsx` | Email and address appear in both files. The contact page has its own `socialLinks` array |
 | Footer text and copyright | `components/layout/Footer.tsx` | The copyright year is written out ("© 2026") |
