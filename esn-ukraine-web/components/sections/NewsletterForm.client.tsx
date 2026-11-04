@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useId } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
@@ -13,7 +13,11 @@ interface SubscribeResponse {
   error?: string;
 }
 
-export default function NewsletterForm() {
+export default function NewsletterForm({ autoFocus = false }: { autoFocus?: boolean } = {}) {
+  // Unique ids so the form can appear twice on a page (e.g. inline + popup)
+  const uid = useId();
+  const emailId = `newsletter-email-${uid}`;
+  const consentId = `privacy-consent-${uid}`;
   const [email, setEmail] = useState('');
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<FormStatus>('idle');
@@ -128,7 +132,7 @@ export default function NewsletterForm() {
             transition={{ duration: 0.3 }}
           >
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto" noValidate>
-              <label htmlFor="newsletter-email" className="sr-only">Your email address</label>
+              <label htmlFor={emailId} className="sr-only">Your email address</label>
 
               {/* Honeypot — invisible to real users, attracts bots */}
               <input
@@ -142,7 +146,8 @@ export default function NewsletterForm() {
               />
 
               <input
-                id="newsletter-email"
+                id={emailId}
+                autoFocus={autoFocus}
                 type="email"
                 required
                 value={email}
@@ -195,7 +200,7 @@ export default function NewsletterForm() {
             <div className="mt-4 sm:mt-5 flex justify-center">
               <div className="inline-flex items-start gap-2.5 text-left max-w-sm">
                 <input
-                  id="privacy-consent"
+                  id={consentId}
                   name="privacy-consent"
                   type="checkbox"
                   required
@@ -211,7 +216,7 @@ export default function NewsletterForm() {
                   aria-invalid={status === 'error' && !consent ? 'true' : 'false'}
                   className="mt-0.5 h-4 w-4 rounded border-gray-300 text-esn-dark focus:ring-esn-cyan cursor-pointer transition-colors accent-esn-dark shrink-0 disabled:opacity-60"
                 />
-                <label htmlFor="privacy-consent" className="text-xs text-gray-500 leading-normal cursor-pointer select-none">
+                <label htmlFor={consentId} className="text-xs text-gray-500 leading-normal cursor-pointer select-none">
                   I agree to the processing of personal data per ESN Ukraine&apos;s{' '}
                   <Link href="/privacy" className="font-semibold text-esn-dark underline decoration-esn-dark/30 hover:decoration-esn-dark hover:text-esn-cyan transition-colors">
                     Privacy Policy
