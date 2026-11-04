@@ -5,6 +5,7 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./sanity/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   // tailwind.config.ts (фрагмент)
   theme: {
@@ -24,12 +25,14 @@ const config: Config = {
         'slide-up': 'slideUp 0.8s ease-out forwards',
         'marquee': 'marquee 40s linear infinite',
         'menu-slide-down': 'menuSlideDown 0.2s ease-out forwards',
+        'cookie-in': 'cookieIn 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) both',
       },
       keyframes: {
         fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
         slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
         marquee: { '0%': { transform: 'translateX(0%)' }, '100%': { transform: 'translateX(-50%)' } },
         menuSlideDown: { '0%': { opacity: '0', transform: 'translateY(-4px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+        cookieIn: { '0%': { opacity: '0', transform: 'translateY(24px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
       }
     }
   },

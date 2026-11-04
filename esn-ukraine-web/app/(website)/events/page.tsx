@@ -1,14 +1,13 @@
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { groq } from "next-sanity";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import PageHero from "@/components/ui/PageHero";
 import { EventCard } from "@/components/ui/Card";
 import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
-  title: 'Events',
+  title: 'Past Events',
   description:
-    'From national platforms to local meetups: discover upcoming ESN Ukraine events and relive the best moments of our student community.',
+    'A look back at ESN Ukraine events: national assemblies, international conferences and community gatherings that brought students and volunteers together.',
   path: '/events',
 });
 
@@ -157,36 +156,20 @@ export default async function EventsPage() {
 
   return (
     <main className="min-h-svh bg-white">
-      {/* Hero Section */}
-      <section className="relative bg-esn-dark pt-40 pb-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-esn-dark via-esn-dark to-[#141B41]" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-esn-green/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-esn-cyan/10 rounded-full blur-3xl" />
-
-        <div className="relative z-10 mx-auto max-w-7xl px-6 sm:px-12 lg:px-24">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-8"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">Back to Home</span>
-          </Link>
-
-          <div className="max-w-3xl">
-
-            <h1 className="text-5xl md:text-7xl font-black text-white mb-6">
-              Events
-            </h1>
-            <p className="text-xl text-gray-300 leading-relaxed">
-              From national platforms to local meetups. Discover what ESN Ukraine
-              has planned and relive our best moments.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title="Past Events"
+        lead={
+          <>
+            A look back at the moments that <span className="font-black text-esn-dark">shaped our network</span>,
+            from national assemblies to international conferences.
+          </>
+        }
+        sub="Each of these events was made possible by volunteers. Find your local section and be part of the next one."
+        action={{ href: "/our-sections", label: "Find your section" }}
+      />
 
       {/* Events Grid */}
-      <section className="py-24 px-6 sm:px-12 lg:px-24">
+      <section className="pt-10 pb-24 sm:pt-14 px-6 sm:px-12 lg:px-24">
         <div className="mx-auto max-w-7xl">
           {events.length === 0 ? (
             <p className="text-gray-500 text-center py-12">No events yet.</p>

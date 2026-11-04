@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useId } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
@@ -13,7 +13,14 @@ interface SubscribeResponse {
   error?: string;
 }
 
-export default function NewsletterForm() {
+export default function NewsletterForm({
+  autoFocus = false,
+  fullWidthButton = false,
+}: { autoFocus?: boolean; fullWidthButton?: boolean } = {}) {
+  // Unique ids so the form can appear twice on a page (e.g. inline + popup)
+  const uid = useId();
+  const emailId = `newsletter-email-${uid}`;
+  const consentId = `privacy-consent-${uid}`;
   const [email, setEmail] = useState('');
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<FormStatus>('idle');
@@ -128,7 +135,7 @@ export default function NewsletterForm() {
             transition={{ duration: 0.3 }}
           >
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto" noValidate>
-              <label htmlFor="newsletter-email" className="sr-only">Your email address</label>
+              <label htmlFor={emailId} className="sr-only">Your email address</label>
 
               {/* Honeypot — invisible to real users, attracts bots */}
               <input
@@ -142,7 +149,8 @@ export default function NewsletterForm() {
               />
 
               <input
-                id="newsletter-email"
+                id={emailId}
+                autoFocus={autoFocus}
                 type="email"
                 required
                 value={email}
@@ -156,13 +164,13 @@ export default function NewsletterForm() {
                 placeholder="Enter your email address"
                 disabled={status === 'loading'}
                 aria-invalid={status === 'error' ? 'true' : 'false'}
-                className="w-full sm:flex-1 rounded-full border border-gray-200 bg-white px-5 py-3 sm:px-6 sm:py-3.5 text-base sm:text-sm text-esn-dark focus:ring-4 focus:ring-esn-cyan/20 focus:border-esn-cyan outline-none placeholder:text-gray-400 font-medium shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full sm:flex-1 rounded-full border border-gray-200 bg-white px-5 py-3 sm:px-6 sm:py-3.5 text-base sm:text-sm [@media(pointer:coarse)]:text-base text-esn-dark focus:ring-4 focus:ring-esn-cyan/20 focus:border-esn-cyan outline-none placeholder:text-gray-400 font-medium shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               />
 
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="group whitespace-nowrap px-8 py-3 sm:py-3.5 rounded-full bg-esn-dark text-xs sm:text-sm font-bold text-white transition-all hover:bg-esn-cyan hover:shadow-lg tracking-wider uppercase inline-flex items-center justify-center gap-2 shadow-md shrink-0 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-esn-dark disabled:hover:shadow-md disabled:active:scale-100"
+                className={`${fullWidthButton ? 'w-full sm:w-auto ' : ''}group whitespace-nowrap px-8 py-3 sm:py-3.5 rounded-full bg-esn-dark text-xs sm:text-sm font-bold text-white transition-all hover:bg-esn-cyan hover:shadow-lg tracking-wider uppercase inline-flex items-center justify-center gap-2 shadow-md shrink-0 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-esn-dark disabled:hover:shadow-md disabled:active:scale-100`}
               >
                 {status === 'loading' ? (
                   <>
@@ -195,7 +203,7 @@ export default function NewsletterForm() {
             <div className="mt-4 sm:mt-5 flex justify-center">
               <div className="inline-flex items-start gap-2.5 text-left max-w-sm">
                 <input
-                  id="privacy-consent"
+                  id={consentId}
                   name="privacy-consent"
                   type="checkbox"
                   required
@@ -211,7 +219,7 @@ export default function NewsletterForm() {
                   aria-invalid={status === 'error' && !consent ? 'true' : 'false'}
                   className="mt-0.5 h-4 w-4 rounded border-gray-300 text-esn-dark focus:ring-esn-cyan cursor-pointer transition-colors accent-esn-dark shrink-0 disabled:opacity-60"
                 />
-                <label htmlFor="privacy-consent" className="text-xs text-gray-500 leading-normal cursor-pointer select-none">
+                <label htmlFor={consentId} className="text-xs text-gray-500 leading-normal cursor-pointer select-none">
                   I agree to the processing of personal data per ESN Ukraine&apos;s{' '}
                   <Link href="/privacy" className="font-semibold text-esn-dark underline decoration-esn-dark/30 hover:decoration-esn-dark hover:text-esn-cyan transition-colors">
                     Privacy Policy
