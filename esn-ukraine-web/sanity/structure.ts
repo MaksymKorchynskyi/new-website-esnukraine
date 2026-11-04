@@ -21,6 +21,14 @@ export const structure: StructureResolver = (S) =>
             .title('Всі події')
             .defaultOrdering([{ field: 'date', direction: 'desc' }])
         ),
+      S.listItem()
+        .title('Майбутні події (Upcoming Events)')
+        .schemaType('upcomingEvent')
+        .child(
+          S.documentTypeList('upcomingEvent')
+            .title('Майбутні події')
+            .defaultOrdering([{ field: 'date', direction: 'asc' }])
+        ),
       S.divider(),
       S.listItem()
         .title('Секції ESN (Sections)')
@@ -58,7 +66,7 @@ export const structure: StructureResolver = (S) =>
         ),
       ...S.documentTypeListItems().filter(
         (listItem) =>
-          !['news', 'event', 'section', 'boardMember', 'networkPhoto', 'newsCategory', 'eventCategory'].includes(
+          !['news', 'event', 'upcomingEvent', 'section', 'boardMember', 'networkPhoto', 'newsCategory', 'eventCategory'].includes(
             listItem.getId() || ''
           )
       ),

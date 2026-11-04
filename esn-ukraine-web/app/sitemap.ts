@@ -55,6 +55,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      url: 'https://esnukraine.org/upcoming-events',
+      lastModified: new Date(),
+      priority: 0.9,
+    },
+    {
       url: 'https://esnukraine.org/events',
       lastModified: new Date(),
       priority: 0.8,

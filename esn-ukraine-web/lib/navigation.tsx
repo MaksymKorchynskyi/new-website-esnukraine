@@ -128,11 +128,12 @@ export const MAIN_NAV: NavItem[] = [
     href: '/projects',
   },
   {
-    label: 'News & Media',
+    label: 'News & Events',
     type: 'dropdown',
     items: [
       { label: 'News', href: '/news' },
-      { label: 'Events', href: '/events' },
+      { label: 'Upcoming Events', href: '/upcoming-events' },
+      { label: 'Past Events', href: '/events' },
       { label: 'Blog', href: '/blog' },
     ],
   },
@@ -160,7 +161,8 @@ export const SOCIAL_LINKS: SocialLink[] = [
 export const FOOTER_QUICK_LINKS: NavLink[] = [
   { label: 'Home', href: '/' },
   { label: 'About Us', href: '/about-us' },
-  { label: 'Events', href: '/events' },
+  { label: 'Upcoming Events', href: '/upcoming-events' },
+  { label: 'Past Events', href: '/events' },
   { label: 'News', href: '/news' },
   { label: 'Our Sections', href: '/our-sections' },
   { label: 'Erasmus+', href: '/erasmus' },
