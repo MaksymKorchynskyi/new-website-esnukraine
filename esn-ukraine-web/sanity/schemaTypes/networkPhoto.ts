@@ -34,7 +34,7 @@ export default defineType({
       type: 'image',
       options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
       description: 'Завантажте якісне фото волонтерів, заходу чи команди. Важливо для безкоштовного тарифу Sanity: макс. розмір 2 МБ, формати JPG/PNG/WebP. Рекомендуємо стискати фото на tinypng.com перед завантаженням.',
-      validation: (rule) => rule.required().custom(validateImageSize(2, 3500, 3500)),
+      validation: (rule) => rule.required().custom(validateImageSize(2, 0, 0)),
     }),
     defineField({
       name: 'order',
