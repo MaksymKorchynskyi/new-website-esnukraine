@@ -164,7 +164,7 @@ export default function NewsletterForm({
                 placeholder="Enter your email address"
                 disabled={status === 'loading'}
                 aria-invalid={status === 'error' ? 'true' : 'false'}
-                className="w-full sm:flex-1 rounded-full border border-gray-200 bg-white px-5 py-3 sm:px-6 sm:py-3.5 text-base sm:text-sm text-esn-dark focus:ring-4 focus:ring-esn-cyan/20 focus:border-esn-cyan outline-none placeholder:text-gray-400 font-medium shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full sm:flex-1 rounded-full border border-gray-200 bg-white px-5 py-3 sm:px-6 sm:py-3.5 text-base sm:text-sm [@media(pointer:coarse)]:text-base text-esn-dark focus:ring-4 focus:ring-esn-cyan/20 focus:border-esn-cyan outline-none placeholder:text-gray-400 font-medium shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               />
 
               <button

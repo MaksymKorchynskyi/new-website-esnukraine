@@ -71,7 +71,7 @@ export default function NewsletterPopupButton({ label = 'Subscribe' }: { label?:
               <motion.div
                 key="newsletter-popup"
                 ref={overlayRef}
-                className="fixed inset-x-0 top-0 h-[100dvh] z-[100] flex items-end sm:items-center justify-center sm:p-6 overscroll-contain"
+                className="fixed inset-x-0 top-0 h-[100dvh] z-[100] flex items-center justify-center p-4 sm:p-6 overscroll-contain"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -84,16 +84,16 @@ export default function NewsletterPopupButton({ label = 'Subscribe' }: { label?:
                   aria-hidden
                 />
 
-                {/* Dialog: bottom sheet on phones, centered card on larger screens */}
+                {/* Dialog: centered card on every screen size */}
                 <motion.div
                   role="dialog"
                   aria-modal="true"
                   aria-labelledby="newsletter-popup-title"
-                  className="relative w-full sm:max-w-lg max-h-full overflow-y-auto overscroll-contain rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl"
-                  initial={{ y: 40, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 40, opacity: 0 }}
-                  transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                  className="relative w-full max-w-md sm:max-w-lg max-h-full overflow-y-auto overscroll-contain rounded-3xl bg-white shadow-2xl"
+                  initial={{ scale: 0.96, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.96, opacity: 0 }}
+                  transition={{ duration: 0.2, ease: [0.2, 0.8, 0.2, 1] }}
                 >
                   {/* ESN colour strip */}
                   <div className="flex h-1" aria-hidden>
@@ -113,7 +113,7 @@ export default function NewsletterPopupButton({ label = 'Subscribe' }: { label?:
                     <X className="h-5 w-5" />
                   </button>
 
-                  <div className="px-5 pt-9 pb-[max(1.75rem,env(safe-area-inset-bottom))] sm:px-10 sm:pt-12 sm:pb-10 text-center">
+                  <div className="px-5 pt-9 pb-7 sm:px-10 sm:pt-12 sm:pb-10 text-center">
                     <div className="mx-auto mb-4 sm:mb-5 flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-esn-cyan/10">
                       <Mail className="h-6 w-6 text-esn-dark" />
                     </div>
