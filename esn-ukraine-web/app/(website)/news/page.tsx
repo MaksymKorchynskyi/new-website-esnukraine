@@ -1,15 +1,14 @@
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { groq } from "next-sanity";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import PageHero from "@/components/ui/PageHero";
 import { NewsCard } from "@/components/ui/Card";
-import NewsletterForm from "@/components/sections/NewsletterForm.client";
+import NewsletterPopupButton from "@/components/sections/NewsletterPopup.client";
 import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
   title: 'News',
   description:
-    'The latest updates from ESN Ukraine: announcements, events and stories from the Erasmus Student Network community across Ukraine.',
+    'Updates, stories and opportunities from ESN Ukraine: projects, partnerships and the people behind the Erasmus Student Network in Ukraine.',
   path: '/news',
 });
 
@@ -47,35 +46,20 @@ export default async function NewsPage() {
 
   return (
     <main className="min-h-svh bg-white">
-      {/* Hero Section */}
-      <section className="relative bg-esn-dark pt-40 pb-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-esn-dark via-esn-dark to-[#141B41]" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-esn-cyan/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-esn-magenta/10 rounded-full blur-3xl" />
-
-        <div className="relative z-10 mx-auto max-w-7xl px-6 sm:px-12 lg:px-24">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-8"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">Back to Home</span>
-          </Link>
-
-          <div className="max-w-3xl">
-
-            <h1 className="text-5xl md:text-7xl font-black text-white mb-6">
-              News
-            </h1>
-            <p className="text-xl text-gray-300 leading-relaxed">
-              The latest updates from ESN Ukraine. Events, announcements, and stories from our community.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title="News"
+        lead={
+          <>
+            <span className="font-black text-esn-dark">Updates, stories and opportunities</span> from
+            our community, for everyone who wants to stay in the loop.
+          </>
+        }
+        sub="Read about our projects, partnerships and the people behind them. Subscribe to get the latest news in your inbox."
+        actionSlot={<NewsletterPopupButton />}
+      />
 
       {/* News Grid */}
-      <section className="py-24 px-6 sm:px-12 lg:px-24">
+      <section className="pt-10 pb-24 sm:pt-14 px-6 sm:px-12 lg:px-24">
         <div className="mx-auto max-w-7xl">
           {news.length === 0 ? (
             <div className="text-center py-20">
@@ -97,19 +81,6 @@ export default async function NewsPage() {
               ))}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Newsletter CTA */}
-      <section className="py-20 px-6 sm:px-12 lg:px-24 bg-gray-50">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl md:text-4xl font-black text-esn-dark mb-6">
-            Never Miss an Update
-          </h2>
-          <p className="text-lg text-gray-600 mb-8">
-            Subscribe to our newsletter and stay connected with ESN Ukraine.
-          </p>
-          <NewsletterForm />
         </div>
       </section>
     </main>
