@@ -13,7 +13,10 @@ interface SubscribeResponse {
   error?: string;
 }
 
-export default function NewsletterForm({ autoFocus = false }: { autoFocus?: boolean } = {}) {
+export default function NewsletterForm({
+  autoFocus = false,
+  fullWidthButton = false,
+}: { autoFocus?: boolean; fullWidthButton?: boolean } = {}) {
   // Unique ids so the form can appear twice on a page (e.g. inline + popup)
   const uid = useId();
   const emailId = `newsletter-email-${uid}`;
@@ -167,7 +170,7 @@ export default function NewsletterForm({ autoFocus = false }: { autoFocus?: bool
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="group whitespace-nowrap px-8 py-3 sm:py-3.5 rounded-full bg-esn-dark text-xs sm:text-sm font-bold text-white transition-all hover:bg-esn-cyan hover:shadow-lg tracking-wider uppercase inline-flex items-center justify-center gap-2 shadow-md shrink-0 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-esn-dark disabled:hover:shadow-md disabled:active:scale-100"
+                className={`${fullWidthButton ? 'w-full sm:w-auto ' : ''}group whitespace-nowrap px-8 py-3 sm:py-3.5 rounded-full bg-esn-dark text-xs sm:text-sm font-bold text-white transition-all hover:bg-esn-cyan hover:shadow-lg tracking-wider uppercase inline-flex items-center justify-center gap-2 shadow-md shrink-0 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-esn-dark disabled:hover:shadow-md disabled:active:scale-100`}
               >
                 {status === 'loading' ? (
                   <>
