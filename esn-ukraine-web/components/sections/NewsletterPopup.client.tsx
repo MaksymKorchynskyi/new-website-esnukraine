@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Mail, X } from 'lucide-react';
 import NewsletterForm from '@/components/sections/NewsletterForm.client';
+import { lockScroll } from '@/lib/scrollLock';
 
 const noopSubscribe = () => () => {};
 
@@ -27,20 +28,8 @@ export default function NewsletterPopupButton({ label = 'Subscribe' }: { label?:
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
     window.addEventListener('keydown', onKey);
 
-    // iOS Safari ignores overflow:hidden on <body>, so pin the body in place instead
-    // and put the scroll position back on close.
-    const { body } = document;
-    const scrollY = window.scrollY;
-    const prev = {
-      position: body.style.position,
-      top: body.style.top,
-      width: body.style.width,
-      overflow: body.style.overflow,
-    };
-    body.style.position = 'fixed';
-    body.style.top = `-${scrollY}px`;
-    body.style.width = '100%';
-    body.style.overflow = 'hidden';
+    // iOS-safe page scroll lock (restores the scroll position on close)
+    const unlock = lockScroll();
 
     // Keep the overlay matched to the visible area, so the on-screen keyboard
     // never covers the sheet (the layout viewport does not shrink on iOS).
@@ -59,8 +48,7 @@ export default function NewsletterPopupButton({ label = 'Subscribe' }: { label?:
       window.removeEventListener('keydown', onKey);
       vv?.removeEventListener('resize', fitToViewport);
       vv?.removeEventListener('scroll', fitToViewport);
-      Object.assign(body.style, prev);
-      window.scrollTo({ top: scrollY, behavior: 'instant' });
+      unlock();
     };
   }, [open]);
 

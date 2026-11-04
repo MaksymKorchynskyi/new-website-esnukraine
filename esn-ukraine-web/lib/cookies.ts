@@ -95,6 +95,19 @@ export function setConsent(state: CookieConsentState): void {
 }
 
 /**
+ * Subscribe to consent changes (this tab via the custom event, other tabs via
+ * `storage`). Shaped for React's `useSyncExternalStore`.
+ */
+export function subscribeToConsent(onChange: () => void): () => void {
+  window.addEventListener(CONSENT_EVENT, onChange);
+  window.addEventListener('storage', onChange);
+  return () => {
+    window.removeEventListener(CONSENT_EVENT, onChange);
+    window.removeEventListener('storage', onChange);
+  };
+}
+
+/**
  * Returns `true` if the user has previously interacted with the banner.
  */
 export function hasConsentBeenGiven(): boolean {
