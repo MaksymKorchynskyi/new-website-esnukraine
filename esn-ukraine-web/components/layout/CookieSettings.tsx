@@ -127,7 +127,7 @@ function SettingsDialog({ onClose, onSave }: { onClose: () => void; onSave: () =
   return (
     <motion.div
       key="cookie-settings"
-      className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center sm:p-4"
+      className="fixed inset-0 z-[70] flex items-center justify-center p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -140,16 +140,16 @@ function SettingsDialog({ onClose, onSave }: { onClose: () => void; onSave: () =
         aria-hidden="true"
       />
 
-      {/* Dialog: bottom sheet on phones, centered card on larger screens */}
+      {/* Dialog: centered card on every screen size */}
       <motion.div
         ref={modalRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="cookie-settings-title"
-        className="relative w-full sm:max-w-md max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl"
-        initial={{ y: 24 }}
-        animate={{ y: 0 }}
-        exit={{ y: 24 }}
+        className="relative w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain bg-white rounded-2xl shadow-2xl"
+        initial={{ scale: 0.96 }}
+        animate={{ scale: 1 }}
+        exit={{ scale: 0.96 }}
         transition={{ duration: 0.2, ease: [0.2, 0.8, 0.2, 1] }}
       >
         {/* ESN gradient stripe */}
@@ -223,7 +223,7 @@ function SettingsDialog({ onClose, onSave }: { onClose: () => void; onSave: () =
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-2.5 px-5 sm:px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:pb-6">
+        <div className="flex flex-col sm:flex-row gap-2.5 px-5 sm:px-6 pb-5 sm:pb-6">
           <button
             type="button"
             onClick={() => save({ essential: true, analytics })}
