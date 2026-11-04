@@ -77,9 +77,9 @@ export default function NewsletterPopupButton({ label = 'Subscribe' }: { label?:
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                {/* Backdrop */}
+                {/* Backdrop: plain dim on phones, blue blur from sm up */}
                 <div
-                  className="absolute inset-0 bg-esn-navy/60 backdrop-blur-sm touch-none"
+                  className="absolute inset-0 bg-black/30 sm:bg-esn-navy/60 sm:backdrop-blur-sm touch-none"
                   onClick={() => setOpen(false)}
                   aria-hidden
                 />
