@@ -81,6 +81,9 @@ function PhotoSlot({
   className?: string;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  // Збільшується при кліку, щоб перезапустити таймер автоперемикання
+  const [clicks, setClicks] = useState(0);
+  const canSwitch = photos.length > 1;
 
   useEffect(() => {
     if (photos.length <= 1) return;
@@ -90,13 +93,39 @@ function PhotoSlot({
     }, intervalMs);
 
     return () => clearInterval(timer);
-  }, [photos.length, intervalMs]);
+  }, [photos.length, intervalMs, clicks]);
 
   if (!photos.length) return null;
-  const currentPhoto = photos[currentIndex];
+  const currentPhoto = photos[currentIndex % photos.length];
+
+  // Клік показує наступне фото і починає відлік до автоперемикання заново
+  const showNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % photos.length);
+    setClicks((c) => c + 1);
+  };
 
   return (
-    <div className={`relative overflow-hidden rounded-xl shadow-lg transition-shadow duration-300 hover:shadow-xl bg-gray-200 ${className}`}>
+    <div
+      role={canSwitch ? 'button' : undefined}
+      tabIndex={canSwitch ? 0 : undefined}
+      aria-label={canSwitch ? 'Show next photo' : undefined}
+      onClick={canSwitch ? showNext : undefined}
+      onKeyDown={
+        canSwitch
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                showNext();
+              }
+            }
+          : undefined
+      }
+      className={`relative overflow-hidden rounded-xl shadow-lg transition duration-300 hover:shadow-xl bg-gray-200 ${
+        canSwitch
+          ? 'cursor-pointer select-none active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-esn-cyan focus-visible:ring-offset-2'
+          : ''
+      } ${className}`}
+    >
       <AnimatePresence mode="popLayout">
         <motion.div
           key={currentPhoto.id}
