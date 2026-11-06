@@ -6,6 +6,7 @@ import {
   Mail
 } from 'lucide-react';
 import HeroSection from '@/components/sections/HeroSection.client';
+import NetworkPanel from '@/components/sections/NetworkPanel';
 import { NewsCard } from '@/components/ui/Card';
 
 // Lazy-load below-the-fold client components to reduce initial JS bundle (TBT optimization)
@@ -63,6 +64,10 @@ export default async function Home() {
     title: item.title,
     description: item.excerpt,
     image: item.bannerUrl || 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80',
+    imageBlur: item.bannerUrl ? item.bannerLqip ?? undefined : undefined,
+    imagePosition: item.bannerHotspot
+      ? `${Math.round(item.bannerHotspot.x * 100)}% ${Math.round(item.bannerHotspot.y * 100)}%`
+      : undefined,
     link: `/${item._type === 'news' ? 'news' : 'events'}/${item.slug}`
   }));
 
@@ -155,49 +160,21 @@ export default async function Home() {
       </section>
 
       {/* =========================================
-          3. OUR SECTIONS (UPDATED: COLLAGE & EXPANSION)
-          Оновлено: Колаж + Текст + Кнопка (без списку) + Градієнт у заголовку
+          3. OUR NETWORK
+          Rotating photo collage + text on a white map of Ukraine (NetworkPanel)
       ========================================= */}
-      <section className="relative bg-gray-50 py-12 sm:py-16 md:py-24 overflow-hidden">
-        <div className="mx-auto max-w-7xl px-5 sm:px-12">
-          <div className="grid gap-8 md:gap-12 lg:grid-cols-2 lg:items-center">
-
-            {/* Left Side: Dynamic Animated Visual Collage (from Sanity CMS or fallbacks) */}
-            <NetworkCollage
-              photosSlotA={photosSlotA.length > 0 ? photosSlotA : undefined}
-              photosSlotB={photosSlotB.length > 0 ? photosSlotB : undefined}
-              photosSlotC={photosSlotC.length > 0 ? photosSlotC : undefined}
-            />
-
-            {/* Right Side: Content */}
-            <div className="mt-2 lg:mt-0 lg:pl-10">
-              <div className="mb-4 sm:mb-6 inline-flex items-center gap-2">
-                <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-esn-dark">Our Network</span>
-              </div>
-
-              <h2 className="mb-4 sm:mb-6 text-4xl sm:text-5xl lg:text-[2.65rem] xl:text-5xl font-black leading-[1.08] tracking-tight text-esn-dark">
-                One Family, <br />
-                <span className="text-esn-cyan block mt-1.5">Growing Across Ukraine.</span>
-              </h2>
-
-              <p className="mb-6 sm:mb-8 text-base sm:text-xl leading-relaxed text-gray-600">
-                The ESN family in Ukraine is growing bigger every year. We started with small steps, but now the spirit of mobility is spreading fast. We are actively working on opening new sections to cover every corner of Ukraine.
-              </p>
-
-              <div className="pt-2 sm:pt-0 flex justify-start">
-                <Link 
-                  href="/our-sections" 
-                  className="group inline-flex items-center justify-center font-bold uppercase tracking-widest transition-all text-esn-magenta text-[13px] py-2 sm:bg-esn-dark sm:px-8 sm:py-3.5 sm:text-sm sm:text-white sm:hover:bg-esn-magenta sm:rounded-full sm:shadow-lg sm:hover:shadow-xl sm:w-auto"
-                >
-                  <span className="border-b-2 border-transparent pb-0.5 group-hover:border-esn-magenta sm:border-none sm:pb-0 transition-colors">
-                    View Our Sections
-                  </span>
-                  <ChevronRight className="ml-1.5 h-4 w-4 sm:hidden transition-transform group-hover:translate-x-1" />
-                </Link>
-              </div>
-            </div>
-
-          </div>
+      {/* Full-screen grey band (desktop): fills the screen below the 84px header when scrolled to */}
+      <section className="relative flex items-center overflow-hidden bg-gray-100 py-12 sm:py-16 md:py-24 lg:min-h-[calc(100svh-84px)]">
+        <div className="mx-auto w-full max-w-7xl px-5 sm:px-12">
+          <NetworkPanel
+            photos={
+              <NetworkCollage
+                photosSlotA={photosSlotA.length > 0 ? photosSlotA : undefined}
+                photosSlotB={photosSlotB.length > 0 ? photosSlotB : undefined}
+                photosSlotC={photosSlotC.length > 0 ? photosSlotC : undefined}
+              />
+            }
+          />
         </div>
       </section>
 

@@ -121,7 +121,11 @@ export const getSpotlightItemsQuery = groq`
     date,
     publishedAt,
     excerpt,
-    "bannerUrl": bannerImage.asset->url
+    // Fall back to the card photo when no banner is set, so a slide never needs a stock image
+    "bannerUrl": coalesce(bannerImage.asset->url, mainImage.asset->url),
+    // Tiny blurred preview (base64) — fills the hero backdrop without needing a high-res photo
+    "bannerLqip": coalesce(bannerImage.asset->metadata.lqip, mainImage.asset->metadata.lqip),
+    "bannerHotspot": select(defined(bannerImage.asset) => bannerImage.hotspot, mainImage.hotspot)
   }
 `;
 

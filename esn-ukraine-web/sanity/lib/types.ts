@@ -94,4 +94,6 @@ export interface SpotlightItem {
   publishedAt?: string;
   excerpt: string;
   bannerUrl: string | null;
+  bannerLqip: string | null;
+  bannerHotspot?: { x: number; y: number } | null;
 }
