@@ -63,6 +63,10 @@ export default async function Home() {
     title: item.title,
     description: item.excerpt,
     image: item.bannerUrl || 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80',
+    imageBlur: item.bannerUrl ? item.bannerLqip ?? undefined : undefined,
+    imagePosition: item.bannerHotspot
+      ? `${Math.round(item.bannerHotspot.x * 100)}% ${Math.round(item.bannerHotspot.y * 100)}%`
+      : undefined,
     link: `/${item._type === 'news' ? 'news' : 'events'}/${item.slug}`
   }));
 

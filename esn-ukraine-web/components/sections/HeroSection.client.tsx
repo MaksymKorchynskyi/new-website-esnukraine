@@ -12,6 +12,10 @@ export interface HeroSlide {
   title: string;
   description: string;
   image: string;
+  /** Tiny base64 preview (Sanity LQIP) — used for the blurred backdrop and as the loading placeholder */
+  imageBlur?: string;
+  /** CSS object-position, e.g. "50% 30%" (from the Sanity hotspot) */
+  imagePosition?: string;
   link: string;
 }
 
@@ -19,29 +23,18 @@ export interface HeroSectionProps {
   slides: HeroSlide[];
 }
 
+/**
+ * Title sizing by length. On lg the title sits in a half-width column next to the photo card,
+ * so it steps down there and grows back on xl.
+ */
 function getTitleSizeClass(title: string): string {
   const length = title?.length || 0;
   if (length < 28) {
-    return "text-4xl sm:text-5xl md:text-7xl lg:text-8xl";
+    return 'text-[1.75rem] sm:text-4xl md:text-6xl lg:text-5xl xl:text-7xl';
   } else if (length <= 48) {
-    return "text-3xl sm:text-4xl md:text-6xl lg:text-7xl";
+    return 'text-2xl sm:text-[1.75rem] md:text-5xl lg:text-[2.75rem] xl:text-6xl';
   } else {
-    return "text-2xl sm:text-3xl md:text-5xl lg:text-6xl";
-  }
-}
-
-/**
- * Mobile-specific title sizing — slightly smaller to leave more room for the photo.
- * Only used below the `md` breakpoint; desktop keeps getTitleSizeClass().
- */
-function getMobileTitleSizeClass(title: string): string {
-  const length = title?.length || 0;
-  if (length < 28) {
-    return "text-[1.75rem] sm:text-4xl";
-  } else if (length <= 48) {
-    return "text-2xl sm:text-[1.75rem]";
-  } else {
-    return "text-xl sm:text-2xl";
+    return 'text-xl sm:text-2xl md:text-4xl lg:text-4xl xl:text-5xl';
   }
 }
 
@@ -52,8 +45,6 @@ export default function HeroSection({ slides }: HeroSectionProps) {
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
   const [touchEndY, setTouchEndY] = useState<number | null>(null);
-  const [mobileHeight, setMobileHeight] = useState<string | undefined>(undefined);
-
   useEffect(() => {
     if (!isAutoPlaying) return;
     const interval = setInterval(() => {
@@ -61,37 +52,6 @@ export default function HeroSection({ slides }: HeroSectionProps) {
     }, 6000);
     return () => clearInterval(interval);
   }, [isAutoPlaying, slides.length]);
-
-  useEffect(() => {
-    // Only lock height in pixels on mobile/tablet to prevent iOS scroll jump bugs
-    if (window.innerWidth < 1024) {
-      setMobileHeight(`${window.innerHeight * 0.78}px`);
-    }
-    
-    const handleOrientationChange = () => {
-      if (window.innerWidth < 1024) {
-        setTimeout(() => {
-          setMobileHeight(`${window.innerHeight * 0.78}px`);
-        }, 150);
-      } else {
-        setMobileHeight(undefined);
-      }
-    };
-
-    const handleResize = () => {
-      // If we resize back to desktop, remove the fixed pixel height immediately
-      if (window.innerWidth >= 1024) {
-        setMobileHeight(undefined);
-      }
-    };
-    
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('orientationchange', handleOrientationChange);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleOrientationChange);
-    };
-  }, []);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
@@ -126,196 +86,210 @@ export default function HeroSection({ slides }: HeroSectionProps) {
     }
   };
 
+  const scrollToNextSection = () => {
+    const nextSection = document.querySelector('section:nth-of-type(2)');
+    if (nextSection) {
+      const headerHeight = 84;
+      const targetTop = nextSection.getBoundingClientRect().top + window.scrollY - headerHeight;
+      window.scrollTo({ top: targetTop, behavior: 'smooth' });
+    }
+  };
+
+  /*
+   * Layout idea: the sharp photo only ever fills a bounded card, never the whole screen.
+   * The full-bleed area behind it is a heavily blurred, brand-tinted copy of the photo
+   * (Sanity's ~20px LQIP), which looks the same at any resolution. So a 1280px photo
+   * stays crisp on phones, tablets and 4K/retina desktops alike.
+   */
   return (
     <section
-      style={{ height: mobileHeight }}
-      className={`relative min-h-[500px] sm:min-h-[580px] w-full overflow-hidden bg-esn-dark text-white ${
-        !mobileHeight ? 'h-[70svh] md:h-[75svh] lg:h-svh' : ''
-      }`}
+      className="relative w-full overflow-hidden bg-esn-navy pt-[76px] text-white sm:pt-[84px] lg:h-svh lg:min-h-[680px]"
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      {/* SLIDES RENDERING */}
-      {slides.map((slide, index) => {
-        // Only mount <Image> for the active slide and its immediate neighbors
-        // to prevent the browser from downloading all images at once
-        // (absolutely positioned elements intersect the viewport regardless of opacity)
-        const isActive = index === currentSlide;
-        const isAdjacent =
-          index === (currentSlide + 1) % slides.length ||
-          index === (currentSlide - 1 + slides.length) % slides.length;
-        const shouldRenderImage = isActive || isAdjacent;
-
-        return (
-          <div
-            key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0'
+      {/* ─── BACKDROP: blurred photo colours + brand tint ─── */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        {slides.map((slide, index) => {
+          const isNear =
+            index === currentSlide ||
+            index === (currentSlide + 1) % slides.length ||
+            index === (currentSlide - 1 + slides.length) % slides.length;
+          if (!slide.imageBlur || !isNear) return null;
+          return (
+            <div
+              key={slide.id}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentSlide ? 'opacity-100' : 'opacity-0'
               }`}
-          >
-            {/* Background Image — full bleed, gradient overlays it */}
-            <div className="absolute inset-0">
-              {shouldRenderImage ? (
-                <Image
-                  src={slide.image}
-                  alt={slide.title}
-                  fill={true}
-                  priority={index === 0}
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                  fetchPriority={index === 0 ? 'high' : 'auto'}
-                  quality={75}
-                  sizes="100vw"
-                  className="object-cover object-center"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-esn-dark" />
-              )}
+            >
+              <div
+                className="absolute -inset-16 bg-cover bg-center blur-3xl"
+                style={{ backgroundImage: `url("${slide.imageBlur}")` }}
+              />
             </div>
+          );
+        })}
+        <div className="absolute inset-0 bg-gradient-to-br from-esn-navy/90 via-esn-dark/75 to-esn-navy/95" />
+        <div className="absolute -top-24 right-[10%] h-96 w-96 rounded-full bg-esn-cyan/10 blur-3xl" />
+        <div className="absolute -bottom-24 left-[5%] h-80 w-80 rounded-full bg-esn-magenta/10 blur-3xl" />
+      </div>
 
-            {/* ─── GRADIENT OVERLAY — Mobile (<md) ─── */}
-            {/* Gradient never fully solid — photo always peeks through */}
-            <div
-              className="absolute inset-0 md:hidden"
-              style={{
-                background:
-                  'linear-gradient(to bottom, transparent 0%, transparent 15%, rgba(46,49,146,0.25) 30%, rgba(46,49,146,0.55) 45%, rgba(46,49,146,0.75) 60%, rgba(46,49,146,0.88) 80%, rgba(46,49,146,0.92) 100%)',
-              }}
-            />
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col lg:px-16 xl:px-24">
+        <div className="flex-1 lg:grid lg:grid-cols-12 lg:items-center lg:gap-12 xl:gap-16">
 
-            {/* ─── GRADIENT OVERLAY — Tablet (md to lg) ─── */}
-            <div
-              className="hidden md:block lg:hidden absolute inset-0"
-              style={{
-                background:
-                  'linear-gradient(to right, rgba(46,49,146,0.85) 0%, rgba(46,49,146,0.55) 45%, rgba(46,49,146,0.15) 75%, transparent 100%)',
-              }}
-            />
-
-            {/* ─── GRADIENT OVERLAY — Desktop (lg+) — UNCHANGED ─── */}
-            <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-esn-dark via-esn-dark/80 to-esn-dark/0" />
-          </div>
-        );
-      })}
-
-      {/* ─── CONTENT CONTAINER ─── */}
-      {/* Mobile: content pushed to bottom but higher up; Desktop: original centered layout */}
-      <div className="relative z-20 flex h-full items-end lg:items-center">
-        <div className="mx-auto w-full max-w-7xl px-5 sm:px-12 lg:px-24 pb-[6.5rem] sm:pb-28 md:pb-24 lg:pt-16 lg:pb-0">
-          <div className="max-w-2xl">
-
-            {/* Animated text block */}
-            <div key={currentSlide} className="animate-fade-in-up">
-
-              {/* Meta Info */}
-              <div className="mb-2 sm:mb-3 md:mb-4 flex flex-wrap items-center gap-2 sm:gap-3">
-                <span className="bg-esn-cyan px-2.5 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white shadow-sm sm:shadow-none">
-                  {slides[currentSlide].type}
-                </span>
-                <span className="flex items-center text-xs sm:text-sm font-medium text-gray-200 sm:text-gray-300 drop-shadow-md sm:drop-shadow-none">
-                  <Calendar className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  {slides[currentSlide].date}
-                </span>
+          {/* ─── PHOTO CARD ─── */}
+          {/* Mobile: edge-to-edge 4:3. Tablet: rounded 16:9 card. Desktop: 3:2 card on the right, max 680px wide */}
+          <div className="relative md:px-12 md:pt-8 lg:order-2 lg:col-span-6 lg:flex lg:justify-end lg:px-0 lg:pt-0">
+            <div className="relative w-full lg:max-w-[640px] xl:max-w-[680px]">
+              {/* Brand accent layer peeking out behind the card */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 hidden translate-x-3 translate-y-3 rounded-2xl bg-gradient-to-br from-esn-cyan via-esn-dark to-esn-magenta md:block lg:translate-x-5 lg:translate-y-5 lg:rounded-3xl"
+              />
+              <div className="relative aspect-[4/3] overflow-hidden bg-esn-navy md:aspect-video md:rounded-2xl md:shadow-2xl md:ring-1 md:ring-white/10 lg:aspect-[3/2] lg:rounded-3xl">
+                {slides.map((slide, index) => {
+                  // Only mount <Image> for the active slide and its neighbours,
+                  // so the browser doesn't download every slide up front
+                  const isActive = index === currentSlide;
+                  const isAdjacent =
+                    index === (currentSlide + 1) % slides.length ||
+                    index === (currentSlide - 1 + slides.length) % slides.length;
+                  if (!isActive && !isAdjacent) return null;
+                  return (
+                    <div
+                      key={slide.id}
+                      className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                        isActive ? 'opacity-100' : 'opacity-0'
+                      }`}
+                    >
+                      <Image
+                        src={slide.image}
+                        alt={slide.title}
+                        fill
+                        priority={index === 0}
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                        fetchPriority={index === 0 ? 'high' : 'auto'}
+                        quality={75}
+                        sizes="(min-width: 1280px) 680px, (min-width: 1024px) 50vw, 100vw"
+                        placeholder={slide.imageBlur ? 'blur' : 'empty'}
+                        blurDataURL={slide.imageBlur}
+                        className="object-cover"
+                        style={{ objectPosition: slide.imagePosition ?? '50% 50%' }}
+                      />
+                    </div>
+                  );
+                })}
               </div>
-
-              {/* Title — smaller on mobile to save vertical space for the photo */}
-              <h1
-                className={`mb-3 sm:mb-4 md:mb-6 font-sans font-black leading-tight tracking-tight text-white drop-shadow-md sm:drop-shadow-none break-words ${getMobileTitleSizeClass(slides[currentSlide].title)} md:hidden`}
-              >
-                {slides[currentSlide].title}
-              </h1>
-              <h1
-                className={`mb-6 font-sans font-black leading-tight tracking-tight text-white break-words hidden md:block ${getTitleSizeClass(slides[currentSlide].title)}`}
-              >
-                {slides[currentSlide].title}
-              </h1>
-
-              {/* Description — 3 lines on mobile, full on md+ */}
-              <p className="mb-5 text-sm font-medium leading-relaxed text-gray-200 max-w-md line-clamp-3 drop-shadow-md md:hidden">
-                {slides[currentSlide].description}
-              </p>
-              <p className="hidden md:block mb-8 text-lg md:text-xl font-medium leading-relaxed text-gray-200 max-w-lg">
-                {slides[currentSlide].description}
-              </p>
-
-              {/* CTA Button — compact on mobile, full-size on md+ */}
-              <Link
-                href={slides[currentSlide].link}
-                className="group inline-flex items-center gap-1.5 md:gap-2 rounded-full bg-white px-4 py-2 sm:px-5 sm:py-2.5 md:px-8 md:py-4 text-[10px] sm:text-[11px] md:text-sm font-bold uppercase tracking-widest text-esn-dark transition-all hover:bg-esn-magenta hover:text-white shadow-md w-auto max-w-fit"
-              >
-                Read Full Story
-                <ArrowUpRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-5 md:w-5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </Link>
             </div>
+          </div>
 
+          {/* ─── TEXT ─── */}
+          {/* Every slide's text is stacked in one grid cell, so the block is as tall as the
+              tallest slide and the layout never jumps when the slide changes */}
+          <div className="grid px-5 pt-6 sm:px-12 md:pt-12 lg:order-1 lg:col-span-6 lg:px-0 lg:pt-0">
+            {slides.map((slide, index) => {
+              const isActive = index === currentSlide;
+              const Heading = isActive ? 'h1' : 'p';
+              return (
+                <div
+                  key={slide.id}
+                  aria-hidden={!isActive}
+                  className={`[grid-area:1/1] transition-all duration-700 ease-out ${
+                    isActive
+                      ? 'visible translate-y-0 opacity-100'
+                      : 'pointer-events-none invisible translate-y-3 opacity-0'
+                  }`}
+                >
+                  {/* Meta Info */}
+                  <div className="mb-3 flex flex-wrap items-center gap-2 sm:gap-3 md:mb-4">
+                    <span className="bg-esn-cyan px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-white sm:text-xs">
+                      {slide.type}
+                    </span>
+                    <span className="flex items-center text-xs font-medium text-gray-200 sm:text-sm">
+                      <Calendar className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      {slide.date}
+                    </span>
+                  </div>
+
+                  <Heading
+                    className={`mb-3 break-words font-sans font-black leading-tight tracking-tight text-white sm:mb-4 md:mb-6 ${getTitleSizeClass(slide.title)}`}
+                  >
+                    {slide.title}
+                  </Heading>
+
+                  <p className="mb-5 max-w-lg text-sm font-medium leading-relaxed text-gray-200 line-clamp-3 md:mb-8 md:text-lg lg:line-clamp-4 xl:text-xl">
+                    {slide.description}
+                  </p>
+
+                  <Link
+                    href={slide.link}
+                    tabIndex={isActive ? undefined : -1}
+                    className="group inline-flex w-auto max-w-fit items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-esn-dark shadow-md transition-all hover:bg-esn-magenta hover:text-white sm:px-5 sm:py-2.5 sm:text-[11px] md:gap-2 md:px-8 md:py-4 md:text-sm"
+                  >
+                    Read Full Story
+                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:h-3.5 sm:w-3.5 md:h-5 md:w-5" />
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         </div>
-      </div>
 
-      {/* ─── CONTROLS & NAVIGATION ─── */}
-      <div className="absolute bottom-5 sm:bottom-10 left-0 z-30 w-full px-5 sm:px-12 lg:px-24">
-        <div className="mx-auto flex max-w-7xl items-end justify-between border-t border-white/20 pt-4 sm:pt-6">
+        {/* ─── CONTROLS & NAVIGATION ─── */}
+        <div className="px-5 pb-6 pt-8 sm:px-12 sm:pb-10 lg:px-0">
+          <div className="relative flex items-end justify-between border-t border-white/20 pt-4 sm:pt-6">
 
-          {/* Progress Indicators */}
-          <div className="flex gap-2 sm:gap-4 items-center">
-            {slides.map((_, idx) => (
+            {/* Progress Indicators */}
+            <div className="flex items-center gap-2 sm:gap-4">
+              {slides.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentSlide(idx)}
+                  className="group relative flex cursor-pointer items-center py-2.5 sm:py-0"
+                  aria-label={`Go to slide ${idx + 1}`}
+                  aria-current={idx === currentSlide}
+                >
+                  <span className={`h-1.5 rounded-full transition-all duration-300 sm:h-1 ${idx === currentSlide ? 'w-10 bg-esn-cyan sm:w-16' : 'w-5 bg-white/40 group-hover:bg-white sm:w-8 sm:bg-white/30'}`} />
+                  <span className="absolute -top-4 left-0 hidden text-[10px] font-bold opacity-0 transition-opacity group-hover:opacity-100 sm:inline">0{idx + 1}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Scroll Down — desktop only, centred in the controls row */}
+            <button
+              onClick={scrollToNextSection}
+              className="group absolute bottom-0 left-1/2 hidden -translate-x-1/2 flex-col items-center text-white/80 transition-all duration-300 hover:text-white lg:flex"
+              aria-label="Scroll down"
+            >
+              <span className="mb-2 text-xs font-medium uppercase tracking-wider">Scroll</span>
+              <span className="flex h-10 w-6 items-center justify-center rounded-full border-2 border-white/30">
+                <span className="h-3 w-1 rounded-full bg-white/60" />
+              </span>
+            </button>
+
+            {/* Arrows */}
+            <div className="flex gap-2.5 sm:gap-2">
               <button
-                key={idx}
-                onClick={() => setCurrentSlide(idx)}
-                className="py-2.5 sm:py-0 group relative cursor-pointer flex items-center"
-                aria-label={`Go to slide ${idx + 1}`}
+                onClick={prevSlide}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/20 text-white backdrop-blur-md transition-all hover:bg-white hover:text-esn-dark active:scale-95 sm:h-12 sm:w-12 sm:active:scale-100"
+                aria-label="Previous slide"
               >
-                <span className={`h-1.5 sm:h-1 rounded-full transition-all duration-300 ${idx === currentSlide ? 'w-10 sm:w-16 bg-esn-cyan' : 'w-5 sm:w-8 bg-white/40 sm:bg-white/30 group-hover:bg-white'}`} />
-                <span className="absolute -top-4 left-0 text-[10px] font-bold opacity-0 transition-opacity group-hover:opacity-100 hidden sm:inline">0{idx + 1}</span>
+                <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
-            ))}
-          </div>
-
-          {/* Arrows */}
-          <div className="flex gap-2.5 sm:gap-2">
-            <button
-              onClick={prevSlide}
-              className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-white/20 bg-black/20 text-white backdrop-blur-md transition-all hover:bg-white hover:text-esn-dark active:scale-95 sm:active:scale-100"
-              aria-label="Previous slide"
-            >
-              <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
-            </button>
-            <button
-              onClick={nextSlide}
-              className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-white/20 bg-black/20 text-white backdrop-blur-md transition-all hover:bg-white hover:text-esn-dark active:scale-95 sm:active:scale-100"
-              aria-label="Next slide"
-            >
-              <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
-            </button>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Scroll Down Arrow */}
-      <div className="hidden sm:block absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
-        <button
-          onClick={() => {
-            const nextSection = document.querySelector('section:nth-of-type(2)');
-            if (nextSection) {
-              const headerHeight = 84;
-              const targetTop = nextSection.getBoundingClientRect().top + window.scrollY - headerHeight;
-              window.scrollTo({ top: targetTop, behavior: 'smooth' });
-            }
-          }}
-          className="group flex flex-col items-center text-white/80 hover:text-white transition-all duration-300"
-          aria-label="Scroll down"
-        >
-          <span className="text-xs font-medium uppercase tracking-wider mb-2 transition-colors">
-            Scroll
-          </span>
-          <div className="relative">
-            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex items-center justify-center">
-              <div className="w-1 h-3 bg-white/60 rounded-full"></div>
+              <button
+                onClick={nextSlide}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/20 text-white backdrop-blur-md transition-all hover:bg-white hover:text-esn-dark active:scale-95 sm:h-12 sm:w-12 sm:active:scale-100"
+                aria-label="Next slide"
+              >
+                <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
+              </button>
             </div>
+
           </div>
-        </button>
+        </div>
       </div>
     </section>
   );
