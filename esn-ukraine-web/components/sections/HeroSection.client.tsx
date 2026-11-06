@@ -184,7 +184,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
       // lg: as tall as the LARGEST of the viewport units, plus 2px. Safari on macOS showed a
       // thin white line of the next section under a 100svh hero (its svh can come out a few px
       // short of the visible height), so take whichever unit is biggest and run 2px past it.
-      className="relative w-full overflow-hidden bg-esn-dark pt-[76px] text-white sm:pt-[84px] lg:h-[calc(max(100vh,100dvh,100svh)+2px)] lg:min-h-[680px]"
+      className="relative w-full overflow-hidden bg-esn-dark pt-[77px] text-white sm:pt-[84px] lg:h-[calc(max(100vh,100dvh,100svh)+2px)] lg:min-h-[680px]"
       onPointerEnter={(e) => e.pointerType === 'mouse' && setIsHovered(true)}
       onPointerLeave={(e) => e.pointerType === 'mouse' && setIsHovered(false)}
       onTouchStart={onTouchStart}
