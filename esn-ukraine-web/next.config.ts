@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
     // so the Vercel optimizer only handles the few files in /public. One output format
     // and a long cache keep the free-tier transformation quota low.
     formats: ['image/webp'],
+    // Next 16 only allows listed qualities; 35 is the blurred article banner (Sanity CDN).
+    qualities: [35, 75],
     minimumCacheTTL: 2678400, // 31 days
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
