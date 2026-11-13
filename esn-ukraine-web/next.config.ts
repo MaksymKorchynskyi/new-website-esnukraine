@@ -19,6 +19,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Next 16.4 writes an AGENTS.md into the project on every `next dev`; keep the tree clean.
+  agentRules: false,
   images: {
     // Sanity images are served straight from the Sanity CDN (see sanity/lib/imageLoader.ts),
     // so the Vercel optimizer only handles the few files in /public. One output format
