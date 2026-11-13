@@ -18,14 +18,16 @@ The schemas live in [`esn-ukraine-web/sanity/schemaTypes/`](../../esn-ukraine-we
 | [`boardMember`](#boardmember) | Члени борду (National Board) | Current National Board and related bodies | `/national-board` |
 | [`formerBoard`](#formerboard) | Колишні борди (Former Boards) | Past boards with their members | `/about-us/former-boards` |
 | [`networkPhoto`](#networkphoto) | Фотографії "Our Network" (Головна) | Photos for the homepage collage | `/` |
+| [`upcomingEvent`](#upcomingevent) | Майбутні події (Upcoming Events) | Announcement of a future event, linking out to registration | `/upcoming-events` |
 
 ```mermaid
 erDiagram
     accTitle: Sanity content model
-    accDescr: News and events optionally reference one category each. A former board embeds a list of members. Sections, board members and network photos are standalone document types.
+    accDescr: News and events optionally reference one category each. An upcoming event optionally references the organising section. A former board embeds a list of members. Board members and network photos are standalone document types.
 
     NEWS }o--o| NEWS_CATEGORY : "category"
     EVENT }o--o| EVENT_CATEGORY : "category"
+    UPCOMING_EVENT }o--o| SECTION : "section"
     FORMER_BOARD ||--o{ FORMER_BOARD_MEMBER : "members (embedded)"
 
     NEWS {
@@ -97,9 +99,18 @@ erDiagram
         image image
         number order
     }
+    UPCOMING_EVENT {
+        string title
+        datetime date
+        string location
+        string[] causes
+        image image
+        text description
+        url link
+    }
 ```
 
-The only references between documents are the optional categories on news and events. Sections, board members and events are not linked to each other.
+References between documents: the optional categories on news and events, and `upcomingEvent.section`, which points to the organising `section`. Board members and past events are not linked to other documents.
 
 ## Studio structure
 
@@ -110,11 +121,12 @@ The sidebar is defined in [`sanity/structure.ts`](../../esn-ukraine-web/sanity/s
 | Новини (News) | `news` | `publishedAt`, newest first |
 | Події (Events) | `event` | `date`, latest first |
 | Секції ESN (Sections) | `section` | `order`, then `name` |
-| Члени Борду (Board Members) | `boardMember` | `order`, then `name` |
+| Майбутні події (Upcoming Events) | `upcomingEvent` | `date`, soonest first |
+| Члени борду (National Board) | `boardMember` | `order`, then `name` |
+| Колишні борди (Former Boards) | `formerBoard` | `order`, newest first |
 | Категорії новин | `newsCategory` | — |
 | Категорії подій | `eventCategory` | — |
 | Фото "Our Network" (Головна) | `networkPhoto` | `slot`, then `order` |
-| Колишні борди (Former Boards) | `formerBoard` | Added automatically at the end, because it is not listed explicitly in `structure.ts` |
 
 The Vision tool (a GROQ playground) is available in the Studio only in development (`npm run dev`).
 
@@ -247,10 +259,27 @@ File: `networkPhoto.ts`. Studio label: **Фотографії "Our Network" (Г�
 |---|---|---|---|---|
 | `title` | Назва / Опис фотографії (Alt текст) | string | Yes | Used as the image's alt text |
 | `slot` | В якому слоті на головній сторінці відображати? | string (radio) | Yes | `slotA` (top left, landscape), `slotB` (bottom left, landscape), `slotC` (right, tall). Default `slotA` |
-| `image` | Фотографія | image | Yes | ≤ 2 MB, ≤ 3,500 × 3,500 px |
-| `order` | Порядок відображення (необов'язково) | number | No | Default 10. Order within the slot |
+| `image` | Фотографія | image | Yes | ≤ 2 MB, ≤ 4,000 × 4,000 px |
+| `order` | Порядок відображення (необов'язково) | number | No | Default 10. Integer ≥ 0. Order within the slot |
 
-Each slot rotates through its photos: slot A every 4.5 s, slot B every 6 s, slot C every 5.2 s. A slot without photos shows built-in stock photos.
+Each slot rotates through its photos: slot A every 4.5 s, slot B every 6 s, slot C every 5.2 s (only while the collage is on screen and the visitor does not prefer reduced motion). A slot without photos stays empty; with no photos at all the collage is not rendered.
+
+## upcomingEvent
+
+File: `upcomingEvent.ts`. Studio label: **Майбутні події (Upcoming Events)**. An announcement for `/upcoming-events`: there is no detail page, the card links out (registration form, Instagram post). Once the day of the event has passed, the card disappears automatically.
+
+| Field | Studio label | Type | Required | Rules and notes |
+|---|---|---|---|---|
+| `title` | Назва події | string | Yes | ≤ 120 characters |
+| `date` | Дата та час проведення | datetime | Yes | The card is hidden after this day |
+| `section` | Секція-організатор | reference → `section` | No | Empty means a national ESN Ukraine event |
+| `causes` | Категорії (ESN Causes) | array of strings | No | One or more of the six ESN causes (see `lib/esnCauses.ts`); used by the filter |
+| `location` | Місце проведення | string | No | For example "Kyiv, KPI Campus" or "Online" |
+| `image` | Фото / постер | image (with `alt`) | No | ≤ 2 MB, ≤ 4,000 × 4,000 px |
+| `description` | Короткий опис | text | No | ≤ 300 characters |
+| `link` | Посилання | url | No | `http(s)` only; where the card leads |
+
+Each upcoming event is also published as `Event` structured data (JSON-LD) for search engines.
 
 ## Upload limits
 
@@ -258,19 +287,20 @@ Validators from [`sanity/lib/imageValidation.ts`](../../esn-ukraine-web/sanity/l
 
 | Field | Max file size | Max resolution | Formats |
 |---|---|---|---|
-| News/event `mainImage`, `bannerImage` | 12 MB | 10,000 × 10,000 px | JPEG, PNG, WebP, AVIF |
-| Rich text images, photo rows, `gallery` | 2 MB | 10,000 × 10,000 px | JPEG, PNG, WebP, AVIF |
+| News/event `mainImage`, `bannerImage` | 3 MB | 6,000 × 6,000 px | JPEG, PNG, WebP, AVIF (PNG > 1 MB shows a warning) |
+| Rich text images, photo rows, `gallery` | 2 MB | 6,000 × 6,000 px | JPEG, PNG, WebP, AVIF |
 | `attachmentFiles` | 10 MB | — | PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX |
 | Section logo | 2 MB | 3,000 × 3,000 px | JPEG, PNG, WebP, AVIF |
 | Board member photo | 2 MB | 3,000 × 3,500 px | JPEG, PNG, WebP, AVIF |
 | Former board member photo | 2.5 MB | 3,000 × 3,500 px | JPEG, PNG, WebP, AVIF |
-| Network photo | 2 MB | 3,500 × 3,500 px | JPEG, PNG, WebP, AVIF |
+| Network photo, upcoming event poster | 2 MB | 4,000 × 4,000 px | JPEG, PNG, WebP, AVIF |
 
 How the validation works:
 
-- The resolution is read from the asset ID, for example `image-<hash>-4000x3000-jpg`. The file size is read with a query for the asset document.
+- The format and resolution are read from the asset ID, for example `image-<hash>-4000x3000-jpg`. The file size is read with a query for the asset document.
 - If that query fails, for example because of a network problem, the validator does not block saving.
-- Some field descriptions in the Studio mention other numbers. The attachments description, for example, mentions 5 MB. The validators above are what is enforced.
+- Validation runs after the upload: a rejected file is already in the asset store and must be deleted by the editor.
+- Slugs of news and events must match `^[a-z0-9]+(?:-[a-z0-9]+)*$`; the Studio's "Generate" button strips apostrophes and other punctuation.
 
 ## Queries
 

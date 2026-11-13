@@ -39,12 +39,20 @@ export const structure: StructureResolver = (S) =>
             .defaultOrdering([{ field: 'order', direction: 'asc' }, { field: 'name', direction: 'asc' }])
         ),
       S.listItem()
-        .title('Члени Борду (Board Members)')
+        .title('Члени борду (National Board)')
         .schemaType('boardMember')
         .child(
           S.documentTypeList('boardMember')
             .title('Борд')
             .defaultOrdering([{ field: 'order', direction: 'asc' }, { field: 'name', direction: 'asc' }])
+        ),
+      S.listItem()
+        .title('Колишні борди (Former Boards)')
+        .schemaType('formerBoard')
+        .child(
+          S.documentTypeList('formerBoard')
+            .title('Колишні борди')
+            .defaultOrdering([{ field: 'order', direction: 'desc' }])
         ),
       S.divider(),
       S.listItem()
@@ -66,7 +74,7 @@ export const structure: StructureResolver = (S) =>
         ),
       ...S.documentTypeListItems().filter(
         (listItem) =>
-          !['news', 'event', 'upcomingEvent', 'section', 'boardMember', 'networkPhoto', 'newsCategory', 'eventCategory'].includes(
+          !['news', 'event', 'upcomingEvent', 'section', 'boardMember', 'formerBoard', 'networkPhoto', 'newsCategory', 'eventCategory'].includes(
             listItem.getId() || ''
           )
       ),

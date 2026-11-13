@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { buildMetadata } from '@/lib/seo';
+import { JsonLd, webPageJsonLd } from '@/lib/jsonld';
 import {
   ArrowLeft,
   ArrowRight,
@@ -34,6 +35,7 @@ const programmes = [
     icon: GraduationCap,
     color: 'bg-esn-cyan',
     accent: 'text-esn-cyan',
+    hoverAccent: 'group-hover:text-esn-cyan',
     hoverBorder: 'hover:border-esn-cyan/40',
   },
   {
@@ -44,6 +46,7 @@ const programmes = [
     icon: BookOpen,
     color: 'bg-esn-magenta',
     accent: 'text-esn-magenta',
+    hoverAccent: 'group-hover:text-esn-magenta',
     hoverBorder: 'hover:border-esn-magenta/40',
   },
   {
@@ -54,6 +57,7 @@ const programmes = [
     icon: Users,
     color: 'bg-esn-green',
     accent: 'text-esn-green',
+    hoverAccent: 'group-hover:text-esn-green',
     hoverBorder: 'hover:border-esn-green/40',
   },
   {
@@ -64,6 +68,7 @@ const programmes = [
     icon: Heart,
     color: 'bg-yellow-500',
     accent: 'text-yellow-600',
+    hoverAccent: 'group-hover:text-yellow-600',
     hoverBorder: 'hover:border-yellow-400/40',
   },
   {
@@ -74,6 +79,7 @@ const programmes = [
     icon: Building2,
     color: 'bg-orange-500',
     accent: 'text-orange-500',
+    hoverAccent: 'group-hover:text-orange-500',
     hoverBorder: 'hover:border-orange-400/40',
   },
 ];
@@ -112,26 +118,17 @@ const benefits = [
 ];
 
 export default function ErasmusPage() {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
+  const jsonLd = webPageJsonLd({
     name: 'Erasmus+ Programme — Opportunities for Ukrainian Students',
     description:
       'Discover Erasmus+ programmes and opportunities for Ukrainian students — academic mobility, Erasmus Mundus Master Programmes, trainings, exchanges, volunteering, and more.',
-    url: 'https://esnukraine.org/erasmus',
-    publisher: {
-      '@type': 'Organization',
-      name: 'ESN Ukraine',
-      url: 'https://esnukraine.org',
-    },
-  };
+    path: '/erasmus',
+    breadcrumbs: [{ name: 'Home', path: '/' }, { name: 'Erasmus+', path: '/erasmus' }],
+  });
 
   return (
     <main className="min-h-svh bg-white">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       {/* ═══════ HERO ═══════ */}
       <section className="relative pt-32 sm:pt-36 md:pt-40 pb-20 sm:pb-24 md:pb-32 bg-esn-dark overflow-hidden">
@@ -249,7 +246,7 @@ export default function ErasmusPage() {
                   <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-[20px] ${prog.color} flex items-center justify-center mb-5 sm:mb-6`}>
                     <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                   </div>
-                  <h3 className={`text-lg sm:text-xl font-bold text-esn-dark group-hover:${prog.accent} transition-colors mb-3`}>
+                  <h3 className={`text-lg sm:text-xl font-bold text-esn-dark ${prog.hoverAccent} transition-colors mb-3`}>
                     {prog.title}
                   </h3>
                   <p className="text-sm sm:text-base text-gray-500 leading-relaxed mb-4">

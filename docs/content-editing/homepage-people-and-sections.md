@@ -45,7 +45,7 @@ To add a photo:
 4. Optionally, set **Порядок відображення** to control the order within the slot. Lower numbers come first.
 5. Publish.
 
-If a slot has no photos, the website shows built-in stock photos there.
+If a slot has no photos, that slot stays empty; if all three are empty, the collage is not shown at all.
 
 ## National Board
 

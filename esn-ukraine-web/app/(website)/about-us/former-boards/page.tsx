@@ -2,9 +2,11 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { groq } from 'next-sanity';
-import FormerBoardsClient, { FormerBoardItem } from './FormerBoardsClient';
+import FormerBoardsClient, { type FormerBoardItem } from './FormerBoardsClient';
 import type { Metadata } from 'next';
 import { buildMetadata } from '@/lib/seo';
+import { hasAsset, urlFor, type ProjectedImage } from '@/sanity/lib/image';
+import { IMAGE_PROJECTION } from '@/sanity/lib/queries';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Former Boards',
@@ -16,6 +18,13 @@ export const metadata: Metadata = buildMetadata({
 // ==========================================
 // DATA FETCHING FROM SANITY CMS
 // ==========================================
+interface FormerBoardDoc {
+    _id: string;
+    title: string;
+    order: number;
+    members: { _key: string; name: string; position: string; image: ProjectedImage | null }[] | null;
+}
+
 async function getFormerBoards(): Promise<FormerBoardItem[]> {
     const query = groq`*[_type == "formerBoard"] | order(order desc) {
         _id,
@@ -25,11 +34,24 @@ async function getFormerBoards(): Promise<FormerBoardItem[]> {
             _key,
             name,
             position,
-            "imageUrl": image.asset->url,
-            "imageAlt": image.alt
+            "image": image${IMAGE_PROJECTION}
         }
     }`;
-    return await sanityFetch<FormerBoardItem[]>({ query, tags: ['formerBoard'] });
+    const boards = await sanityFetch<FormerBoardDoc[]>({ query, tags: ['formerBoard'] });
+    return boards.map((board) => ({
+        _id: board._id,
+        title: board.title,
+        order: board.order,
+        members: (board.members ?? []).map((m) => ({
+            _key: m._key,
+            name: m.name,
+            position: m.position,
+            // Square avatar crop (160px circles, 2x for retina)
+            imageUrl: hasAsset(m.image) ? urlFor(m.image).width(320).height(320).fit('crop').url() : null,
+            imageLqip: m.image?.asset?.lqip ?? null,
+            imageAlt: m.image?.alt ?? null,
+        })),
+    }));
 }
 
 export default async function FormerBoardsPage() {

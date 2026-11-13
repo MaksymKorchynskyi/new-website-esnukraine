@@ -56,8 +56,17 @@ export default defineType({
       title: 'Фото / постер',
       type: 'image',
       options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-      description: 'Необовʼязково. Макс. 2 МБ, формати JPG/PNG/WebP.',
-      validation: (rule) => rule.custom(validateImageSize(2, 0, 0)),
+      description: 'Необовʼязково. Макс. 2 МБ, до 4000 px, формати JPG/PNG/WebP/AVIF.',
+      validation: (rule) => rule.custom(validateImageSize(2, 4000, 4000)),
+      fields: [
+        defineField({
+          name: 'alt',
+          type: 'string',
+          title: 'Alt текст',
+          description: 'Опис фото для доступності (англійською).',
+          validation: (rule) => rule.required().warning('Опишіть фото англійською'),
+        }),
+      ],
     }),
     defineField({
       name: 'description',

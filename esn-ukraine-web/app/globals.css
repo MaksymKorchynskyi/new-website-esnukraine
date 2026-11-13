@@ -21,3 +21,13 @@ body {
     scrollbar-width: none;
   }
 }
+/* The fixed header (84px) must not cover the target of in-page links (#toc anchors, skip link) */
+html {
+  scroll-padding-top: 96px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

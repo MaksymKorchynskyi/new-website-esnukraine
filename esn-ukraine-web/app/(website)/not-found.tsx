@@ -1,27 +1,22 @@
 import Link from 'next/link';
 
-export default function NotFoundRoot() {
+/** Rendered inside the site layout (header and footer stay), so no <html>/<body> here. */
+export default function NotFoundPage() {
   return (
-    <html lang="en">
-      <body style={{ margin: 0, padding: 0, fontFamily: 'sans-serif', backgroundColor: '#ffffff', color: '#111827' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: "100svh", padding: '2rem', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '4rem', fontWeight: 900, margin: '0 0 1rem 0', color: '#2E3192' }}>
-            404
-          </h1>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 1rem 0' }}>
-            Page Not Found
-          </h2>
-          <p style={{ color: '#6B7280', margin: '0 0 2rem 0', fontSize: '1.125rem' }}>
-            The page you are looking for does not exist or has been moved.
-          </p>
-          <Link 
-            href="/"
-            style={{ display: 'inline-block', padding: '0.875rem 2rem', backgroundColor: '#2E3192', color: '#ffffff', textDecoration: 'none', borderRadius: '9999px', fontWeight: 500 }}
-          >
-            Return Home
-          </Link>
-        </div>
-      </body>
-    </html>
+    <main className="min-h-svh bg-white flex flex-col items-center justify-center px-6 pt-28 pb-16 text-center">
+      <p className="text-6xl sm:text-7xl font-black text-esn-dark mb-4" aria-hidden="true">
+        404
+      </p>
+      <h1 className="text-3xl sm:text-4xl font-black text-esn-dark mb-4">Page Not Found</h1>
+      <p className="text-lg text-gray-500 mb-8 max-w-md">
+        The page you are looking for does not exist or has been moved.
+      </p>
+      <Link
+        href="/"
+        className="inline-flex items-center justify-center rounded-full bg-esn-dark px-8 py-3.5 text-sm font-bold uppercase tracking-widest text-white hover:bg-esn-cyan transition-colors"
+      >
+        Return Home
+      </Link>
+    </main>
   );
 }

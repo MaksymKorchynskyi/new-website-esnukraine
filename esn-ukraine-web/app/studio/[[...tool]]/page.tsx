@@ -9,7 +9,6 @@
 
 import { NextStudio } from 'next-sanity/studio'
 import config from '../../../sanity.config'
-import Link from "next/link";
 export const dynamic = 'force-static'
 
 export { metadata, viewport } from 'next-sanity/studio'

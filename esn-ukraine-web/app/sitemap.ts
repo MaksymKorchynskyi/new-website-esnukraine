@@ -1,120 +1,56 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next';
 import { sanityFetch } from '@/sanity/lib/fetch';
+import { getSitemapEntriesQuery } from '@/sanity/lib/queries';
+import { SITE_URL } from '@/lib/seo';
+
+type SitemapItem = {
+  _type: 'news' | 'event';
+  slug: string;
+  _updatedAt: string;
+};
+
+/**
+ * Static pages carry no `lastModified`: a date that changes on every regeneration
+ * teaches Google to ignore it. `priority` is not emitted either (ignored by Google).
+ */
+const STATIC_PATHS = [
+  '/',
+  '/about-us',
+  '/national-board',
+  '/about-us/former-boards',
+  '/contact',
+  '/our-sections',
+  '/news',
+  '/upcoming-events',
+  '/events',
+  '/erasmus',
+  '/erasmus/academic-mobility',
+  '/erasmus/erasmus-mundus',
+  '/erasmus/trainings-and-exchanges',
+  '/erasmus/european-solidarity-corps',
+  '/erasmus/national-erasmus-office',
+  '/for-students/esncard',
+  '/privacy',
+  '/cookies',
+];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const query = `
-    *[_type in ["news", "event"] && defined(slug.current)] {
-      _type,
-      "slug": slug.current,
-      _updatedAt
-    }
-  `;
+  const staticUrls: MetadataRoute.Sitemap = STATIC_PATHS.map((path) => ({
+    url: `${SITE_URL}${path}`,
+  }));
 
-  type SitemapItem = {
-    _type: 'news' | 'event';
-    slug: string;
-    _updatedAt: string;
-  };
-
-  const dynamicItems: SitemapItem[] = await sanityFetch({ query, tags: ['news', 'event'] });
-
-  const staticUrls: MetadataRoute.Sitemap = [
-    {
-      url: 'https://esnukraine.org',
-      lastModified: new Date(),
-      priority: 1.0,
-    },
-    {
-      url: 'https://esnukraine.org/about-us',
-      lastModified: new Date(),
-      priority: 0.8,
-    },
-    {
-      url: 'https://esnukraine.org/national-board',
-      lastModified: new Date(),
-      priority: 0.8,
-    },
-    {
-      url: 'https://esnukraine.org/about-us/former-boards',
-      lastModified: new Date(),
-      priority: 0.6,
-    },
-    {
-      url: 'https://esnukraine.org/contact',
-      lastModified: new Date(),
-      priority: 0.8,
-    },
-    {
-      url: 'https://esnukraine.org/our-sections',
-      lastModified: new Date(),
-      priority: 0.8,
-    },
-    {
-      url: 'https://esnukraine.org/news',
-      lastModified: new Date(),
-      priority: 0.9,
-    },
-    {
-      url: 'https://esnukraine.org/upcoming-events',
-      lastModified: new Date(),
-      priority: 0.9,
-    },
-    {
-      url: 'https://esnukraine.org/events',
-      lastModified: new Date(),
-      priority: 0.8,
-    },
-    {
-      url: 'https://esnukraine.org/erasmus',
-      lastModified: new Date(),
-      priority: 0.8,
-    },
-    {
-      url: 'https://esnukraine.org/erasmus/academic-mobility',
-      lastModified: new Date(),
-      priority: 0.7,
-    },
-    {
-      url: 'https://esnukraine.org/erasmus/erasmus-mundus',
-      lastModified: new Date(),
-      priority: 0.7,
-    },
-    {
-      url: 'https://esnukraine.org/erasmus/trainings-and-exchanges',
-      lastModified: new Date(),
-      priority: 0.7,
-    },
-    {
-      url: 'https://esnukraine.org/erasmus/european-solidarity-corps',
-      lastModified: new Date(),
-      priority: 0.7,
-    },
-    {
-      url: 'https://esnukraine.org/erasmus/national-erasmus-office',
-      lastModified: new Date(),
-      priority: 0.7,
-    },
-    {
-      url: 'https://esnukraine.org/for-students/esncard',
-      lastModified: new Date(),
-      priority: 0.6,
-    },
-    {
-      url: 'https://esnukraine.org/privacy',
-      lastModified: new Date(),
-      priority: 0.3,
-    },
-    {
-      url: 'https://esnukraine.org/cookies',
-      lastModified: new Date(),
-      priority: 0.3,
-    },
-  ];
+  let dynamicItems: SitemapItem[] = [];
+  try {
+    dynamicItems = await sanityFetch<SitemapItem[]>({ query: getSitemapEntriesQuery, tags: ['news', 'event'] });
+  } catch (error) {
+    // Sanity unavailable: still publish the static part of the sitemap
+    console.error('[Sitemap] Could not load Sanity documents:', error);
+  }
 
   const dynamicUrls: MetadataRoute.Sitemap = dynamicItems.map((item) => ({
-    url: `https://esnukraine.org/${item._type === 'news' ? 'news' : 'events'}/${item.slug}`,
+    // encodeURI keeps "/" and "-" but escapes anything outside the URL-safe set
+    url: `${SITE_URL}/${item._type === 'news' ? 'news' : 'events'}/${encodeURIComponent(item.slug)}`,
     lastModified: new Date(item._updatedAt),
-    priority: 0.6,
   }));
 
   return [...staticUrls, ...dynamicUrls];

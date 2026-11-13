@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useCallback } from 'react';
+import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
 import { X, Shield, BarChart3 } from 'lucide-react';
 import {
   getConsent,
@@ -9,7 +9,7 @@ import {
   COOKIE_CATEGORIES,
   type CookieConsentState,
 } from '@/lib/cookies';
-import { lockScroll } from '@/lib/scrollLock';
+import { useDialog } from '@/lib/useDialog';
 
 // ---------------------------------------------------------------------------
 // Toggle Switch
@@ -67,53 +67,14 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   analytics: <BarChart3 className="w-5 h-5 text-esn-cyan" />,
 };
 
-const FOCUSABLE = 'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-
 // ---------------------------------------------------------------------------
 // Dialog (mounted only while open, so it always starts from the saved consent)
 // ---------------------------------------------------------------------------
 
 function SettingsDialog({ onClose, onSave }: { onClose: () => void; onSave: () => void }) {
   const [analytics, setAnalytics] = useState(() => getConsent()?.analytics ?? false);
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  // Scroll lock (iOS-safe) + focus the first control, restore focus on close
-  useEffect(() => {
-    const previousFocus = document.activeElement as HTMLElement | null;
-    const unlock = lockScroll();
-    const firstFocusable = modalRef.current?.querySelector<HTMLElement>(FOCUSABLE);
-    // preventScroll: don't let the browser jump the page on phones
-    firstFocusable?.focus({ preventScroll: true });
-    return () => {
-      unlock();
-      if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
-    };
-  }, []);
-
-  // Focus trap + Escape handler
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-        return;
-      }
-      if (e.key !== 'Tab' || !modalRef.current) return;
-
-      const focusable = modalRef.current.querySelectorAll<HTMLElement>(FOCUSABLE);
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last?.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first?.focus();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  // Scroll lock, initial focus, focus trap, Escape and focus restore
+  const modalRef = useDialog<HTMLDivElement>({ open: true, onClose });
 
   const save = useCallback(
     (state: CookieConsentState) => {
@@ -256,8 +217,10 @@ interface CookieSettingsProps {
 
 export default function CookieSettings({ isOpen, onClose, onSave }: CookieSettingsProps) {
   return (
-    <AnimatePresence>
-      {isOpen && <SettingsDialog key="cookie-settings" onClose={onClose} onSave={onSave} />}
-    </AnimatePresence>
+    <MotionConfig reducedMotion="user">
+      <AnimatePresence>
+        {isOpen && <SettingsDialog key="cookie-settings" onClose={onClose} onSave={onSave} />}
+      </AnimatePresence>
+    </MotionConfig>
   );
 }

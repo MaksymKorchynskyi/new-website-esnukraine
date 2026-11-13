@@ -4,7 +4,6 @@ import {
   Linkedin,
   Youtube,
   Mail,
-  Link2,
 } from 'lucide-react';
 
 // ============================================================
@@ -148,8 +147,8 @@ export const MAIN_NAV: NavItem[] = [
 // Social Links (shared between Header & Footer)
 // ============================================================
 export const SOCIAL_LINKS: SocialLink[] = [
-  { Icon: Instagram, href: 'https://www.instagram.com/esn.ukraine?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw==', label: 'Instagram' },
-  { Icon: Linkedin, href: 'https://www.linkedin.com/company/erasmus-student-network-ukraine/?viewAsMember=true', label: 'LinkedIn' },
+  { Icon: Instagram, href: 'https://www.instagram.com/esn.ukraine', label: 'Instagram' },
+  { Icon: Linkedin, href: 'https://www.linkedin.com/company/erasmus-student-network-ukraine/', label: 'LinkedIn' },
   { Icon: XSocialIcon, href: 'https://x.com/esnukraine', label: 'X / Twitter' },
   { Icon: Youtube, href: 'https://www.youtube.com/@esnukraine', label: 'YouTube' },
   { Icon: Mail, href: 'mailto:ukraine-nr@esn.org', label: 'Email' },

@@ -27,8 +27,8 @@ export default defineType({
       description: 'Оберіть групу, в якій відображатиметься картка на сторінці',
       options: {
         list: [
-          { title: 'The Board 2025-26', value: 'board' },
-          { title: 'The Board Support 2025-26', value: 'support' },
+          { title: 'The Board', value: 'board' },
+          { title: 'The Board Support', value: 'support' },
           { title: 'The Audit Board & Advisory Council', value: 'audit' },
         ],
       },
@@ -41,13 +41,14 @@ export default defineType({
       type: 'number',
       description: 'Число для сортування всередині категорії (1, 2, 3...)',
       initialValue: 10,
+      validation: (rule) => rule.integer().min(0),
     }),
     defineField({
       name: 'image',
       title: 'Фотографія (продовгувата / вертикальна 4:5)',
       type: 'image',
       options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-      description: 'Рекомендується завантажувати вертикальне / продовгувате зображення борду (співвідношення 4:5 або 3:4). Ліміти Sanity Free: макс. 2 МБ, формати JPG/PNG/WebP. Обов\'язково стискайте фото (наприклад, через tinypng.com або squoosh.app)!',
+      description: 'Рекомендується завантажувати вертикальне / продовгувате зображення борду (співвідношення 4:5 або 3:4). Правило проєкту: макс. 2 МБ, до 3000×3500 px, формати JPG/PNG/WebP/AVIF. Обов\'язково стискайте фото (наприклад, через tinypng.com або squoosh.app)!',
       validation: (rule) => rule.required().custom(validateImageSize(2, 3000, 3500)),
       fields: [
         {
@@ -76,6 +77,7 @@ export default defineType({
       name: 'email',
       title: 'Email',
       type: 'string',
+      validation: (rule) => rule.email(),
     }),
     defineField({
       name: 'linkedin',

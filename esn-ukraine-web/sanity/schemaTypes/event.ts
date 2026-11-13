@@ -1,28 +1,49 @@
 import { defineField, defineType } from 'sanity'
 import { formatDate } from '../lib/utils'
-import { ACCEPTED_FILE_TYPES, ACCEPTED_IMAGE_TYPES, validateFileSize, validateImageSize } from '../lib/imageValidation'
+import { ACCEPTED_FILE_TYPES, ACCEPTED_IMAGE_TYPES, validateFileSize, validateImageSize, warnLargePng } from '../lib/imageValidation'
+import { slugify, validateSlug } from '../lib/slug'
+
+/** Alt текст для фото: попередження (не блокує старі документи без alt). */
+const ALT_FIELD = defineField({
+  name: 'alt',
+  type: 'string',
+  title: 'Alt текст',
+  description: 'Опис фото для доступності та SEO (англійською).',
+  validation: (rule) => rule.required().warning('Опишіть фото англійською'),
+})
 
 export default defineType({
   name: 'event',
   title: 'Події (Events)',
   type: 'document',
+  groups: [
+    { name: 'content', title: 'Контент', default: true },
+    { name: 'media', title: 'Медіа' },
+    { name: 'settings', title: 'Налаштування' },
+  ],
+  orderings: [
+    { title: 'Дата (нові спершу)', name: 'dateDesc', by: [{ field: 'date', direction: 'desc' }] },
+  ],
   fields: [
     defineField({
       name: 'title',
+      group: 'content',
       title: 'Назва події',
       type: 'string',
       validation: (rule) => rule.required().min(5).max(150),
     }),
     defineField({
       name: 'slug',
+      group: 'content',
       title: 'Посилання (Slug)',
       type: 'slug',
-      options: { source: 'title', maxLength: 96 },
-      validation: (rule) => rule.required(),
+      options: { source: 'title', maxLength: 96, slugify },
+      validation: (rule) => rule.required().custom(validateSlug),
       description: 'Це частина URL адреси. Натисни "Generate", щоб створити автоматично.',
     }),
     defineField({
       name: 'publishedAt',
+      group: 'content',
       title: 'Дата та час створення',
       type: 'datetime',
       initialValue: () => new Date().toISOString(),
@@ -30,14 +51,16 @@ export default defineType({
     }),
     defineField({
       name: 'excerpt',
+      group: 'content',
       title: 'Короткий опис (Summary)',
       type: 'text',
       rows: 3,
-      description: 'Кілька речень для прев\'ю на сторінці подій та у карточці.',
+      description: 'Кілька речень для прев\'ю на сторінці подій та у картці.',
       validation: (rule) => rule.required().min(10).max(300),
     }),
     defineField({
       name: 'category',
+      group: 'settings',
       title: 'Категорія',
       type: 'reference',
       to: [{ type: 'eventCategory' }],
@@ -46,30 +69,39 @@ export default defineType({
 
     defineField({
       name: 'date',
+      group: 'settings',
       title: 'Дата проведення',
       type: 'datetime',
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'location',
+      group: 'settings',
       title: 'Місце проведення',
       type: 'string',
     }),
     defineField({
       name: 'registrationLink',
+      group: 'settings',
       title: 'Посилання на реєстрацію (Google Form)',
       type: 'url',
     }),
     defineField({
       name: 'mainImage',
-      title: 'Прев\'ю зображення (для карточки)',
+      group: 'media',
+      title: 'Прев\'ю зображення (для картки)',
       type: 'image',
       options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-      description: 'Це фото буде показано у карточці події на сторінці "Events". Ліміти Sanity: макс. 12 МБ (до 10000px), формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото перед завантаженням.',
-      validation: (rule) => rule.required().custom(validateImageSize(12, 10000, 10000)),
+      description: 'Це фото буде показано у картці події на сторінці "Events". Макс. 3 МБ, до 6000 px, формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото перед завантаженням (tinypng.com, squoosh.app).',
+      validation: (rule) => [
+        rule.required().custom(validateImageSize(3, 6000, 6000)),
+        rule.custom(warnLargePng()).warning(),
+      ],
+      fields: [ALT_FIELD],
     }),
     defineField({
       name: 'isSpotlight',
+      group: 'settings',
       title: 'Показувати в Spotlight на головній',
       type: 'boolean',
       description: 'Увімкніть, щоб ця подія відображалась у великому слайдері на головній сторінці.',
@@ -77,14 +109,20 @@ export default defineType({
     }),
     defineField({
       name: 'bannerImage',
+      group: 'media',
       title: 'Банер (задній фон)',
       type: 'image',
       options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-      description: 'Фото для заднього фону на сторінці події та в Spotlight. Ліміти Sanity: макс. 12 МБ (до 10000px), формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото перед завантаженням.',
-      validation: (rule) => rule.custom(validateImageSize(12, 10000, 10000)),
+      description: 'Фото для заднього фону на сторінці події та в Spotlight. Макс. 3 МБ, до 6000 px, формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото перед завантаженням.',
+      validation: (rule) => [
+        rule.custom(validateImageSize(3, 6000, 6000)),
+        rule.custom(warnLargePng()).warning(),
+      ],
+      fields: [ALT_FIELD],
     }),
     defineField({
       name: 'body',
+      group: 'content',
       title: 'Текст сторінки події',
       type: 'array',
       of: [
@@ -200,7 +238,7 @@ export default defineType({
           type: 'image',
           title: 'Фото у тексті',
           options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-          validation: (rule) => rule.custom(validateImageSize(2, 10000, 10000)),
+          validation: (rule) => rule.custom(validateImageSize(2, 6000, 6000)),
           fields: [
             defineField({
               name: 'caption',
@@ -212,7 +250,8 @@ export default defineType({
               name: 'alt',
               type: 'string',
               title: 'Alt текст',
-              description: 'Опис зображення для доступності.',
+              description: 'Опис зображення для доступності (англійською).',
+              validation: (rule) => rule.required().warning('Опишіть фото англійською'),
             }),
             defineField({
               name: 'width',
@@ -269,7 +308,7 @@ export default defineType({
                 {
                   type: 'image',
                   options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-                  validation: (rule) => rule.custom(validateImageSize(2, 10000, 10000)),
+                  validation: (rule) => rule.custom(validateImageSize(2, 6000, 6000)),
                   fields: [
                     defineField({
                       name: 'caption',
@@ -280,6 +319,7 @@ export default defineType({
                       name: 'alt',
                       type: 'string',
                       title: 'Alt текст',
+                      validation: (rule) => rule.required().warning('Опишіть фото англійською'),
                     }),
                   ],
                 },
@@ -336,6 +376,7 @@ export default defineType({
     }),
     defineField({
       name: 'attachmentFiles',
+      group: 'media',
       title: 'Прикріплені файли (Attachment Files)',
       type: 'array',
       of: [
@@ -359,28 +400,30 @@ export default defineType({
           ],
         },
       ],
-      description: 'Файли (PDF, документи тощо), які відображатимуться перед фотогалереєю. Ліміт для безкоштовного тарифу Sanity: макс. 5 МБ на файл.',
+      description: 'Файли (PDF, документи тощо), які відображатимуться перед фотогалереєю. Макс. 10 МБ на файл; стискайте PDF перед завантаженням.',
     }),
     defineField({
       name: 'gallery',
-      title: 'Photo Gallery',
+      group: 'media',
+      title: 'Фотогалерея (Photo Gallery)',
       type: 'array',
       of: [
         {
           type: 'image',
           title: 'Фото',
           options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-          validation: (rule) => rule.custom(validateImageSize(2, 10000, 10000)),
+          validation: (rule) => rule.custom(validateImageSize(2, 6000, 6000)),
           fields: [
             defineField({
               name: 'caption',
               type: 'string',
               title: 'Підпис',
             }),
+            ALT_FIELD,
           ],
         },
       ],
-      description: 'Додаткові фото, які будуть відображені як галерея під описом. Ліміти Sanity: макс. 2 МБ (до 10000px) на фото.',
+      description: 'Додаткові фото, які будуть відображені як галерея під описом. Макс. 2 МБ (до 6000 px) на фото.',
     }),
   ],
   preview: {

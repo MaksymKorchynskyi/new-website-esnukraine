@@ -89,18 +89,18 @@ The webhook tells the website that content changed (see [Rendering and data flow
 | URL | `https://esnukraine.org/api/revalidate` |
 | Dataset | The production dataset |
 | Trigger on | Create, Update, Delete |
-| Filter | Optional, for example `_type in ["news", "event", "section", "boardMember", "formerBoard", "networkPhoto", "newsCategory", "eventCategory"]` |
-| Projection | `{ _type }`. The route uses `_type` as an extra cache tag |
+| Filter | Optional, for example `_type in ["news", "event", "upcomingEvent", "section", "boardMember", "formerBoard", "networkPhoto", "newsCategory", "eventCategory"]` |
+| Projection | `{ _type, "slug": slug.current }`. The route expires the `_type` tag and, for news and events, the `type:slug` tag of that one document |
 | HTTP method | `POST` |
-| HTTP headers | `x-sanity-secret: <value of SANITY_REVALIDATE_SECRET>` |
+| Secret | The value of `SANITY_REVALIDATE_SECRET`. Sanity signs every request with it (`sanity-webhook-signature` header) |
 | Drafts | Off: trigger only for published documents |
 
 Notes:
 
-- The route also accepts `Authorization: Bearer <secret>` or `?secret=<secret>`. Prefer a header, because URLs appear in logs.
-- Sanity's own **Secret** field signs the payload. The route does not verify the signature, so the header above is required.
+- The route verifies the signature with `parseBody` from `next-sanity/webhook`. Headers or a `?secret=` query parameter are no longer accepted.
+- The route waits briefly for Sanity's eventual consistency before answering, so the regenerated page never reads the previous version of the document.
 - If you add a filter, extend it whenever you add a content type.
-- **To test:** publish a small change and check the webhook's delivery log in Sanity. It should show `200`. A `401` means the secret does not match.
+- **To test:** publish a small change and check the webhook's delivery log in Sanity. It should show `200`. A `401` means the Secret in Sanity does not match `SANITY_REVALIDATE_SECRET`; a `400` means the projection does not include `_type`.
 
 > [!NOTE]
 > **To confirm:** the current webhook configuration (URL, filter, header).

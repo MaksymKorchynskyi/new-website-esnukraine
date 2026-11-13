@@ -98,7 +98,7 @@ The photos appear in a grid below the article. Visitors can open them full scree
 
 1. Open the news item or event.
 2. Switch on **Показувати в Spotlight на головній**.
-3. Add a **Банер (задній фон)**. Without a banner, the slide shows a generic stock photo.
+3. Add a **Банер (задній фон)**. Without a banner, the slide uses the card photo (**Прев'ю зображення**); an item with neither is skipped by the slider.
 4. Publish.
 
 The slider shows up to **five** Spotlight items, the newest first: by event date for events and by publication date for news. To remove an item from the slider, switch the option off and publish. **Always keep at least one item switched on.**

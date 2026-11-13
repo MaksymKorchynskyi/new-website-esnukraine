@@ -1,43 +1,50 @@
 import { revalidateTag } from 'next/cache';
 import { type NextRequest, NextResponse } from 'next/server';
+import { parseBody } from 'next-sanity/webhook';
+
+/**
+ * Sanity webhook → on-demand revalidation.
+ *
+ * Sanity signs every request with the webhook secret (`sanity-webhook-signature`
+ * header); the secret is `SANITY_REVALIDATE_SECRET`. Configure the webhook with
+ * the projection `{ _type, "slug": slug.current }` so only the affected pages are
+ * expired. Tags are expired immediately (`expire: 0`): the first visitor after a
+ * publish already gets the fresh page instead of a stale-while-revalidate copy.
+ */
+type WebhookBody = { _type?: string; slug?: string | null };
 
 export async function POST(req: NextRequest) {
+  const secret = process.env.SANITY_REVALIDATE_SECRET;
+  if (!secret) {
+    console.error('[Revalidate] SANITY_REVALIDATE_SECRET is not configured.');
+    return NextResponse.json({ message: 'Revalidation is not configured' }, { status: 503 });
+  }
+
   try {
-    // 1. Отримуємо токен з заголовків або параметрів запиту
-    const authHeader = req.headers.get('authorization');
-    const customHeader = req.headers.get('x-sanity-secret');
-    const secretFromUrl = req.nextUrl.searchParams.get('secret');
-    
-    const token = (authHeader ? authHeader.replace('Bearer ', '') : customHeader) || secretFromUrl;
+    // `true`: wait for Content Lake eventual consistency, so the regenerated
+    // page does not read the previous version of the document.
+    const { isValidSignature, body } = await parseBody<WebhookBody>(req, secret, true);
 
-    // 2. Захист: Перевіряємо секретний токен (SANITY_REVALIDATE_SECRET з .env)
-    if (!token || token !== process.env.SANITY_REVALIDATE_SECRET) {
-      return NextResponse.json(
-        { message: 'Unauthorized: Invalid token' },
-        { status: 401 }
-      );
+    if (!isValidSignature) {
+      return NextResponse.json({ message: 'Invalid signature' }, { status: 401 });
     }
 
-    // 3. Зчитуємо тіло запиту після авторизації (webhook payload від Sanity)
-    const body = await req.json().catch(() => ({}));
-    const type = body?._type;
-
-    // 4. Логіка ревалідації
-    // Завжди ревалідуємо загальний тег 'sanity'
-    revalidateTag('sanity', 'max');
-
-    // Якщо Sanity надсилає `_type` (наприклад, 'news', 'event'), ревалідуємо й його
-    if (type && typeof type === 'string') {
-      revalidateTag(type, 'max');
+    const type = typeof body?._type === 'string' ? body._type : null;
+    if (!type) {
+      return NextResponse.json({ message: 'Bad request: missing _type' }, { status: 400 });
     }
 
-    // 5. Успішна відповідь
-    return NextResponse.json({ revalidated: true, now: Date.now() });
-  } catch (error: any) {
-    console.error('Webhook revalidation error:', error.message);
-    return NextResponse.json(
-      { message: 'Internal Server Error' },
-      { status: 500 }
-    );
+    const tags = [type];
+    if (typeof body?.slug === 'string' && body.slug) {
+      tags.push(`${type}:${body.slug}`.replace(/[^a-zA-Z0-9_\-:]/g, '-'));
+    }
+    for (const tag of tags) {
+      revalidateTag(tag, { expire: 0 });
+    }
+
+    return NextResponse.json({ revalidated: true, tags, now: Date.now() });
+  } catch (error) {
+    console.error('[Revalidate] Webhook error:', error instanceof Error ? error.message : error);
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }

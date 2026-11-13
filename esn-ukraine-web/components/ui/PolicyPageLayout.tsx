@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ChevronRight, ChevronDown, List } from 'lucide-react';
 
@@ -57,16 +57,6 @@ export default function PolicyPageLayout({
     return () => observers.forEach((o) => o.disconnect());
   }, [tableOfContents]);
 
-  const scrollToSection = useCallback((id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      const headerOffset = 100;
-      const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
-      window.scrollTo({ top, behavior: 'smooth' });
-      setTocOpen(false);
-    }
-  }, []);
-
   return (
     <main className="min-h-svh bg-white text-esn-dark selection:bg-esn-cyan selection:text-white">
       {/* ======================== Hero Section ======================== */}
@@ -113,7 +103,10 @@ export default function PolicyPageLayout({
         {/* Mobile ToC */}
         <div className="lg:hidden mb-2 sm:mb-6">
           <button
+            type="button"
             onClick={() => setTocOpen(!tocOpen)}
+            aria-expanded={tocOpen}
+            aria-controls="policy-toc-mobile"
             className="flex items-center gap-2 w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 text-sm font-bold text-esn-dark hover:bg-gray-100 transition-colors"
           >
             <List className="w-4 h-4" />
@@ -125,20 +118,24 @@ export default function PolicyPageLayout({
             />
           </button>
           {tocOpen && (
-            <nav className="mt-2 px-4 py-3 bg-gray-50 rounded-xl border border-gray-200">
+            <nav id="policy-toc-mobile" aria-label="Table of contents" className="mt-2 px-4 py-3 bg-gray-50 rounded-xl border border-gray-200">
               <ul className="space-y-2">
                 {tableOfContents.map(({ id, label }) => (
                   <li key={id}>
-                    <button
-                      onClick={() => scrollToSection(id)}
-                      className={`text-sm text-left w-full transition-colors hover:text-esn-cyan ${
+                    {/* Real anchors: focus moves into the section, and each section is linkable.
+                        The fixed header is accounted for by `scroll-padding-top` in globals.css. */}
+                    <a
+                      href={`#${id}`}
+                      onClick={() => setTocOpen(false)}
+                      aria-current={activeSection === id ? 'location' : undefined}
+                      className={`block text-sm text-left w-full transition-colors hover:text-esn-cyan ${
                         activeSection === id
                           ? 'text-esn-cyan font-bold'
                           : 'text-gray-500'
                       }`}
                     >
                       {label}
-                    </button>
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -158,23 +155,24 @@ export default function PolicyPageLayout({
           <aside className="hidden lg:block lg:col-span-4">
             <div className="sticky top-28">
               <div className="rounded-2xl border border-gray-200 bg-gray-50/50 p-6">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4" id="policy-toc-title">
                   On this page
-                </h3>
-                <nav>
+                </p>
+                <nav aria-labelledby="policy-toc-title">
                   <ul className="space-y-2">
                     {tableOfContents.map(({ id, label }) => (
                       <li key={id}>
-                        <button
-                          onClick={() => scrollToSection(id)}
-                          className={`text-sm text-left w-full py-1 transition-all duration-200 border-l-2 pl-3 ${
+                        <a
+                          href={`#${id}`}
+                          aria-current={activeSection === id ? 'location' : undefined}
+                          className={`block text-sm text-left w-full py-1 transition-all duration-200 border-l-2 pl-3 ${
                             activeSection === id
                               ? 'text-esn-cyan font-bold border-esn-cyan'
                               : 'text-gray-500 hover:text-esn-dark border-transparent hover:border-gray-300'
                           }`}
                         >
                           {label}
-                        </button>
+                        </a>
                       </li>
                     ))}
                   </ul>

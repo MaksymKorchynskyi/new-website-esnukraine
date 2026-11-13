@@ -7,6 +7,9 @@ import UpcomingEvents, {
 } from '@/components/sections/UpcomingEvents.client';
 import { buildMetadata } from '@/lib/seo';
 import { isUpcomingEvent } from '@/lib/events';
+import { JsonLd, eventJsonLd } from '@/lib/jsonld';
+import { cardImageUrl, hasAsset, type ProjectedImage } from '@/sanity/lib/image';
+import { IMAGE_PROJECTION } from '@/sanity/lib/queries';
 
 export const metadata = buildMetadata({
   title: 'Upcoming Events',
@@ -18,6 +21,8 @@ export const metadata = buildMetadata({
 // ==========================================
 // DATA FETCHING
 // ==========================================
+type UpcomingEventDoc = Omit<UpcomingEvent, 'imageUrl' | 'imageLqip'> & { image: ProjectedImage | null };
+
 async function getData(): Promise<{ events: UpcomingEvent[]; sections: SectionOption[] }> {
   const query = groq`{
     "events": *[_type == "upcomingEvent" && defined(date) && dateTime(date) > dateTime(now()) - 60*60*48] | order(date asc) {
@@ -28,20 +33,26 @@ async function getData(): Promise<{ events: UpcomingEvent[]; sections: SectionOp
       description,
       link,
       "causes": coalesce(causes, []),
-      "imageUrl": image.asset->url,
+      "image": image${IMAGE_PROJECTION},
       "section": section->{ _id, name }
     },
     "sections": *[_type == "section"] | order(order asc, name asc) { _id, name }
   }`;
 
-  const data = await sanityFetch<{ events: UpcomingEvent[]; sections: SectionOption[] }>({
+  const data = await sanityFetch<{ events: UpcomingEventDoc[]; sections: SectionOption[] }>({
     query,
     tags: ['upcomingEvent', 'section'],
   });
 
   return {
     // Announcements disappear automatically once their day has passed.
-    events: (data?.events ?? []).filter((e) => isUpcomingEvent(e.date)),
+    events: (data?.events ?? [])
+      .filter((e) => isUpcomingEvent(e.date))
+      .map(({ image, ...e }) => ({
+        ...e,
+        imageUrl: hasAsset(image) ? cardImageUrl(image) : null,
+        imageLqip: image?.asset?.lqip ?? null,
+      })),
     sections: data?.sections ?? [],
   };
 }
@@ -54,6 +65,20 @@ export default async function UpcomingEventsPage() {
 
   return (
     <main className="min-h-svh bg-white">
+      {events.map((event) => (
+        <JsonLd
+          key={event._id}
+          data={eventJsonLd({
+            name: event.title,
+            description: event.description,
+            startDate: event.date,
+            location: event.location,
+            url: event.link,
+            image: event.imageUrl,
+            organizer: event.section?.name,
+          })}
+        />
+      ))}
       <PageHero
         title="Upcoming Events"
         compactTitle

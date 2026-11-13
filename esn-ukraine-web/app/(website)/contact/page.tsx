@@ -1,28 +1,53 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Mail, MapPin, Send, CheckCircle, ExternalLink, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Mail, MapPin, Send, CheckCircle, ExternalLink, ChevronDown, Loader2, AlertCircle } from 'lucide-react';
+
+const EMPTY_FORM = { name: '', email: '', subject: '', message: '' };
 
 export default function ContactPage() {
-    const [formState, setFormState] = useState({
-        name: '',
-        email: '',
-        subject: '',
-        message: '',
-    });
+    const [formState, setFormState] = useState(EMPTY_FORM);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isSending, setIsSending] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const honeypotRef = useRef<HTMLInputElement>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement actual form submission
-        setIsSubmitted(true);
+        if (isSending) return;
+        setIsSending(true);
+        setError(null);
+
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...formState,
+                    honeypot: honeypotRef.current?.value || '',
+                }),
+            });
+            const data: { success?: boolean; error?: string } = await res.json().catch(() => ({}));
+
+            if (res.ok && data.success) {
+                setIsSubmitted(true);
+            } else if (res.status === 429) {
+                setError(data.error || 'Too many messages. Please try again in a few minutes.');
+            } else {
+                setError(data.error || 'We could not send your message. Please email us at ukraine-nr@esn.org.');
+            }
+        } catch {
+            setError('Network error. Please check your connection and try again.');
+        } finally {
+            setIsSending(false);
+        }
     };
 
     const socialLinks = [
         {
             name: 'Instagram',
-            href: 'https://www.instagram.com/esn.ukraine?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw==',
+            href: 'https://www.instagram.com/esn.ukraine',
             icon: (
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
@@ -31,7 +56,7 @@ export default function ContactPage() {
         },
         {
             name: 'LinkedIn',
-            href: 'https://www.linkedin.com/company/erasmus-student-network-ukraine/?viewAsMember=true',
+            href: 'https://www.linkedin.com/company/erasmus-student-network-ukraine/',
             icon: (
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
@@ -58,7 +83,7 @@ export default function ContactPage() {
         },
         {
             name: 'Linktree',
-            href: 'https://linktr.ee/esninukraine?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAcGRvZgJleHRuA2FlbQIxMQBzcnRjBmFwcF9pZA85MzY2MTk3NDMzOTI0NTkAAaccCW-gtvRLX_tKmC2APRzRpidBJFUz7QnF8HuZQmK16TsKhVI5KBYxF2mlSA_aem_iWYWXPuYWhCldjwOKRGYQQ',
+            href: 'https://linktr.ee/esninukraine',
             icon: (
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="m13.73635 5.85251 4.00467-4.11665 2.3248 2.3808-4.20064 4.00466h5.9085v3.30473h-5.9365l4.22865 4.10766-2.3248 2.3338L12.0005 12.099l-5.74052 5.76852-2.3248-2.3248 4.22864-4.10766h-5.9375V8.12132h5.9085L3.93417 4.11666l2.3248-2.3808 4.00468 4.11665V0h3.4727zm-3.4727 10.30614h3.4727V24h-3.4727z" />
@@ -90,7 +115,7 @@ export default function ContactPage() {
                         </h1>
                         <p className="text-xl text-gray-300 leading-relaxed">
                             Have questions? Want to collaborate? Looking to start a new section?
-                            We'd love to hear from you.
+                            We&apos;d love to hear from you.
                         </p>
                     </div>
                 </div>
@@ -177,12 +202,13 @@ export default function ContactPage() {
                                         Message Sent!
                                     </h3>
                                     <p className="text-gray-600 mb-6">
-                                        Thank you for reaching out. We'll get back to you as soon as possible.
+                                        Thank you for reaching out. We&apos;ll get back to you as soon as possible.
                                     </p>
                                     <button
+                                        type="button"
                                         onClick={() => {
                                             setIsSubmitted(false);
-                                            setFormState({ name: '', email: '', subject: '', message: '' });
+                                            setFormState(EMPTY_FORM);
                                         }}
                                         className="text-esn-cyan font-bold hover:text-esn-dark transition-colors"
                                     >
@@ -195,10 +221,20 @@ export default function ContactPage() {
                                         Send a Message
                                     </h2>
                                     <p className="text-gray-500 mb-8">
-                                        Fill out the form below and we'll get back to you as soon as possible.
+                                        Fill out the form below and we&apos;ll get back to you as soon as possible.
                                     </p>
 
                                     <form onSubmit={handleSubmit} className="space-y-6">
+                                        {/* Honeypot — invisible to real users, attracts bots */}
+                                        <input
+                                            ref={honeypotRef}
+                                            type="url"
+                                            name="website"
+                                            tabIndex={-1}
+                                            autoComplete="off"
+                                            aria-hidden="true"
+                                            style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }}
+                                        />
                                         <div className="grid gap-6 sm:grid-cols-2">
                                             <div>
                                                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -207,6 +243,9 @@ export default function ContactPage() {
                                                 <input
                                                     type="text"
                                                     id="name"
+                                                    name="name"
+                                                    autoComplete="name"
+                                                    maxLength={100}
                                                     required
                                                     value={formState.name}
                                                     onChange={(e) => setFormState({ ...formState, name: e.target.value })}
@@ -221,6 +260,9 @@ export default function ContactPage() {
                                                 <input
                                                     type="email"
                                                     id="email"
+                                                    name="email"
+                                                    autoComplete="email"
+                                                    maxLength={254}
                                                     required
                                                     value={formState.email}
                                                     onChange={(e) => setFormState({ ...formState, email: e.target.value })}
@@ -237,6 +279,7 @@ export default function ContactPage() {
                                             <div className="relative">
                                                 <select
                                                     id="subject"
+                                                    name="subject"
                                                     required
                                                     value={formState.subject}
                                                     onChange={(e) => setFormState({ ...formState, subject: e.target.value })}
@@ -262,7 +305,10 @@ export default function ContactPage() {
                                             </label>
                                             <textarea
                                                 id="message"
+                                                name="message"
                                                 required
+                                                minLength={10}
+                                                maxLength={5000}
                                                 rows={5}
                                                 value={formState.message}
                                                 onChange={(e) => setFormState({ ...formState, message: e.target.value })}
@@ -271,12 +317,29 @@ export default function ContactPage() {
                                             />
                                         </div>
 
+                                        {error && (
+                                            <div role="alert" className="flex items-start gap-2 text-sm text-red-600 font-medium">
+                                                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true" />
+                                                <p>{error}</p>
+                                            </div>
+                                        )}
+
                                         <button
                                             type="submit"
-                                            className="w-full inline-flex items-center justify-center gap-2 bg-esn-dark px-8 py-4 text-sm font-bold uppercase tracking-widest text-white hover:bg-esn-cyan transition-colors rounded-xl"
+                                            disabled={isSending}
+                                            className="w-full inline-flex items-center justify-center gap-2 bg-esn-dark px-8 py-4 text-sm font-bold uppercase tracking-widest text-white hover:bg-esn-cyan transition-colors rounded-xl disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-esn-dark"
                                         >
-                                            Send Message
-                                            <Send className="w-4 h-4" />
+                                            {isSending ? (
+                                                <>
+                                                    Sending...
+                                                    <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                                                </>
+                                            ) : (
+                                                <>
+                                                    Send Message
+                                                    <Send className="w-4 h-4" aria-hidden="true" />
+                                                </>
+                                            )}
                                         </button>
                                     </form>
                                 </>

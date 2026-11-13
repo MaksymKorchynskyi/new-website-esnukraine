@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react';
 
-export default function ErrorRoot({
+/** Rendered inside the site layout (header and footer stay), so no <html>/<body> here. */
+export default function ErrorPage({
   error,
   reset,
 }: {
@@ -14,23 +15,18 @@ export default function ErrorRoot({
   }, [error]);
 
   return (
-    <html lang="en">
-      <body style={{ margin: 0, padding: 0, fontFamily: 'sans-serif', backgroundColor: '#ffffff', color: '#111827' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: "100svh", padding: '2rem', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 1rem 0' }}>
-            Something went wrong
-          </h2>
-          <p style={{ color: '#6B7280', margin: '0 0 2rem 0', fontSize: '1.125rem' }}>
-            A system error occurred. Please try refreshing the page.
-          </p>
-          <button
-            onClick={() => reset()}
-            style={{ display: 'inline-block', padding: '0.875rem 2rem', backgroundColor: '#00AEEF', color: '#ffffff', border: 'none', borderRadius: '9999px', fontWeight: 500, cursor: 'pointer' }}
-          >
-            Try again
-          </button>
-        </div>
-      </body>
-    </html>
+    <main className="min-h-svh bg-white flex flex-col items-center justify-center px-6 pt-28 pb-16 text-center">
+      <h1 className="text-3xl sm:text-4xl font-black text-esn-dark mb-4">Something went wrong</h1>
+      <p className="text-lg text-gray-500 mb-8 max-w-md">
+        A system error occurred. Please try refreshing the page.
+      </p>
+      <button
+        type="button"
+        onClick={() => reset()}
+        className="inline-flex items-center justify-center rounded-full bg-esn-dark px-8 py-3.5 text-sm font-bold uppercase tracking-widest text-white hover:bg-esn-cyan transition-colors"
+      >
+        Try again
+      </button>
+    </main>
   );
 }

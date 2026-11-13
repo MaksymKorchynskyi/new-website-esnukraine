@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useSyncExternalStore } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Cookie } from 'lucide-react';
 import {
@@ -10,7 +11,9 @@ import {
   subscribeToConsent,
   OPEN_SETTINGS_EVENT,
 } from '@/lib/cookies';
-import CookieSettings from './CookieSettings';
+
+// The preferences dialog (and framer-motion with it) is only downloaded when it is opened
+const CookieSettings = dynamic(() => import('./CookieSettings'), { ssr: false });
 
 /** Run `fn` after the browser has painted, so a tap feels instant on slow phones. */
 function afterPaint(fn: () => void) {
@@ -129,8 +132,8 @@ export default function CookieBanner() {
         </div>
       )}
 
-      {/* Cookie Settings Modal */}
-      <CookieSettings isOpen={settingsOpen} onClose={closeSettings} onSave={handleSettingsSave} />
+      {/* Cookie Settings Modal (lazy: mounted only once opened) */}
+      {settingsOpen && <CookieSettings isOpen={settingsOpen} onClose={closeSettings} onSave={handleSettingsSave} />}
     </>
   );
 }

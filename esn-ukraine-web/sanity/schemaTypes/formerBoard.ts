@@ -16,9 +16,9 @@ export default defineType({
       name: 'order',
       title: 'Порядковий номер',
       type: 'number',
-      description: 'Число для сортування (наприклад, 2021). Більше число буде вище у списку.',
-      validation: (rule) => rule.required(),
-      initialValue: 2020,
+      description: 'Рік (наприклад, 2021). Більше число буде вище у списку.',
+      validation: (rule) => rule.required().integer().min(2000).max(2100),
+      initialValue: () => new Date().getFullYear(),
     }),
     defineField({
       name: 'members',
@@ -48,12 +48,13 @@ export default defineType({
               description: 'Фото члена борду.',
               validation: (rule) => rule.required().custom(validateImageSize(2.5, 3000, 3500)),
               fields: [
-                {
+                defineField({
                   name: 'alt',
                   type: 'string',
                   title: 'Альтернативний текст (Alt опис під фото)',
-                  description: 'Наприклад: Фото члена борду',
-                },
+                  description: 'Наприклад: Dariia Beliaieva, President (англійською)',
+                  validation: (rule) => rule.required().warning('Опишіть фото англійською'),
+                }),
               ],
             }),
           ],

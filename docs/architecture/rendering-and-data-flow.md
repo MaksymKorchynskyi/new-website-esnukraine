@@ -22,10 +22,10 @@ Every public page is rendered on the server. The table shows how each group of r
 | Strategy | Routes | Behaviour |
 |---|---|---|
 | **Static** | `/about-us`, `/contact`, `/cookies`, `/privacy`, `/erasmus` and its subpages, `/for-students/*`, `/blog`, `/projects`, `/robots.txt` | Rendered once at build time. These pages do not read from Sanity, so content changes need a new deployment. |
-| **Incremental static regeneration (ISR)** | `/`, `/news`, `/events`, `/national-board`, `/our-sections`, `/about-us/former-boards`, `/sitemap.xml` | Rendered at build time and cached. Refreshed after one hour or when the publish webhook invalidates the cache. |
-| **ISR with pre-rendered parameters** | `/news/[slug]`, `/events/[slug]` | `generateStaticParams` pre-renders every published slug at build time. A slug published later is rendered on its first request and then cached. Unknown slugs return the 404 page. |
+| **Incremental static regeneration (ISR)** | `/`, `/news`, `/events`, `/upcoming-events`, `/national-board`, `/our-sections`, `/about-us/former-boards`, `/sitemap.xml`, `/rss.xml` | Rendered at build time and cached. Refreshed after 24 hours or, immediately, when the publish webhook expires the cache tags. `/upcoming-events` reads the `upcomingEvent` and `section` types. |
+| **ISR with pre-rendered parameters** | `/news/[slug]`, `/events/[slug]` | `generateStaticParams` pre-renders every published slug at build time. A slug published later is rendered on its first request and then cached. Unknown slugs are checked against the cached list of all slugs (no Sanity request) and return a real `404`. |
 | **Static shell, browser application** | `/studio/[[...tool]]` (`dynamic = 'force-static'`) | The page delivers the Studio application, which then runs in the browser. |
-| **Dynamic** | `/api/*` | Executed on every request. The newsletter route runs on the Edge runtime. |
+| **Dynamic** | `/api/*` | Executed on every request on the Node.js runtime. |
 
 The cache lifetime and tags come from `sanityFetch`, described below. Pages do not export their own `revalidate` settings.
 
@@ -45,15 +45,15 @@ Its behaviour depends on the context:
 
 | Context | Perspective | Caching | Other |
 |---|---|---|---|
-| **Normal request** (production, preview) | `published`: only published documents | Next.js data cache with `revalidate: 3600` and tags `['sanity', …tags]` | `stega` off |
-| **Draft mode** | `previewDrafts`: drafts override published documents | No caching (`revalidate: 0`) | Uses `SANITY_API_READ_TOKEN`; `stega` on, for visual editing |
+| **Normal request** (production, preview) | `published`: only published documents | Next.js data cache with `revalidate: 86400` (24 h) and the given tags | `stega` off |
+| **Draft mode** | `drafts`: drafts override published documents | No caching (`revalidate: 0`) | Uses `SANITY_API_READ_TOKEN`; `stega` on, for visual editing |
 | **Development** (`npm run dev`) | `published` | No caching (`revalidate: 0`) | Content changes appear on refresh |
 
 Implementation details worth knowing:
 
 - **The CDN is bypassed.** The client in `sanity/lib/client.ts` sets `useCdn: false`, so every fetch reads fresh data from the Sanity API. Next.js caching keeps the number of API calls low.
 - **Tags are sanitised.** Characters outside `a–z`, `A–Z`, `0–9`, `_`, `-` and `:` are replaced with `-`. Tags such as `news:<slug>` can contain special characters from slugs, which caused server errors in the past.
-- **Every tag list includes `sanity`.** That way a single `revalidateTag('sanity')` refreshes every page that uses CMS data.
+- **Tags name every document type a query reads.** The webhook expires only the tags of the published type (and `type:slug` for one document), so publishing an event no longer regenerates every page of the site. There is no global tag any more.
 - **`draftMode()` outside a request.** At build time, for example inside `generateStaticParams`, the function throws. `sanityFetch` catches the error and treats the request as not being in draft mode.
 
 The queries themselves are listed in [Content model → Queries](../reference/content-model.md#queries).
@@ -130,13 +130,13 @@ If a regeneration fails, for example because Sanity is unreachable or a componen
 
 Draft mode shows unpublished drafts on the real website and adds click-to-edit overlays that link back to the Studio.
 
-1. A maintainer opens `/api/draft-mode/enable?token=<SANITY_API_READ_TOKEN>&slug=/news/<slug>`.
-2. The route compares the token with `SANITY_API_READ_TOKEN`, enables Next.js draft mode (a cookie in the browser), and redirects to the given path.
-3. While the cookie is present, `sanityFetch` uses the `previewDrafts` perspective without caching. The root layout renders `<VisualEditing />`, which turns the invisible `stega` markers in strings into edit links.
+1. A maintainer opens `/api/draft-mode/enable?secret=<SANITY_DRAFT_MODE_SECRET>&slug=/news/<slug>`.
+2. The route compares the secret with `SANITY_DRAFT_MODE_SECRET` (constant-time comparison), enables Next.js draft mode (a cookie in the browser), and redirects to the given path. Only site-relative paths are accepted as `slug`.
+3. While the cookie is present, `sanityFetch` uses the `drafts` perspective without caching. The root layout renders `<VisualEditing />`, which turns the invisible `stega` markers in strings into edit links.
 4. `/api/draft-mode/disable?slug=/` turns draft mode off.
 
 > [!WARNING]
-> The enable URL contains the Sanity read token. Anyone with the URL can read draft content while the token is valid. Do not share the URL or paste it into chats or issues. If it leaks, rotate the token as described in [Deployment and environments](../guides/deployment-and-environments.md#rotate-secrets).
+> The enable URL contains a secret. Anyone with the URL can read draft content while the secret is valid. Do not share the URL or paste it into chats or issues. If it leaks, change `SANITY_DRAFT_MODE_SECRET` in Vercel (the Sanity read token itself never appears in a URL).
 
 The Studio configuration (`sanity.config.ts`) does not include Sanity's Presentation tool, so the Studio has no **Preview** button. `sanity/lib/live.ts` sets up Sanity's Live Content API (`defineLive`), but nothing uses it yet.
 

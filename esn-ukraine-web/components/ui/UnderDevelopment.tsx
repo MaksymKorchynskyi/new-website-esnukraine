@@ -16,24 +16,25 @@ export default function UnderDevelopment() {
                     <Image
                         src="/images/mascot-builder.png"
                         alt="ESN Mascot Building"
-                        fill={true}
+                        fill
                         priority
-                        className="object-contain drop-shadow-sm animate-fade-in-up"
+                        sizes="(max-width: 640px) 288px, 320px"
+                        className="object-contain drop-shadow-sm animate-slide-up"
                     />
                 </div>
 
-                <h1 className="text-2xl md:text-3xl font-black text-esn-dark mb-3 tracking-tight animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+                <h1 className="text-2xl md:text-3xl font-black text-esn-dark mb-3 tracking-tight animate-slide-up" style={{ animationDelay: '100ms' }}>
                     Under Construction
                 </h1>
                 
-                <p className="text-sm md:text-base text-gray-500 mb-10 leading-relaxed max-w-sm mx-auto animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+                <p className="text-sm md:text-base text-gray-500 mb-10 leading-relaxed max-w-sm mx-auto animate-slide-up" style={{ animationDelay: '200ms' }}>
                     Measure twice, hit with a hammer once.
                 </p>
 
                 {/* Button matching ESN light theme style */}
                 <Link
                     href="/"
-                    className="group inline-flex items-center gap-3 bg-esn-dark px-8 py-4 text-sm font-bold uppercase tracking-widest text-white hover:bg-esn-cyan transition-colors duration-300 rounded-full animate-fade-in-up"
+                    className="group inline-flex items-center gap-3 bg-esn-dark px-8 py-4 text-sm font-bold uppercase tracking-widest text-white hover:bg-esn-cyan transition-colors duration-300 rounded-full animate-slide-up"
                     style={{ animationDelay: '300ms' }}
                 >
                     <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />

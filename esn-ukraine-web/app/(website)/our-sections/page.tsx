@@ -1,8 +1,10 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { groq } from 'next-sanity';
+import SanityImage from '@/components/ui/SanityImage';
+import { hasAsset, urlFor, type ProjectedImage } from '@/sanity/lib/image';
+import { IMAGE_PROJECTION } from '@/sanity/lib/queries';
 
 // ==========================================
 // INTERFACES
@@ -10,11 +12,19 @@ import { groq } from 'next-sanity';
 interface SectionCard {
     _id: string;
     name: string;
-    city: string;
+    city: string | null;
     summary: string;
-    imageUrl: string | null;
-    instagram: string;
+    image: ProjectedImage | null;
+    instagram: string | null;
 }
+
+/** Stable, unique anchor id per card (two sections in one city must not share an id). */
+function anchorId(section: SectionCard): string {
+    const slug = (section.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    return slug || section._id;
+}
+
+const isHttpUrl = (value: string | null): value is string => !!value && /^https?:\/\//i.test(value);
 
 // ==========================================
 // DATA FETCHING
@@ -26,7 +36,7 @@ async function getSections(): Promise<SectionCard[]> {
     city,
     summary,
     instagram,
-    "imageUrl": mainImage.asset->url
+    "image": mainImage${IMAGE_PROJECTION}
   }`;
     return await sanityFetch<SectionCard[]>({ query, tags: ['section'] });
 }
@@ -96,18 +106,19 @@ export default async function SectionsPage() {
                             {sections.map((section) => (
                                 <article
                                     key={section._id}
-                                    id={section.city.toLowerCase()}
+                                    id={anchorId(section)}
                                     className="group relative bg-white rounded-3xl overflow-hidden flex flex-col border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-esn-cyan/15 hover:-translate-y-2 transition-all duration-500"
                                 >
                                     {/* Section Image Header */}
                                     <div className="relative w-full h-56 bg-gray-50/50 flex items-center justify-center p-8 overflow-hidden">
-                                        {section.imageUrl ? (
+                                        {hasAsset(section.image) ? (
                                             <div className="relative z-10 flex items-center justify-center w-full h-full">
-                                                <Image
-                                                    src={section.imageUrl}
-                                                    alt={section.name}
+                                                <SanityImage
+                                                    src={urlFor(section.image).width(720).url()}
+                                                    alt={section.image.alt || `${section.name} logo`}
                                                     width={360}
                                                     height={240}
+                                                    sizes="(max-width: 768px) 85vw, 300px"
                                                     className="object-contain max-h-full w-auto max-w-[85%] group-hover:scale-110 transition-transform duration-700 ease-out"
                                                 />
                                             </div>
@@ -128,26 +139,29 @@ export default async function SectionsPage() {
                                         </div>
 
                                         <div className="flex-1 mb-8">
-                                            <h3 className="text-2xl font-black text-esn-dark mb-4 group-hover:text-esn-dark transition-colors duration-300">
+                                            <h2 className="text-2xl font-black text-esn-dark mb-4 group-hover:text-esn-dark transition-colors duration-300">
                                                 {section.name}
-                                            </h3>
+                                            </h2>
                                             <p className="text-gray-500 text-sm leading-relaxed">
                                                 {section.summary}
                                             </p>
                                         </div>
 
-                                        {/* Action Button */}
-                                        <div>
-                                            <a
-                                                href={section.instagram || '#'}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-2 bg-esn-dark text-white px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-esn-magenta transition-colors duration-300 shadow-lg shadow-esn-dark/20 hover:shadow-esn-magenta/30"
-                                            >
-                                                Instagram
-                                                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                                            </a>
-                                        </div>
+                                        {/* Action Button: only when the section has an Instagram link */}
+                                        {isHttpUrl(section.instagram) && (
+                                            <div>
+                                                <a
+                                                    href={section.instagram}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    aria-label={`${section.name} on Instagram`}
+                                                    className="inline-flex items-center gap-2 bg-esn-dark text-white px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-esn-magenta transition-colors duration-300 shadow-lg shadow-esn-dark/20 hover:shadow-esn-magenta/30"
+                                                >
+                                                    Instagram
+                                                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                                                </a>
+                                            </div>
+                                        )}
                                     </div>
                                 </article>
                             ))}

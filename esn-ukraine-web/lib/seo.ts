@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 
 export const SITE_NAME = 'ESN Ukraine';
+/** Canonical production origin. Used by sitemap, robots and JSON-LD. */
+export const SITE_URL = 'https://esnukraine.org';
+/** X / Twitter handle for `twitter:site`. */
+export const TWITTER_SITE = '@esnukraine';
 export const DEFAULT_OG_IMAGE = {
   url: '/og-image.jpg',
   width: 1200,
@@ -53,6 +57,7 @@ export function buildMetadata({
     },
     twitter: {
       card: 'summary_large_image',
+      site: TWITTER_SITE,
       title,
       description,
       images: [ogImage],

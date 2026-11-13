@@ -1,15 +1,17 @@
 # API reference
 
-The website has four API routes under `esn-ukraine-web/app/api/`. They are used by Sanity (revalidation webhook), by maintainers (draft mode) and by the newsletter form.
+The website has five API routes under `esn-ukraine-web/app/api/`, plus the RSS feed. They are used by Sanity (revalidation webhook), by maintainers (draft mode), by the newsletter form and by the contact form.
 
 **Audience:** developers who change these routes, and maintainers who configure the Sanity webhook or debug the newsletter.
 
 | Method and path | Purpose | Authentication |
 |---|---|---|
 | [`POST /api/revalidate`](#post-apirevalidate) | Invalidate cached content after a publish in Sanity | Shared secret |
-| [`GET /api/draft-mode/enable`](#get-apidraft-modeenable) | Turn on draft mode in the browser | Sanity read token |
+| [`GET /api/draft-mode/enable`](#get-apidraft-modeenable) | Turn on draft mode in the browser | `SANITY_DRAFT_MODE_SECRET` |
 | [`GET /api/draft-mode/disable`](#get-apidraft-modedisable) | Turn off draft mode | None |
 | [`POST /api/newsletter/subscribe`](#post-apinewslettersubscribe) | Subscribe an email address to the newsletter | Origin check and rate limit |
+| [`POST /api/contact`](#post-apicontact) | Send a contact-form message by email | Origin check and rate limit |
+| [`GET /rss.xml`](#get-rssxml) | RSS feed of the latest news | None |
 
 All JSON responses use `Content-Type: application/json`.
 
@@ -23,44 +25,39 @@ Invalidates the Next.js data cache, so that pages show newly published content. 
 
 ### Authentication
 
-The route reads a secret from the request and compares it with `SANITY_REVALIDATE_SECRET`. It checks these places in order:
-
-1. the `Authorization` header, with an optional `Bearer ` prefix;
-2. the `x-sanity-secret` header;
-3. the `secret` query parameter.
-
-Prefer a header: query parameters end up in access logs. The route does **not** verify Sanity's `sanity-webhook-signature` header, so the webhook must send the secret in one of the places above.
+Sanity signs the request body with the webhook **Secret** (`sanity-webhook-signature` header). The route verifies that signature against `SANITY_REVALIDATE_SECRET` with `parseBody` from `next-sanity/webhook`. Headers or query parameters carrying the secret are not accepted.
 
 ### Request body
 
-Optional JSON. Only one field is read:
+JSON produced by the webhook projection `{ _type, "slug": slug.current }`:
 
 | Field | Type | Description |
 |---|---|---|
-| `_type` | string | The document type that changed, for example `news`. It is used as an additional cache tag. |
+| `_type` | string | Required. The document type that changed, for example `news`. |
+| `slug` | string | Optional. The slug of the changed document; expires the `news:<slug>` / `event:<slug>` tag. |
 
 ### Behaviour
 
-1. Always calls `revalidateTag('sanity', 'max')`. Every Sanity query is tagged `sanity`, so this refreshes all CMS-backed pages.
-2. If `_type` is a string, also calls `revalidateTag(_type, 'max')`.
+1. Waits for Sanity's eventual consistency, so the regenerated page reads the new version of the document.
+2. Calls `revalidateTag(_type, { expire: 0 })` and, when a slug is given, `revalidateTag('<type>:<slug>', { expire: 0 })`.
 
-With the `max` profile, cached entries are marked stale and refreshed in the background on the next request (stale-while-revalidate).
+With `expire: 0` the cached entries are gone immediately: the first visitor after a publish already gets the fresh page.
 
 ### Responses
 
 | Status | Body | When |
 |---|---|---|
-| `200` | `{ "revalidated": true, "now": 1761400000000 }` | Success. `now` is a timestamp in milliseconds |
-| `401` | `{ "message": "Unauthorized: Invalid token" }` | The secret is missing or wrong |
+| `200` | `{ "revalidated": true, "tags": ["news", "news:my-article"], "now": 1761400000000 }` | Success |
+| `400` | `{ "message": "Bad request: missing _type" }` | The projection does not include `_type` |
+| `401` | `{ "message": "Invalid signature" }` | The signature is missing or does not match the secret |
+| `503` | `{ "message": "Revalidation is not configured" }` | `SANITY_REVALIDATE_SECRET` is not set |
 | `500` | `{ "message": "Internal Server Error" }` | Unexpected error. The message is logged |
 
 ### Example
 
 ```bash
-curl -X POST "https://esnukraine.org/api/revalidate" \
-  -H "x-sanity-secret: <SANITY_REVALIDATE_SECRET>" \
-  -H "Content-Type: application/json" \
-  -d '{"_type":"news"}'
+# The request must be signed; use the "Test" button of the webhook in sanity.io/manage
+# or the Sanity CLI instead of a hand-written curl call.
 ```
 
 See [Deployment and environments](../guides/deployment-and-environments.md#configure-the-sanity-webhook) for the webhook configuration in Sanity.
@@ -70,24 +67,24 @@ See [Deployment and environments](../guides/deployment-and-environments.md#confi
 Turns on [Next.js draft mode](https://nextjs.org/docs/app/guides/draft-mode) in the current browser and redirects to a page. In draft mode, pages show unpublished drafts and visual editing overlays. See [Rendering and data flow](../architecture/rendering-and-data-flow.md#draft-mode-and-visual-editing).
 
 - **Source:** [`app/api/draft-mode/enable/route.ts`](../../esn-ukraine-web/app/api/draft-mode/enable/route.ts)
-- **Environment:** `SANITY_API_READ_TOKEN`
+- **Environment:** `SANITY_DRAFT_MODE_SECRET`
 
 ### Query parameters
 
 | Parameter | Required | Description |
 |---|---|---|
-| `token` | Yes | Must equal `SANITY_API_READ_TOKEN` |
-| `slug` | No | The path to open after enabling draft mode, for example `/news/my-article`. Defaults to `/`. Use a path on this website. |
+| `secret` | Yes | Must equal `SANITY_DRAFT_MODE_SECRET` (compared in constant time) |
+| `slug` | No | The path to open after enabling draft mode, for example `/news/my-article`. Defaults to `/`. Only site-relative paths are accepted; anything else redirects to `/`. |
 
 ### Responses
 
 | Status | Body | When |
 |---|---|---|
-| `307` | Redirect to `slug` and set the draft mode cookie | The token is valid |
-| `401` | Plain text `Invalid token` | The token is missing or wrong |
+| `307` | Redirect to `slug` and set the draft mode cookie | The secret is valid |
+| `401` | Plain text `Invalid secret` | The secret is missing or wrong |
 
 > [!WARNING]
-> The URL contains a secret token. Do not share it, and do not paste it into chats, issues or documents.
+> The URL contains a secret. Do not share it, and do not paste it into chats, issues or documents.
 
 ## GET /api/draft-mode/disable
 
@@ -97,7 +94,7 @@ Turns off draft mode in the current browser and redirects to a page.
 
 | Parameter | Required | Description |
 |---|---|---|
-| `slug` | No | The path to open afterwards. Defaults to `/`. Use a path on this website. |
+| `slug` | No | The path to open afterwards. Defaults to `/`. Only site-relative paths are accepted. |
 
 **Response:** `307` redirect to `slug`, with the draft mode cookie removed.
 
@@ -106,8 +103,8 @@ Turns off draft mode in the current browser and redirects to a page.
 Adds an email address to the newsletter audience in Resend. It is called by the newsletter form ([`components/sections/NewsletterForm.client.tsx`](../../esn-ukraine-web/components/sections/NewsletterForm.client.tsx)) on the homepage and the News page.
 
 - **Source:** [`app/api/newsletter/subscribe/route.ts`](../../esn-ukraine-web/app/api/newsletter/subscribe/route.ts)
-- **Runtime:** Edge
-- **Environment:** `RESEND_API_KEY`, `RESEND_AUDIENCE_ID`, `KV_REST_API_URL`, `KV_REST_API_TOKEN`
+- **Runtime:** Node.js
+- **Environment:** `RESEND_API_KEY`, `RESEND_AUDIENCE_ID`, `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `RATE_LIMIT_SALT` (optional)
 
 ### Request
 
@@ -161,11 +158,11 @@ sequenceDiagram
 
 | Status | `error` or `message` | When |
 |---|---|---|
-| `200` | "Welcome aboard! You've been subscribed to our newsletter." (+ `contactId`) | Subscribed |
+| `200` | "Welcome aboard! You've been subscribed to our newsletter." | Subscribed |
 | `200` | "Welcome aboard! You've been subscribed to our newsletter." | Already subscribed |
 | `200` | "Subscribed successfully!" | Honeypot filled in; nothing stored |
 | `400` | "Invalid request body." | The body is not valid JSON |
-| `400` | The first validation message, for example "Please enter a valid email address." or "Privacy consent is required." | Validation failed |
+| `400` | The first validation message, for example "Please enter a valid email address." or "Privacy consent is required." | Validation failed, or Resend rejected the address |
 | `403` | "Unauthorized origin." | Production request from another origin |
 | `429` | "Too many requests. Please try again later." (+ `Retry-After` header, in seconds) | Rate limit exceeded |
 | `503` | "Service Unavailable" | Production without Upstash credentials |
@@ -178,6 +175,43 @@ All responses have the shape `{ "success": boolean, "message"?: string, "error"?
 ### Logging
 
 Logs never contain email addresses. The route logs blocked origins, missing configuration, Resend errors and unexpected exceptions with the prefix `[Newsletter]`. Logs are visible in the Vercel dashboard (**Logs**).
+
+## POST /api/contact
+
+Sends a message from the contact form ([`app/(website)/contact/page.tsx`](../../esn-ukraine-web/app/(website)/contact/page.tsx)) by email through Resend.
+
+- **Source:** [`app/api/contact/route.ts`](../../esn-ukraine-web/app/api/contact/route.ts)
+- **Runtime:** Node.js
+- **Environment:** `RESEND_API_KEY`, `CONTACT_EMAIL_FROM`, `CONTACT_EMAIL_TO` (optional), `KV_REST_API_URL`, `KV_REST_API_TOKEN`
+
+### Request
+
+```http
+POST /api/contact
+Content-Type: application/json
+
+{ "name": "Jane Doe", "email": "jane@example.com", "subject": "partnership", "message": "…", "honeypot": "" }
+```
+
+`subject` is one of `general`, `buddy`, `partnership`, `new-section`, `media`, `other`. `name` is 2–100 characters, `message` 10–5000 characters. `honeypot` must stay empty (bots that fill it get a fake success).
+
+### Responses
+
+| Status | `error` | When |
+|---|---|---|
+| `200` | — | Sent (`{ "success": true }`) |
+| `400` | The first validation message | Validation failed |
+| `403` | "Unauthorized origin." | Production request from another origin |
+| `429` | "Too many messages. Please try again in a few minutes." (+ `Retry-After`) | More than 3 messages in 10 minutes from one visitor |
+| `502` | "We could not send your message. Please email us at …" | Resend returned an error |
+| `503` | "The contact form is temporarily unavailable. Please email us at …" | `RESEND_API_KEY` or `CONTACT_EMAIL_FROM` missing |
+| `503` | "Service Unavailable" | Production without Upstash credentials |
+
+The email is sent to `CONTACT_EMAIL_TO` with the visitor's address as `Reply-To`; all values are escaped in the HTML body.
+
+## GET /rss.xml
+
+RSS 2.0 feed of the 30 latest news items, generated by [`app/rss.xml/route.ts`](../../esn-ukraine-web/app/rss.xml/route.ts). It uses `sanityFetch` with the `news` tag, so it is refreshed together with the news pages. If Sanity is unreachable the feed is served empty rather than failing.
 
 ## Related
 

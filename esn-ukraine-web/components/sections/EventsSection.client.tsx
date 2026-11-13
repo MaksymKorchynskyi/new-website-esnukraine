@@ -1,17 +1,25 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import SanityImage from '@/components/ui/SanityImage';
 
 export interface PastEvent {
-  id: number;
+  id: string | number;
   title: string;
   date: string;
   location: string;
   description: string;
-  image: string;
+  image: string | null;
+  imageLqip?: string;
   link?: string;
+}
+
+function scrollSlider(delta: number) {
+  const slider = document.getElementById('events-slider');
+  if (!slider) return;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  slider.scrollBy({ left: delta, behavior: reduce ? 'auto' : 'smooth' });
 }
 
 export interface EventsSectionProps {
@@ -35,12 +43,22 @@ export default function EventsSection({ events }: EventsSectionProps) {
                 href={event.link || '/events'}
                 className="block aspect-[3/4] overflow-hidden rounded-2xl sm:rounded-3xl bg-gray-800 relative focus:outline-none focus:ring-2 focus:ring-esn-cyan"
               >
-                <Image
-                  src={event.image}
-                  alt={event.title}
-                  fill={true}
-                  className="object-cover transition-all duration-500 opacity-80 group-hover:opacity-100 group-hover:scale-105"
-                />
+                {event.image ? (
+                  <SanityImage
+                    src={event.image}
+                    // Decorative: the title is in the overlay inside the same link
+                    alt=""
+                    fill
+                    sizes="(max-width: 640px) 82vw, 400px"
+                    className="object-cover transition-all duration-500 opacity-80 group-hover:opacity-100 group-hover:scale-105"
+                    placeholder={event.imageLqip ? 'blur' : 'empty'}
+                    blurDataURL={event.imageLqip}
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-esn-dark/60">
+                    <span className="text-white/60 font-black text-3xl">ESN</span>
+                  </div>
+                )}
 
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-esn-dark via-esn-dark/40 to-esn-dark/0 opacity-90 transition-opacity duration-300 group-hover:opacity-95" />
@@ -70,24 +88,16 @@ export default function EventsSection({ events }: EventsSectionProps) {
 
         {/* Custom Slider Controls */}
         <button
-          onClick={() => {
-            const slider = document.getElementById('events-slider');
-            if (slider) {
-              slider.scrollBy({ left: -416, behavior: 'smooth' });
-            }
-          }}
+          type="button"
+          onClick={() => scrollSlider(-416)}
           className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 items-center justify-center text-white hover:bg-white hover:text-esn-dark transition-all"
           aria-label="Previous events"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
         <button
-          onClick={() => {
-            const slider = document.getElementById('events-slider');
-            if (slider) {
-              slider.scrollBy({ left: 416, behavior: 'smooth' });
-            }
-          }}
+          type="button"
+          onClick={() => scrollSlider(416)}
           className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 items-center justify-center text-white hover:bg-white hover:text-esn-dark transition-all"
           aria-label="Next events"
         >

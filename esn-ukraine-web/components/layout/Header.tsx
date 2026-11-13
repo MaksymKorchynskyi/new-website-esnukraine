@@ -8,16 +8,21 @@ import { ChevronDown, Menu, X } from 'lucide-react';
 import { MAIN_NAV, SOCIAL_LINKS } from '@/lib/navigation';
 import type { NavItem, NavItemMega, NavItemDropdown } from '@/lib/navigation';
 import LanguageSwitcher from './LanguageSwitcher';
+import { lockScroll } from '@/lib/scrollLock';
+
+const scrollBehavior = (): ScrollBehavior =>
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -35,29 +40,33 @@ const Header = () => {
     return () => mql.removeEventListener('change', handler);
   }, []);
 
+  // While the mobile menu is open: iOS-safe scroll lock, and the page behind the
+  // menu becomes inert so Tab and screen readers cannot reach it
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-    }
+    if (!isMobileMenuOpen) return;
+    const unlock = lockScroll();
+    const inertTargets = [document.getElementById('content'), document.querySelector('footer')].filter(
+      (el): el is HTMLElement => el instanceof HTMLElement,
+    );
+    inertTargets.forEach((el) => el.setAttribute('inert', ''));
     return () => {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      unlock();
+      inertTargets.forEach((el) => el.removeAttribute('inert'));
     };
   }, [isMobileMenuOpen]);
 
-
-
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setActiveDropdown(null);
+      if (e.key !== 'Escape') return;
+      setActiveDropdown(null);
+      if (isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, []);
+  }, [isMobileMenuOpen]);
 
   // Cleanup timeout on unmount
   useEffect(() => () => {
@@ -115,6 +124,7 @@ const Header = () => {
       </div>
 
       <nav
+        aria-label="Main"
         className={`w-full transition-all duration-300 ${
           isScrolled ? 'shadow-md border-b border-gray-100' : 'border-b border-gray-100'
         }`}
@@ -126,7 +136,7 @@ const Header = () => {
             onClick={(e) => {
               if (window.location.pathname === '/') {
                 e.preventDefault();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({ top: 0, behavior: scrollBehavior() });
               }
             }}
             className="flex items-center transition-opacity duration-200 hover:opacity-90 cursor-pointer shrink-0"
@@ -137,7 +147,7 @@ const Header = () => {
                 alt="ESN Ukraine"
                 width={128}
                 height={64}
-                loading="eager"
+                sizes="128px"
                 className="w-full h-full object-contain object-left sm:object-center"
               />
             </div>
@@ -173,12 +183,12 @@ const Header = () => {
                   onMouseLeave={scheduleClose}
                 >
                   <button
+                    type="button"
                     onClick={() => setActiveDropdown(isActive ? null : item.label)}
                     className={`relative flex items-center gap-1 py-2 text-[13px] font-bold tracking-wider uppercase transition-colors duration-200 whitespace-nowrap group ${
                       isActive ? 'text-esn-cyan' : 'text-esn-dark hover:text-esn-cyan'
                     }`}
                     aria-expanded={isActive}
-                    aria-haspopup="true"
                   >
                     <span>{item.label}</span>
                     <ChevronDown
@@ -230,9 +240,13 @@ const Header = () => {
               <LanguageSwitcher />
             </div>
             <button
+              ref={menuButtonRef}
+              type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="xl:hidden p-2 rounded-md text-esn-dark hover:bg-esn-cyan/10 transition-colors duration-200"
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -249,7 +263,7 @@ const Header = () => {
         )}
 
         {isMobileMenuOpen && (
-          <div className="xl:hidden bg-white border-t border-gray-100 relative z-50 shadow-xl max-h-[calc(100dvh-76px)] sm:max-h-[calc(100dvh-84px)] overflow-y-auto overscroll-contain">
+          <div id="mobile-menu" className="xl:hidden bg-white border-t border-gray-100 relative z-50 shadow-xl max-h-[calc(100dvh-76px)] sm:max-h-[calc(100dvh-84px)] overflow-y-auto overscroll-contain">
             <div className="px-4 py-6 space-y-6">
               {/* Social + Language */}
               <div className="flex items-center justify-between gap-2 pb-4 border-b border-gray-100">
@@ -277,6 +291,7 @@ const Header = () => {
                     {hasSubItems(item) ? (
                       <div>
                         <button
+                          type="button"
                           onClick={() => handleMobileToggle(item.label)}
                           className="flex items-center justify-between w-full text-left text-esn-dark font-bold text-sm tracking-wider uppercase hover:text-esn-cyan transition-colors duration-200"
                           aria-expanded={activeDropdown === item.label}

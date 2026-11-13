@@ -1,19 +1,17 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { buildMetadata } from '@/lib/seo';
+import { JsonLd, webPageJsonLd } from '@/lib/jsonld';
 import {
   ArrowLeft,
   ArrowRight,
   Building2,
   Globe2,
-  Users,
   CheckCircle2,
   ChevronRight,
   ExternalLink,
   Mail,
-  Phone,
   MapPin,
-  BookOpen,
   Megaphone,
   BarChart3,
   Handshake,
@@ -99,34 +97,17 @@ const initiatives = [
 ];
 
 export default function NationalErasmusOfficePage() {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
+  const jsonLd = webPageJsonLd({
     name: 'National Erasmus+ Office in Ukraine — Support & Information',
     description:
       'Learn about the National Erasmus+ Office (NEO) in Ukraine: its role in supporting Erasmus+ programme implementation, services for universities and students.',
-    url: 'https://esnukraine.org/erasmus/national-erasmus-office',
-    publisher: {
-      '@type': 'Organization',
-      name: 'ESN Ukraine',
-      url: 'https://esnukraine.org',
-    },
-    breadcrumb: {
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://esnukraine.org' },
-        { '@type': 'ListItem', position: 2, name: 'Erasmus+', item: 'https://esnukraine.org/erasmus' },
-        { '@type': 'ListItem', position: 3, name: 'National Erasmus+ Office', item: 'https://esnukraine.org/erasmus/national-erasmus-office' },
-      ],
-    },
-  };
+    path: '/erasmus/national-erasmus-office',
+    breadcrumbs: [{ name: 'Home', path: '/' }, { name: 'Erasmus+', path: '/erasmus' }, { name: 'National Erasmus+ Office', path: '/erasmus/national-erasmus-office' }],
+  });
 
   return (
     <main className="min-h-svh bg-white">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       {/* ═══════ HERO ═══════ */}
       <section className="relative pt-32 sm:pt-36 md:pt-40 pb-20 sm:pb-24 md:pb-32 bg-esn-dark overflow-hidden">

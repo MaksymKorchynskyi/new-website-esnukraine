@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import SanityImage from '@/components/ui/SanityImage';
 import { ArrowUpRight, Calendar, CalendarX2, Check, ChevronDown, MapPin, RotateCcw, X } from 'lucide-react';
 import { formatDate } from '@/sanity/lib/utils';
 import { ESN_CAUSES, ESN_CAUSE_BY_VALUE } from '@/lib/esnCauses';
@@ -16,6 +16,7 @@ export interface UpcomingEvent {
   description?: string | null;
   link?: string | null;
   imageUrl: string | null;
+  imageLqip?: string | null;
   section: { _id: string; name: string } | null;
   causes: string[];
 }
@@ -50,12 +51,15 @@ function UpcomingEventCard({ event }: { event: UpcomingEvent }) {
     <article className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-200 sm:border-gray-100 shadow-md sm:shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-esn-dark/10">
       <div className="relative h-52 sm:h-64 overflow-hidden">
         {event.imageUrl ? (
-          <Image
+          <SanityImage
             src={event.imageUrl}
-            alt={event.title}
+            // Decorative: the title sits right below inside the same card
+            alt=""
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            placeholder={event.imageLqip ? 'blur' : 'empty'}
+            blurDataURL={event.imageLqip ?? undefined}
           />
         ) : (
           <div className="flex items-center justify-center h-full bg-esn-cyan/5">
@@ -82,9 +86,9 @@ function UpcomingEventCard({ event }: { event: UpcomingEvent }) {
             )}
           </div>
 
-          <h3 className="mb-2 sm:mb-3 text-xl sm:text-2xl font-bold leading-tight text-esn-dark group-hover:text-esn-cyan transition-colors break-words">
+          <h2 className="mb-2 sm:mb-3 text-xl sm:text-2xl font-bold leading-tight text-esn-dark group-hover:text-esn-cyan transition-colors break-words">
             {event.title}
-          </h3>
+          </h2>
 
           {event.description && (
             <p className="text-sm sm:text-base text-gray-600 sm:text-gray-500 line-clamp-3 leading-relaxed break-words">
@@ -167,7 +171,9 @@ function FilterDropdown({
 
   // On small screens the list can open below the fold: bring it into view
   useEffect(() => {
-    if (open) panelRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    if (!open) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    panelRef.current?.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
   }, [open]);
 
   const summary =
