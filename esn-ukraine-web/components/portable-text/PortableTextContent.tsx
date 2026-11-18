@@ -68,12 +68,12 @@ const components: PortableTextComponents = {
         <figure className={containerClass} style={!isFullWidth ? { maxWidth: `${width}%` } : undefined}>
           <div className={`relative w-full overflow-hidden ${isRounded ? "rounded-2xl" : ""}`}>
             <SanityImage
-              src={urlFor(value).width(renderWidth).url()}
+              src={value.asset.url ?? urlFor(value).width(1200).url()}
               alt={value.alt || value.caption || ""}
               width={renderWidth}
               height={renderHeight}
               className="w-full h-auto object-cover"
-              sizes={isFullWidth ? "(max-width: 768px) 100vw, 1024px" : `(max-width: 768px) 100vw, ${Math.round((1024 * Number(width)) / 100)}px`}
+              sizes="(max-width: 768px) 100vw, 800px"
               placeholder={value.asset.lqip ? "blur" : "empty"}
               blurDataURL={value.asset.lqip ?? undefined}
             />
@@ -98,11 +98,11 @@ const components: PortableTextComponents = {
             return (
               <figure key={img._key || idx} className={`group relative overflow-hidden aspect-[4/3] ${isRounded ? "rounded-xl" : ""}`}>
                 <SanityImage
-                  src={urlFor(img).width(800).height(600).fit("crop").url()}
+                  src={img.asset.url ?? urlFor(img).width(800).url()}
                   alt={img.alt || img.caption || ""}
                   fill
                   className="object-cover"
-                  sizes={`(max-width: 768px) 50vw, ${Math.round(1024 / cols)}px`}
+                  sizes={`(max-width: 768px) 50vw, ${Math.round(100 / cols)}vw`}
                   placeholder={img.asset.lqip ? "blur" : "empty"}
                   blurDataURL={img.asset.lqip ?? undefined}
                 />

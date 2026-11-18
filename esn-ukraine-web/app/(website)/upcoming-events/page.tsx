@@ -8,7 +8,7 @@ import UpcomingEvents, {
 import { buildMetadata } from '@/lib/seo';
 import { isUpcomingEvent } from '@/lib/events';
 import { JsonLd, eventJsonLd } from '@/lib/jsonld';
-import { cardImageUrl, hasAsset, type ProjectedImage } from '@/sanity/lib/image';
+import { originalImageUrl, type ProjectedImage } from '@/sanity/lib/image';
 import { IMAGE_PROJECTION } from '@/sanity/lib/queries';
 
 export const metadata = buildMetadata({
@@ -50,7 +50,7 @@ async function getData(): Promise<{ events: UpcomingEvent[]; sections: SectionOp
       .filter((e) => isUpcomingEvent(e.date))
       .map(({ image, ...e }) => ({
         ...e,
-        imageUrl: hasAsset(image) ? cardImageUrl(image) : null,
+        imageUrl: originalImageUrl(image),
         imageLqip: image?.asset?.lqip ?? null,
       })),
     sections: data?.sections ?? [],

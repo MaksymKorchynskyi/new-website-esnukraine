@@ -18,10 +18,24 @@ interface SectionCard {
     instagram: string | null;
 }
 
-/** Stable, unique anchor id per card (two sections in one city must not share an id). */
-function anchorId(section: SectionCard): string {
-    const slug = (section.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    return slug || section._id;
+const toAnchor = (value: string | null | undefined) =>
+    (value || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+/**
+ * Anchor id per card. The first section of a city keeps the city anchor the
+ * site has always used (`/our-sections#kyiv`); a second section in the same
+ * city gets its name instead (`#esn-ifnul`), so ids stay unique.
+ */
+function buildAnchorIds(sections: SectionCard[]): Map<string, string> {
+    const ids = new Map<string, string>();
+    const used = new Set<string>();
+    for (const section of sections) {
+        const candidates = [toAnchor(section.city), toAnchor(section.name), section._id];
+        const id = candidates.find((c) => c && !used.has(c)) ?? section._id;
+        used.add(id);
+        ids.set(section._id, id);
+    }
+    return ids;
 }
 
 const isHttpUrl = (value: string | null): value is string => !!value && /^https?:\/\//i.test(value);
@@ -56,6 +70,7 @@ export const metadata = buildMetadata({
 // ==========================================
 export default async function SectionsPage() {
     const sections = await getSections();
+    const anchorIds = buildAnchorIds(sections);
 
     return (
         <main className="min-h-svh bg-white">
@@ -106,7 +121,7 @@ export default async function SectionsPage() {
                             {sections.map((section) => (
                                 <article
                                     key={section._id}
-                                    id={anchorId(section)}
+                                    id={anchorIds.get(section._id)}
                                     className="group relative bg-white rounded-3xl overflow-hidden flex flex-col border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-esn-cyan/15 hover:-translate-y-2 transition-all duration-500"
                                 >
                                     {/* Section Image Header */}
@@ -114,11 +129,10 @@ export default async function SectionsPage() {
                                         {hasAsset(section.image) ? (
                                             <div className="relative z-10 flex items-center justify-center w-full h-full">
                                                 <SanityImage
-                                                    src={urlFor(section.image).width(720).url()}
+                                                    src={section.image.asset.url ?? urlFor(section.image).url()}
                                                     alt={section.image.alt || `${section.name} logo`}
                                                     width={360}
                                                     height={240}
-                                                    sizes="(max-width: 768px) 85vw, 300px"
                                                     className="object-contain max-h-full w-auto max-w-[85%] group-hover:scale-110 transition-transform duration-700 ease-out"
                                                 />
                                             </div>

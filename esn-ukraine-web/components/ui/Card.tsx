@@ -5,7 +5,7 @@ import { formatDate } from "@/sanity/lib/utils";
 
 interface BaseCardProps {
   title: string;
-  /** Pre-built 4:3 image URL (see `cardImageUrl`) */
+  /** Original Sanity image URL (resized by the Sanity CDN via SanityImage) */
   imageUrl?: string | null;
   /** Sanity LQIP blur placeholder */
   imageLqip?: string | null;

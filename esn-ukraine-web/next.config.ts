@@ -22,12 +22,11 @@ const nextConfig: NextConfig = {
   // Next 16.4 writes an AGENTS.md into the project on every `next dev`; keep the tree clean.
   agentRules: false,
   images: {
-    // Sanity images are served straight from the Sanity CDN (see sanity/lib/imageLoader.ts),
-    // so the Vercel optimizer only handles the few files in /public. One output format
-    // and a long cache keep the free-tier transformation quota low.
-    formats: ['image/webp'],
-    // Next 16 only allows listed qualities; 35 is the blurred article banner (Sanity CDN).
-    qualities: [35, 75],
+    // Sanity images are served straight from the Sanity CDN (see sanity/lib/imageLoader.ts)
+    // at the same widths and quality (75) as before, so the Vercel optimizer only handles
+    // the few files in /public. Same output formats as production; a long cache keeps the
+    // free-tier transformation quota low.
+    formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 2678400, // 31 days
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],

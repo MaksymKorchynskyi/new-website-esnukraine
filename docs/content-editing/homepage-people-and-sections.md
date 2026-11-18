@@ -58,15 +58,13 @@ Each person is one document in **Члени Борду (Board Members)**.
 | **Категорія / Розділ борду** | The group: The Board, The Board Support, or The Audit Board & Advisory Council |
 | **Порядковий номер** | Order within the group: 1, 2, 3… |
 | **Фотографія** | A portrait photo in 4:5 format (for example 1200 × 1500 px), at most 2 MB, with the face in the upper part. The cards are cropped from the top. **Alt text is required**, for example "Name Surname, President" |
-| **Опис**, **Секція ESN**, **Email**, **LinkedIn URL** | Optional |
 
 How the page shows people:
 
 - Cards show only the photo. Clicking a card enlarges the photo, and the name and position appear when you point at it.
-- The optional fields **Опис**, **Секція ESN**, **Email** and **LinkedIn URL** are currently not displayed.
 
 > [!WARNING]
-> The optional fields are still included in the page data that browsers download, so anyone could read them. Only enter information the person agreed to make public.
+> The Sanity dataset is public, so anyone could read every field. Only enter information the person agreed to make public.
 
 The group headings, such as "The Board 2025-26", are part of the website code. At the start of a new term, ask a developer to update the year. See the [annual board changeover](../guides/maintenance-tasks.md#annual-board-changeover) for the full procedure.
 

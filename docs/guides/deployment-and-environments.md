@@ -89,7 +89,7 @@ The webhook tells the website that content changed (see [Rendering and data flow
 | URL | `https://esnukraine.org/api/revalidate` |
 | Dataset | The production dataset |
 | Trigger on | Create, Update, Delete |
-| Filter | Optional, for example `_type in ["news", "event", "upcomingEvent", "section", "boardMember", "formerBoard", "networkPhoto", "newsCategory", "eventCategory"]` |
+| Filter | Optional, for example `_type in ["news", "event", "upcomingEvent", "section", "boardMember", "formerBoard", "networkPhoto", "newsCategory"]` |
 | Projection | `{ _type, "slug": slug.current }`. The route expires the `_type` tag and, for news and events, the `type:slug` tag of that one document |
 | HTTP method | `POST` |
 | Secret | The value of `SANITY_REVALIDATE_SECRET`. Sanity signs every request with it (`sanity-webhook-signature` header) |

@@ -34,10 +34,9 @@ Open **Події (Events)** and create a document. Most fields work as for news
 |---|---|---|
 | **Назва події** (title) | 5–150 characters | |
 | **Дата та час створення** | Filled in automatically | The date the page was created, not the event date |
-| **Дата проведення** (event date) | Required. Date and time of the event | Determines the order on the Events page and the homepage, and is shown on cards |
+| **Дата проведення** (event date) | Required. Date and time of the event | Determines the order on the Events page and the homepage, and is shown on cards. The event appears on the website only after this date; announce future events under **Майбутні події** |
 | **Місце проведення** (location) | Optional, for example "Lviv, Ivan Franko University" | Shown on event cards and the event page |
-| **Посилання на реєстрацію (Google Form)** | Optional link to the registration form | Shows a box with **"Зареєструватися"** (Register) on the event page |
-| **Категорія** | Optional | Not shown on the website at the moment |
+| **Посилання на реєстрацію (Google Form)** | Optional link to the registration form | Shows a box with a **Register** button on the event page |
 
 > [!IMPORTANT]
 > The registration box says that registration is open whenever a registration link is filled in, even after the event. **Remove the link when registration closes.**
@@ -81,7 +80,7 @@ The body editor works like a simple word processor.
 Use **Прикріплені файли** for documents such as rules, programmes or reports.
 
 1. Add an item and upload the file: PDF, Word, Excel or PowerPoint, at most 10 MB.
-2. Fill in **Назва файлу** (the title visitors see, for example "Competition rules") and, optionally, a short description.
+2. Fill in **Назва файлу** (the title visitors see, for example "Competition rules"). Without it, the file name is shown.
 
 On a computer, PDFs open in a preview window on the page. Other files, and all files on phones, open in a new browser tab. PDF is the most convenient format for visitors.
 
@@ -105,7 +104,7 @@ The slider shows up to **five** Spotlight items, the newest first: by event date
 
 ## Categories
 
-Create categories under **Категорії новин** and **Категорії подій**, or directly from the category field. A category has a name (2–50 characters) and a slug. At the moment, only news categories are shown, as a label on the News page.
+Create news categories under **Категорії новин**, or directly from the category field. A category has a name (2–50 characters), which is shown as a label on the cards of the News page. Events have no categories.
 
 ## Edit, unpublish or delete
 

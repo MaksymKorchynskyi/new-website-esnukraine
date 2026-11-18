@@ -18,7 +18,6 @@ export default function UnderDevelopment() {
                         alt="ESN Mascot Building"
                         fill
                         priority
-                        sizes="(max-width: 640px) 288px, 320px"
                         className="object-contain drop-shadow-sm animate-slide-up"
                     />
                 </div>

@@ -30,7 +30,7 @@ import { stegaClean } from 'next-sanity';
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { getHomePageQuery } from "@/sanity/lib/queries";
 import type { HomePageData, NetworkPhoto } from "@/sanity/lib/types";
-import { cardImageUrl, hasAsset, hotspotPosition, urlFor } from "@/sanity/lib/image";
+import { hasAsset, hotspotPosition, originalImageUrl } from "@/sanity/lib/image";
 import { formatDate } from "@/sanity/lib/utils";
 import type { VolunteerPhotoItem } from '@/components/sections/NetworkCollage.client';
 
@@ -51,7 +51,7 @@ function toCollagePhoto(photo: NetworkPhoto): VolunteerPhotoItem | null {
   if (!hasAsset(photo.image)) return null;
   return {
     id: photo.id,
-    url: urlFor(photo.image).width(800).url(),
+    url: photo.image.asset.url ?? "",
     alt: photo.title,
     lqip: photo.image.asset.lqip ?? undefined,
   };
@@ -82,7 +82,7 @@ export default async function Home() {
       date: formatDate(item.date || item.publishedAt),
       title: item.title,
       description: item.excerpt,
-      image: urlFor(item.banner!).width(1600).url(),
+      image: originalImageUrl(item.banner) ?? "",
       imageBlur: item.banner?.asset?.lqip ?? undefined,
       imagePosition: hotspotPosition(item.banner),
       link: `/${item._type === 'news' ? 'news' : 'events'}/${item.slug}`,
@@ -93,7 +93,7 @@ export default async function Home() {
     title: item.title,
     publishedAt: item.publishedAt,
     excerpt: item.excerpt,
-    imageUrl: hasAsset(item.image) ? cardImageUrl(item.image) : null,
+    imageUrl: originalImageUrl(item.image),
     imageLqip: item.image?.asset?.lqip,
     slug: item.slug,
     type: 'news' as const,
@@ -105,7 +105,7 @@ export default async function Home() {
     date: formatDate(item.date),
     location: item.location || 'Online',
     description: item.excerpt,
-    image: hasAsset(item.image) ? urlFor(item.image).width(800).url() : null,
+    image: originalImageUrl(item.image),
     imageLqip: item.image?.asset?.lqip ?? undefined,
     link: `/events/${item.slug}`,
   }));

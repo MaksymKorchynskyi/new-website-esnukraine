@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { SOCIAL_LINKS, FOOTER_QUICK_LINKS, FOOTER_POLICY_LINKS } from '@/lib/navigation';
 
 export default function Footer() {
@@ -25,12 +24,15 @@ export default function Footer() {
                             className="inline-block self-start mb-5 hover:opacity-90 transition-opacity cursor-pointer group"
                             aria-label="ESN Ukraine — Scroll to top"
                         >
-                            <Image
+                            {/* Original PNG, as on production: crisp logo edges */}
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
                                 src="/logo-esn-ukraine-white.png"
                                 alt="ESN Ukraine"
                                 width={200}
                                 height={80}
-                                sizes="240px"
+                                loading="lazy"
+                                decoding="async"
                                 className="h-20 sm:h-24 lg:h-[90px] w-auto object-contain select-none"
                                 draggable={false}
                             />

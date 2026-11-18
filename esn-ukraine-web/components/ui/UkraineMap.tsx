@@ -9,7 +9,6 @@ export default function UkraineMap() {
                 alt="ESN Ukraine Section Map"
                 width={1536}
                 height={1024}
-                sizes="(max-width: 1024px) 100vw, 1024px"
                 className="w-full h-auto object-contain pointer-events-none select-none"
                 draggable={false}
                 priority

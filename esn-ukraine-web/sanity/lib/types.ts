@@ -69,7 +69,6 @@ export interface EventDetail {
   publishedAt: string;
   excerpt: string;
   location?: string | null;
-  categoryTitle?: string | null;
   registrationLink?: string | null;
   mainImage: ProjectedImage | null;
   bannerImage: ProjectedImage | null;

@@ -49,7 +49,6 @@ export default function EventsSection({ events }: EventsSectionProps) {
                     // Decorative: the title is in the overlay inside the same link
                     alt=""
                     fill
-                    sizes="(max-width: 640px) 82vw, 400px"
                     className="object-cover transition-all duration-500 opacity-80 group-hover:opacity-100 group-hover:scale-105"
                     placeholder={event.imageLqip ? 'blur' : 'empty'}
                     blurDataURL={event.imageLqip}

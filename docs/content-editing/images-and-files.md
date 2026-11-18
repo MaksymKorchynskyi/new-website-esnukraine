@@ -15,24 +15,17 @@ The Studio checks every upload. If a file is too large, it shows a red message, 
 
 | Where | Maximum file size | Maximum resolution |
 |---|---|---|
-| Card image and banner of news and events | 3 MB | 6,000 × 6,000 px |
-| Photos in the article text and in photo rows | 2 MB | 6,000 × 6,000 px |
-| Photo gallery of news and events | 2 MB per photo | 6,000 × 6,000 px |
+| Card image and banner of news and events | 12 MB | 10,000 × 10,000 px |
+| Photos in the article text and in photo rows | 2 MB | 10,000 × 10,000 px |
+| Photo gallery of news and events | 2 MB per photo | 10,000 × 10,000 px |
 | Attached files | 10 MB per file | — |
 | Board member photo | 2 MB | 3,000 × 3,500 px |
 | Former board member photo | 2.5 MB | 3,000 × 3,500 px |
 | Section logo | 2 MB | 3,000 × 3,000 px |
-| "Our Network" photo | 2 MB | 4,000 × 4,000 px |
-| Upcoming event poster | 2 MB | 4,000 × 4,000 px |
+| "Our Network" photo | 2 MB | — |
+| Upcoming event poster | 2 MB | — |
 
-Only JPG, PNG, WebP and AVIF are accepted. A PNG photo over 1 MB shows a warning: convert it to JPEG or WebP, it will be several times smaller.
-
-> [!IMPORTANT]
-> Validation runs **after** the upload. A rejected file is already stored in Sanity's asset store, so delete it (Studio → the image field → menu → Delete, or the asset in the Media view) to keep the free-tier storage quota free.
-
-The website never serves originals: every photo is resized and converted to WebP/AVIF by the Sanity CDN for the size it is displayed at.
-
-Some field descriptions in the Studio mention other numbers. The limits in this table are the ones the Studio enforces.
+The field descriptions in the Studio state the same limits.
 
 ## Recommended photo shapes
 

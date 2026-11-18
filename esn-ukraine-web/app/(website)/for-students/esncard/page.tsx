@@ -49,9 +49,8 @@ export default function ESNcardPage() {
                                 <Image
                                     src="/esncard.png"
                                     alt="ESNcard Membership Card Specimen"
-                                    width={1024}
-                                    height={684}
-                                    sizes="(max-width: 1024px) 100vw, 540px"
+                                    width={800}
+                                    height={507}
                                     className="w-full h-auto object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.18)]"
                                     priority
                                 />
@@ -161,7 +160,6 @@ export default function ESNcardPage() {
                                         src={benefit.imageUrl}
                                         alt=""
                                         fill
-                                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                                         className="object-cover"
                                     />
                                 </div>

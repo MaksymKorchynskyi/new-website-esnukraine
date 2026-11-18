@@ -123,7 +123,6 @@ export const getEventBySlugQuery = groq`
     publishedAt,
     excerpt,
     location,
-    "categoryTitle": category->title,
     registrationLink,
     "mainImage": mainImage${IMAGE_PROJECTION},
     "bannerImage": bannerImage${IMAGE_PROJECTION},

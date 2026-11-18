@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import SanityImage from '@/components/ui/SanityImage';
-import { hasAsset, hotspotPosition, urlFor, type ProjectedImage } from '@/sanity/lib/image';
+import { hasAsset, urlFor, type ProjectedImage } from '@/sanity/lib/image';
 
 interface ArticleHeroImagesProps {
   mainImage: ProjectedImage | null;
@@ -12,9 +12,9 @@ interface ArticleHeroImagesProps {
 
 /**
  * Shared hero body for news and event pages: decorative banner at 10% opacity
- * behind the text, featured photo on the right. Only the featured photo is the
- * LCP candidate, so it alone gets `priority`; the banner is loaded lazily at
- * low quality (it is barely visible anyway).
+ * behind the text, featured photo on the right. Image sources, sizes and
+ * quality match the production site (16:9 crops at quality 75); only the
+ * featured photo gets `priority`, since it is the LCP candidate.
  */
 export default function ArticleHeroImages({ mainImage, bannerImage, title, children }: ArticleHeroImagesProps) {
   const banner = hasAsset(bannerImage) ? bannerImage : hasAsset(mainImage) ? mainImage : null;
@@ -25,14 +25,10 @@ export default function ArticleHeroImages({ mainImage, bannerImage, title, child
       {banner && (
         <div className="absolute inset-0 opacity-10" aria-hidden="true">
           <SanityImage
-            src={urlFor(banner).width(1280).url()}
+            src={urlFor(banner).width(1920).height(1080).url()}
             alt=""
             fill
-            quality={35}
-            loading="lazy"
-            sizes="100vw"
             className="object-cover"
-            style={{ objectPosition: hotspotPosition(banner) }}
           />
         </div>
       )}
@@ -47,12 +43,12 @@ export default function ArticleHeroImages({ mainImage, bannerImage, title, child
         {main && (
           <div className="lg:col-span-5 max-w-md w-full relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10">
             <SanityImage
-              src={urlFor(main).width(896).height(672).fit('crop').url()}
+              src={urlFor(main).width(1600).height(900).url()}
               alt={main.alt || title}
               fill
               className="object-cover"
               priority
-              sizes="(max-width: 1024px) 100vw, 448px"
+              sizes="(max-width: 1024px) 100vw, 50vw"
               placeholder={main.asset.lqip ? 'blur' : 'empty'}
               blurDataURL={main.asset.lqip ?? undefined}
             />

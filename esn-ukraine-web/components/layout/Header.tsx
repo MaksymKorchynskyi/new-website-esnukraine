@@ -147,7 +147,6 @@ const Header = () => {
                 alt="ESN Ukraine"
                 width={128}
                 height={64}
-                sizes="128px"
                 className="w-full h-full object-contain object-left sm:object-center"
               />
             </div>

@@ -36,9 +36,13 @@ export function hasAsset<T extends ProjectedImage>(
   return Boolean(image?.asset && (image.asset._id || image.asset._ref))
 }
 
-/** Card thumbnail: fixed 4:3 crop that follows the editor's hotspot. */
-export function cardImageUrl(image: ProjectedImage, width = 800, height = 600): string {
-  return urlFor(image).width(width).height(height).fit('crop').url()
+/**
+ * URL of the original uploaded file (same source the production site has always
+ * used). `SanityImage` then asks the Sanity CDN for the width the browser needs,
+ * at the same quality (75) the Vercel optimizer used, so photos look the same.
+ */
+export function originalImageUrl(image?: ProjectedImage | null): string | null {
+  return image?.asset?.url ?? null
 }
 
 /** CSS `object-position` from a hotspot, so `object-cover` keeps the subject visible. */

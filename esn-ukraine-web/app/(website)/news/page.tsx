@@ -1,7 +1,7 @@
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { getAllNewsQuery } from "@/sanity/lib/queries";
 import type { NewsArticlePreview } from "@/sanity/lib/types";
-import { cardImageUrl, hasAsset } from "@/sanity/lib/image";
+import { originalImageUrl } from "@/sanity/lib/image";
 import PageHero from "@/components/ui/PageHero";
 import { NewsCard } from "@/components/ui/Card";
 import NewsletterPopupButton from "@/components/sections/NewsletterPopup.client";
@@ -48,7 +48,7 @@ export default async function NewsPage() {
                   key={article._id}
                   title={article.title}
                   slug={article.slug}
-                  imageUrl={hasAsset(article.image) ? cardImageUrl(article.image) : null}
+                  imageUrl={originalImageUrl(article.image)}
                   imageLqip={article.image?.asset?.lqip}
                   excerpt={article.excerpt}
                   publishedAt={article.publishedAt}

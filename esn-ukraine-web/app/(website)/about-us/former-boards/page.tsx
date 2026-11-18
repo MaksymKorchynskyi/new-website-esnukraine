@@ -5,7 +5,7 @@ import { groq } from 'next-sanity';
 import FormerBoardsClient, { type FormerBoardItem } from './FormerBoardsClient';
 import type { Metadata } from 'next';
 import { buildMetadata } from '@/lib/seo';
-import { hasAsset, urlFor, type ProjectedImage } from '@/sanity/lib/image';
+import { originalImageUrl, type ProjectedImage } from '@/sanity/lib/image';
 import { IMAGE_PROJECTION } from '@/sanity/lib/queries';
 
 export const metadata: Metadata = buildMetadata({
@@ -46,8 +46,8 @@ async function getFormerBoards(): Promise<FormerBoardItem[]> {
             _key: m._key,
             name: m.name,
             position: m.position,
-            // Square avatar crop (160px circles, 2x for retina)
-            imageUrl: hasAsset(m.image) ? urlFor(m.image).width(320).height(320).fit('crop').url() : null,
+            // Original photo, as on production
+            imageUrl: originalImageUrl(m.image),
             imageLqip: m.image?.asset?.lqip ?? null,
             imageAlt: m.image?.alt ?? null,
         })),

@@ -12,8 +12,7 @@ The schemas live in [`esn-ukraine-web/sanity/schemaTypes/`](../../esn-ukraine-we
 |---|---|---|---|
 | [`news`](#news) | Новини | News articles | `/`, `/news`, `/news/[slug]`, homepage hero |
 | [`event`](#event) | Події (Events) | Events | `/`, `/events`, `/events/[slug]`, homepage hero |
-| [`newsCategory`](#newscategory-and-eventcategory) | Категорії новин | Categories for news | Badge on `/news` cards |
-| [`eventCategory`](#newscategory-and-eventcategory) | Категорії подій | Categories for events | Not displayed at the moment |
+| [`newsCategory`](#newscategory) | Категорії новин | Categories for news | Badge on `/news` cards |
 | [`section`](#section) | Секції (ESN Sections) | Local ESN sections | `/our-sections` |
 | [`boardMember`](#boardmember) | Члени борду (National Board) | Current National Board and related bodies | `/national-board` |
 | [`formerBoard`](#formerboard) | Колишні борди (Former Boards) | Past boards with their members | `/about-us/former-boards` |
@@ -23,10 +22,9 @@ The schemas live in [`esn-ukraine-web/sanity/schemaTypes/`](../../esn-ukraine-we
 ```mermaid
 erDiagram
     accTitle: Sanity content model
-    accDescr: News and events optionally reference one category each. An upcoming event optionally references the organising section. A former board embeds a list of members. Board members and network photos are standalone document types.
+    accDescr: News optionally reference one category. An upcoming event optionally references the organising section. A former board embeds a list of members. Board members and network photos are standalone document types.
 
     NEWS }o--o| NEWS_CATEGORY : "category"
-    EVENT }o--o| EVENT_CATEGORY : "category"
     UPCOMING_EVENT }o--o| SECTION : "section"
     FORMER_BOARD ||--o{ FORMER_BOARD_MEMBER : "members (embedded)"
 
@@ -61,10 +59,6 @@ erDiagram
         string title
         slug slug
     }
-    EVENT_CATEGORY {
-        string title
-        slug slug
-    }
     SECTION {
         number order
         string name
@@ -79,10 +73,6 @@ erDiagram
         string category
         number order
         image image
-        text description
-        string section
-        string email
-        url linkedin
     }
     FORMER_BOARD {
         string title
@@ -110,7 +100,7 @@ erDiagram
     }
 ```
 
-References between documents: the optional categories on news and events, and `upcomingEvent.section`, which points to the organising `section`. Board members and past events are not linked to other documents.
+References between documents: the optional category on news, and `upcomingEvent.section`, which points to the organising `section`. Board members and past events are not linked to other documents.
 
 ## Studio structure
 
@@ -120,13 +110,12 @@ The sidebar is defined in [`sanity/structure.ts`](../../esn-ukraine-web/sanity/s
 |---|---|---|
 | Новини (News) | `news` | `publishedAt`, newest first |
 | Події (Events) | `event` | `date`, latest first |
-| Секції ESN (Sections) | `section` | `order`, then `name` |
 | Майбутні події (Upcoming Events) | `upcomingEvent` | `date`, soonest first |
-| Члени борду (National Board) | `boardMember` | `order`, then `name` |
-| Колишні борди (Former Boards) | `formerBoard` | `order`, newest first |
+| Секції ESN (Sections) | `section` | `order`, then `name` |
+| Члени Борду (Board Members) | `boardMember` | `order`, then `name` |
 | Категорії новин | `newsCategory` | — |
-| Категорії подій | `eventCategory` | — |
 | Фото "Our Network" (Головна) | `networkPhoto` | `slot`, then `order` |
+| Колишні борди (Former Boards) | `formerBoard` | Added automatically at the end, because it is not listed explicitly in `structure.ts` |
 
 The Vision tool (a GROQ playground) is available in the Studio only in development (`npm run dev`).
 
@@ -158,8 +147,7 @@ File: `sanity/schemaTypes/event.ts`. Studio label: **Події (Events)**. The 
 | `slug` | Посилання (Slug) | slug | Yes | Max 96 characters. URL: `/events/<slug>` |
 | `publishedAt` | Дата та час створення | datetime | Yes | Defaults to now. Used as the Open Graph publication time |
 | `excerpt` | Короткий опис (Summary) | text | Yes | 10–300 characters. On `/events` cards, it is shortened to three sentences |
-| `category` | Категорія | reference → `eventCategory` | No | Not displayed at the moment |
-| `date` | Дата проведення | datetime | Yes | Event date. Determines the sort order on `/events` and the homepage |
+| `date` | Дата проведення | datetime | Yes | Event date. Determines the sort order on `/events` and the homepage. An event appears on the website only once this date has passed |
 | `location` | Місце проведення | string | No | Shown on `/events` cards and on the detail page |
 | `registrationLink` | Посилання на реєстрацію (Google Form) | url | No | When set, the detail page shows a registration box. The box text says registration is open, regardless of the event date |
 | `mainImage` | Прев'ю зображення (для карточки) | image | Yes | ≤ 12 MB, ≤ 10,000 × 10,000 px |
@@ -185,23 +173,25 @@ News and events share the same [Portable Text](https://www.sanity.io/docs/presen
 | Block `image` | Фото у тексті: ≤ 2 MB, with caption, alt text, width (25–100 %), alignment (left/centre/right; left and right let the text wrap around the image) and rounded corners |
 | Block `imageGallery` | Кілька фото в ряд: 2–6 images (≤ 2 MB each, with caption and alt text), 2–4 columns, rounded corners, gap from none to large |
 
-The website renders rich text with `PortableTextComponents` objects, which are also defined separately in `app/(website)/news/[slug]/page.tsx` and `app/(website)/events/[slug]/page.tsx`. When you add a block type, update both schemas and both renderers. See [Common tasks](../guides/common-tasks.md#add-a-rich-text-block-type).
+The website renders rich text for both types with one shared component, `components/portable-text/PortableTextContent.tsx`. When you add a block type, update both schemas and that component. See [Common tasks](../guides/common-tasks.md#add-a-rich-text-block-type).
 
 ## Attachments and gallery
 
 | Field | Item type | Rules | Rendering |
 |---|---|---|---|
-| `attachmentFiles` | `file` with `title` and `description` | `.pdf`, `.doc`, `.docx`, `.xls`, `.xlsx`, `.ppt`, `.pptx`, ≤ 10 MB each | `AttachmentFiles` component below the text. On desktop, PDFs open in an in-page preview; on mobile, files open in the browser |
+| `attachmentFiles` | `file` with `title` (`description` is hidden in the Studio and not displayed) | `.pdf`, `.doc`, `.docx`, `.xls`, `.xlsx`, `.ppt`, `.pptx`, ≤ 10 MB each | `AttachmentFiles` component below the text. On desktop, PDFs open in an in-page preview; on mobile, files open in the browser |
 | `gallery` | `image` with `caption` | ≤ 2 MB each | `PhotoGalleryLightbox` below the attachments: a grid of photos with a full-screen viewer |
 
-## newsCategory and eventCategory
+## newsCategory
 
-Files: `newsCategory.ts`, `eventCategory.ts`. Studio labels: **Категорії новин**, **Категорії подій**.
+File: `newsCategory.ts`. Studio label: **Категорії новин**.
 
 | Field | Studio label | Type | Required | Rules |
 |---|---|---|---|---|
 | `title` | Назва категорії | string | Yes | 2–50 characters |
-| `slug` | Slug | slug | Yes | Generated from the title, max 50 characters |
+| `slug` | Slug | slug | No | Hidden in the Studio, not used by the website. Existing values are kept |
+
+Event categories (`eventCategory`) were removed in November 2026: they were never displayed and no event used one.
 
 Only the title of a news category is displayed (on `/news` cards). There are no category pages or filters.
 
@@ -231,15 +221,10 @@ File: `boardMember.ts`. Studio label: **Члени борду (National Board)**
 | `category` | Категорія / Розділ борду | string (list) | Yes | `board` = "The Board 2025-26", `support` = "The Board Support 2025-26", `audit` = "The Audit Board & Advisory Council". Default `board` |
 | `order` | Порядковий номер | number | No | Default 10. Order within the group |
 | `image` | Фотографія (продовгувата / вертикальна 4:5) | image with `alt` | Yes | ≤ 2 MB, ≤ 3,000 × 3,500 px. The `alt` field is required |
-| `description` | Опис (відкривається при натисканні на фото) | text | No | Not displayed at the moment |
-| `section` | Секція ESN | string | No | Free text, for example "ESN Kyiv". Not displayed |
-| `email` | Email | string | No | Not displayed |
-| `linkedin` | LinkedIn URL | url | No | Not displayed |
 
 `/national-board` groups members by `category`. Members without a category appear in the Board group. The group headings, including the year, are defined in code in `components/sections/BoardSection.client.tsx`; the list labels are in `boardMember.ts`.
 
-> [!IMPORTANT]
-> The page query fetches `description`, `section`, `email` and `linkedin` and passes them to the browser, even though they are not displayed. Treat every field as public.
+The fields `description`, `section`, `email` and `linkedin` were removed in November 2026: they were never displayed and were empty in every document. The dataset is public, so treat every field as public.
 
 ## formerBoard
 
@@ -259,10 +244,10 @@ File: `networkPhoto.ts`. Studio label: **Фотографії "Our Network" (Г�
 |---|---|---|---|---|
 | `title` | Назва / Опис фотографії (Alt текст) | string | Yes | Used as the image's alt text |
 | `slot` | В якому слоті на головній сторінці відображати? | string (radio) | Yes | `slotA` (top left, landscape), `slotB` (bottom left, landscape), `slotC` (right, tall). Default `slotA` |
-| `image` | Фотографія | image | Yes | ≤ 2 MB, ≤ 4,000 × 4,000 px |
-| `order` | Порядок відображення (необов'язково) | number | No | Default 10. Integer ≥ 0. Order within the slot |
+| `image` | Фотографія | image | Yes | ≤ 2 MB, no resolution limit |
+| `order` | Порядок відображення (необов'язково) | number | No | Default 10. Order within the slot |
 
-Each slot rotates through its photos: slot A every 4.5 s, slot B every 6 s, slot C every 5.2 s (only while the collage is on screen and the visitor does not prefer reduced motion). A slot without photos stays empty; with no photos at all the collage is not rendered.
+Each slot rotates through its photos: slot A every 4.5 s, slot B every 6 s, slot C every 5.2 s. A slot without photos stays empty; with no photos at all the collage is not rendered.
 
 ## upcomingEvent
 
@@ -271,15 +256,13 @@ File: `upcomingEvent.ts`. Studio label: **Майбутні події (Upcoming 
 | Field | Studio label | Type | Required | Rules and notes |
 |---|---|---|---|---|
 | `title` | Назва події | string | Yes | ≤ 120 characters |
-| `date` | Дата та час проведення | datetime | Yes | The card is hidden after this day |
+| `date` | Дата та час проведення | datetime | Yes | The card is shown until the end of this day |
 | `section` | Секція-організатор | reference → `section` | No | Empty means a national ESN Ukraine event |
 | `causes` | Категорії (ESN Causes) | array of strings | No | One or more of the six ESN causes (see `lib/esnCauses.ts`); used by the filter |
 | `location` | Місце проведення | string | No | For example "Kyiv, KPI Campus" or "Online" |
-| `image` | Фото / постер | image (with `alt`) | No | ≤ 2 MB, ≤ 4,000 × 4,000 px |
+| `image` | Фото / постер | image | No | ≤ 2 MB, no resolution limit |
 | `description` | Короткий опис | text | No | ≤ 300 characters |
-| `link` | Посилання | url | No | `http(s)` only; where the card leads |
-
-Each upcoming event is also published as `Event` structured data (JSON-LD) for search engines.
+| `link` | Посилання (реєстрація, Instagram тощо) | url | No | `http(s)` only; the whole card links here |
 
 ## Upload limits
 
@@ -287,20 +270,19 @@ Validators from [`sanity/lib/imageValidation.ts`](../../esn-ukraine-web/sanity/l
 
 | Field | Max file size | Max resolution | Formats |
 |---|---|---|---|
-| News/event `mainImage`, `bannerImage` | 3 MB | 6,000 × 6,000 px | JPEG, PNG, WebP, AVIF (PNG > 1 MB shows a warning) |
-| Rich text images, photo rows, `gallery` | 2 MB | 6,000 × 6,000 px | JPEG, PNG, WebP, AVIF |
+| News/event `mainImage`, `bannerImage` | 12 MB | 10,000 × 10,000 px | JPEG, PNG, WebP, AVIF |
+| Rich text images, photo rows, `gallery` | 2 MB | 10,000 × 10,000 px | JPEG, PNG, WebP, AVIF |
 | `attachmentFiles` | 10 MB | — | PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX |
 | Section logo | 2 MB | 3,000 × 3,000 px | JPEG, PNG, WebP, AVIF |
 | Board member photo | 2 MB | 3,000 × 3,500 px | JPEG, PNG, WebP, AVIF |
 | Former board member photo | 2.5 MB | 3,000 × 3,500 px | JPEG, PNG, WebP, AVIF |
-| Network photo, upcoming event poster | 2 MB | 4,000 × 4,000 px | JPEG, PNG, WebP, AVIF |
+| Network photo, upcoming event poster | 2 MB | — | JPEG, PNG, WebP, AVIF |
 
 How the validation works:
 
-- The format and resolution are read from the asset ID, for example `image-<hash>-4000x3000-jpg`. The file size is read with a query for the asset document.
+- The resolution is read from the asset ID, for example `image-<hash>-4000x3000-jpg`. The file size is read with a query for the asset document.
 - If that query fails, for example because of a network problem, the validator does not block saving.
-- Validation runs after the upload: a rejected file is already in the asset store and must be deleted by the editor.
-- Slugs of news and events must match `^[a-z0-9]+(?:-[a-z0-9]+)*$`; the Studio's "Generate" button strips apostrophes and other punctuation.
+- The field descriptions in the Studio state the same limits as this table.
 
 ## Queries
 

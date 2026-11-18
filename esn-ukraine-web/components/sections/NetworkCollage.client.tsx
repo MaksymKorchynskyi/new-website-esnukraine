@@ -96,8 +96,7 @@ function PhotoSlot({
             src={currentPhoto.url}
             alt={currentPhoto.alt}
             fill
-            // Half of a two-column grid inside the container: roughly a quarter of the viewport on desktop
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 45vw, 22vw"
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover"
             placeholder={currentPhoto.lqip ? 'blur' : 'empty'}
             blurDataURL={currentPhoto.lqip}

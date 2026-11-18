@@ -1,7 +1,7 @@
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { getAllEventsQuery } from "@/sanity/lib/queries";
 import type { EventPreview } from "@/sanity/lib/types";
-import { cardImageUrl, hasAsset } from "@/sanity/lib/image";
+import { originalImageUrl } from "@/sanity/lib/image";
 import PageHero from "@/components/ui/PageHero";
 import { EventCard } from "@/components/ui/Card";
 import { buildMetadata } from '@/lib/seo';
@@ -56,7 +56,7 @@ export default async function EventsPage() {
                   key={event._id}
                   title={event.title}
                   slug={event.slug}
-                  imageUrl={hasAsset(event.image) ? cardImageUrl(event.image) : null}
+                  imageUrl={originalImageUrl(event.image)}
                   imageLqip={event.image?.asset?.lqip}
                   description={event.excerpt ? truncateToSentences(event.excerpt, 3) : null}
                   date={event.date}

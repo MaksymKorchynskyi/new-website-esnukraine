@@ -23,14 +23,13 @@ interface BoardMemberDoc {
     position: string;
     category: string;
     order?: number;
-    section?: string;
     image: ProjectedImage | null;
 }
 
 /**
  * Only the fields the page shows are requested (description, email and
  * LinkedIn are not rendered and would otherwise be shipped in the JS bundle).
- * Image URLs are built here: a 4:5 crop for the cards, max 1200px for the modal.
+ * Photos use the original uploaded file, exactly as the production site does.
  */
 async function getBoardMembers(): Promise<BoardMemberItem[]> {
     const query = groq`*[_type == "boardMember"] | order(order asc, name asc) {
@@ -39,7 +38,6 @@ async function getBoardMembers(): Promise<BoardMemberItem[]> {
         position,
         category,
         order,
-        section,
         "image": image${IMAGE_PROJECTION}
     }`;
     const docs = await sanityFetch<BoardMemberDoc[]>({ query, tags: ['boardMember'] });
@@ -54,10 +52,7 @@ async function getBoardMembers(): Promise<BoardMemberItem[]> {
                 position: doc.position,
                 category: doc.category,
                 order: doc.order,
-                section: doc.section,
-                imageUrl: urlFor(image).width(600).height(750).fit('crop').url(),
-                imageFullUrl: urlFor(image).width(1200).fit('max').quality(80).url(),
-                imageLqip: image.asset?.lqip ?? null,
+                imageUrl: image.asset?.url ?? urlFor(image).url(),
                 imageAlt: image.alt ?? null,
             };
         });

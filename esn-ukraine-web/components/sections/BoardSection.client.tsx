@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Maximize2, X } from 'lucide-react';
 import { stegaClean } from 'next-sanity';
-import SanityImage from '@/components/ui/SanityImage';
 import { useDialog } from '@/lib/useDialog';
 
 export interface BoardMemberItem {
@@ -12,12 +11,8 @@ export interface BoardMemberItem {
     position: string;
     category: string;
     order?: number;
-    section?: string;
-    /** 4:5 card crop, built on the server with urlFor */
+    /** Original photo from Sanity (same as production) */
     imageUrl: string;
-    /** Larger version for the modal (max 1200px) */
-    imageFullUrl: string;
-    imageLqip?: string | null;
     imageAlt?: string | null;
 }
 
@@ -66,10 +61,10 @@ function MemberDialog({ member, onClose }: { member: BoardMemberItem; onClose: (
 
                 {/* Enlarged Photo fitting perfectly without side bars */}
                 <div className="group relative flex items-center justify-center bg-transparent overflow-hidden rounded-2xl sm:rounded-3xl">
-                    {/* Native img keeps the photo's own aspect ratio; the URL is already a resized Sanity CDN image */}
+                    {/* Native img keeps the photo's own aspect ratio */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                        src={member.imageFullUrl}
+                        src={member.imageUrl}
                         alt={member.imageAlt || `${member.name} - ${member.position}`}
                         decoding="async"
                         className="block w-auto h-auto max-w-[90vw] max-h-[85dvh] object-contain rounded-2xl sm:rounded-3xl"
@@ -131,14 +126,14 @@ export default function BoardSection({ members }: BoardSectionProps) {
                                         >
                                             {/* Portrait / Oblong Image Container (4:5 ratio) */}
                                             <div className="relative aspect-[4/5] w-full overflow-hidden bg-gray-100">
-                                                <SanityImage
+                                                {/* Original photo, as on production */}
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                <img
                                                     src={member.imageUrl}
                                                     alt={member.imageAlt || `${member.name} - ${member.position}`}
-                                                    fill
-                                                    sizes="(max-width: 1024px) 50vw, 25vw"
-                                                    className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                                                    placeholder={member.imageLqip ? 'blur' : 'empty'}
-                                                    blurDataURL={member.imageLqip ?? undefined}
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                                                 />
 
                                                 {/* Compact zoom icon at the corner of the photo on hover */}

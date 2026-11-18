@@ -1,128 +1,87 @@
 import { defineField, defineType } from 'sanity'
 import { formatDate } from '../lib/utils'
-import { ACCEPTED_FILE_TYPES, ACCEPTED_IMAGE_TYPES, validateFileSize, validateImageSize, warnLargePng } from '../lib/imageValidation'
-import { slugify, validateSlug } from '../lib/slug'
-
-/** Alt текст для фото: попередження (не блокує старі документи без alt). */
-const ALT_FIELD = defineField({
-  name: 'alt',
-  type: 'string',
-  title: 'Alt текст',
-  description: 'Опис фото для доступності та SEO (англійською).',
-  validation: (rule) => rule.required().warning('Опишіть фото англійською'),
-})
+import { ACCEPTED_FILE_TYPES, ACCEPTED_IMAGE_TYPES, validateFileSize, validateImageSize } from '../lib/imageValidation'
 
 export default defineType({
   name: 'event',
   title: 'Події (Events)',
   type: 'document',
-  groups: [
-    { name: 'content', title: 'Контент', default: true },
-    { name: 'media', title: 'Медіа' },
-    { name: 'settings', title: 'Налаштування' },
-  ],
-  orderings: [
-    { title: 'Дата (нові спершу)', name: 'dateDesc', by: [{ field: 'date', direction: 'desc' }] },
-  ],
   fields: [
     defineField({
       name: 'title',
-      group: 'content',
       title: 'Назва події',
       type: 'string',
+      description: 'Назва події англійською, як її побачать відвідувачі: на картці події, на сторінці події та в Google. Від 5 до 150 символів.',
       validation: (rule) => rule.required().min(5).max(150),
     }),
     defineField({
       name: 'slug',
-      group: 'content',
       title: 'Посилання (Slug)',
       type: 'slug',
-      options: { source: 'title', maxLength: 96, slugify },
-      validation: (rule) => rule.required().custom(validateSlug),
-      description: 'Це частина URL адреси. Натисни "Generate", щоб створити автоматично.',
+      options: { source: 'title', maxLength: 96 },
+      validation: (rule) => rule.required(),
+      description: 'Кінець адреси сторінки: esnukraine.org/events/ваш-slug. Натисніть «Generate», щоб створити його з назви. Лише малі латинські літери, цифри та дефіси, без апострофів і пробілів. Не змінюйте slug після публікації: старе посилання перестане працювати.',
     }),
     defineField({
       name: 'publishedAt',
-      group: 'content',
       title: 'Дата та час створення',
       type: 'datetime',
+      description: 'Службова дата: коли подію додали на сайт. Відвідувачі її не бачать, вона потрібна для Google. Заповнюється автоматично, змінювати не потрібно.',
       initialValue: () => new Date().toISOString(),
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'excerpt',
-      group: 'content',
       title: 'Короткий опис (Summary)',
       type: 'text',
       rows: 3,
-      description: 'Кілька речень для прев\'ю на сторінці подій та у картці.',
+      description: '1–3 речення про подію (від 10 до 300 символів). Показується на картці події, під назвою на сторінці події і в описі для Google та соцмереж.',
       validation: (rule) => rule.required().min(10).max(300),
     }),
     defineField({
-      name: 'category',
-      group: 'settings',
-      title: 'Категорія',
-      type: 'reference',
-      to: [{ type: 'eventCategory' }],
-      description: 'Опціонально. Оберіть категорію або створіть нову.',
-    }),
-
-    defineField({
       name: 'date',
-      group: 'settings',
       title: 'Дата проведення',
       type: 'datetime',
+      description: 'Коли відбулася подія. Показується на картці й на сторінці події, за нею впорядкований список Past Events. Подія зʼявляється на сайті лише після настання цієї дати (оновлення може зайняти до доби). Анонси майбутніх подій додавайте в «Майбутні події».',
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'location',
-      group: 'settings',
       title: 'Місце проведення',
       type: 'string',
+      description: 'Місто або «Online». Наприклад: Kyiv. Показується на картці події.',
     }),
     defineField({
       name: 'registrationLink',
-      group: 'settings',
       title: 'Посилання на реєстрацію (Google Form)',
       type: 'url',
+      description: 'Необовʼязково. Посилання на форму реєстрації, що починається з https://. Якщо заповнено, на сторінці події зʼявиться кнопка «Register».',
     }),
     defineField({
       name: 'mainImage',
-      group: 'media',
-      title: 'Прев\'ю зображення (для картки)',
+      title: 'Прев\'ю зображення (для карточки)',
       type: 'image',
       options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-      description: 'Це фото буде показано у картці події на сторінці "Events". Макс. 3 МБ, до 6000 px, формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото перед завантаженням (tinypng.com, squoosh.app).',
-      validation: (rule) => [
-        rule.required().custom(validateImageSize(3, 6000, 6000)),
-        rule.custom(warnLargePng()).warning(),
-      ],
-      fields: [ALT_FIELD],
+      description: 'Головне фото події. Показується на картці події (сторінка Events і головна) та праворуч від назви на сторінці події. На головній фото обрізається до вертикального формату, тож важливе має бути в центрі кадру. Макс. 12 МБ і 10000 px, формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото перед завантаженням (tinypng.com або squoosh.app).',
+      validation: (rule) => rule.required().custom(validateImageSize(12, 10000, 10000)),
     }),
     defineField({
       name: 'isSpotlight',
-      group: 'settings',
       title: 'Показувати в Spotlight на головній',
       type: 'boolean',
-      description: 'Увімкніть, щоб ця подія відображалась у великому слайдері на головній сторінці.',
+      description: 'Увімкніть, щоб подія зʼявилася у великому слайдері вгорі головної сторінки. У слайдері до 5 найновіших новин і подій з цією позначкою. Для слайда береться Банер, а якщо його немає — Превʼю зображення.',
       initialValue: false,
     }),
     defineField({
       name: 'bannerImage',
-      group: 'media',
       title: 'Банер (задній фон)',
       type: 'image',
       options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-      description: 'Фото для заднього фону на сторінці події та в Spotlight. Макс. 3 МБ, до 6000 px, формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото перед завантаженням.',
-      validation: (rule) => [
-        rule.custom(validateImageSize(3, 6000, 6000)),
-        rule.custom(warnLargePng()).warning(),
-      ],
-      fields: [ALT_FIELD],
+      description: 'Необовʼязково. Широке горизонтальне фото (найкраще 16:9) для слайдера на головній, якщо увімкнено Spotlight, і як ледь помітний фон за назвою на сторінці події. Якщо не додати, використовується Превʼю зображення. Макс. 12 МБ і 10000 px, формати JPG/PNG/WebP/AVIF.',
+      validation: (rule) => rule.custom(validateImageSize(12, 10000, 10000)),
     }),
     defineField({
       name: 'body',
-      group: 'content',
       title: 'Текст сторінки події',
       type: 'array',
       of: [
@@ -207,6 +166,7 @@ export default defineType({
                     name: 'href',
                     type: 'url',
                     title: 'URL',
+                    description: 'Повна адреса з https:// (наприклад, https://esn.org), сторінка цього сайту (наприклад, /news) або email у форматі mailto:name@esn.org.',
                     validation: (rule) =>
                       rule.uri({ allowRelative: true, scheme: ['http', 'https', 'mailto'] }),
                   },
@@ -238,26 +198,25 @@ export default defineType({
           type: 'image',
           title: 'Фото у тексті',
           options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-          validation: (rule) => rule.custom(validateImageSize(2, 6000, 6000)),
+          validation: (rule) => rule.custom(validateImageSize(2, 10000, 10000)),
           fields: [
             defineField({
               name: 'caption',
               type: 'string',
               title: 'Підпис до фото',
-              description: 'Опціональний підпис під зображенням.',
+              description: 'Необовʼязково. Текст, який показується під фото.',
             }),
             defineField({
               name: 'alt',
               type: 'string',
               title: 'Alt текст',
-              description: 'Опис зображення для доступності (англійською).',
-              validation: (rule) => rule.required().warning('Опишіть фото англійською'),
+              description: 'Коротко, що на фото: для незрячих відвідувачів і Google. Наприклад: «Волонтери ESN Kyiv на Welcome Week».',
             }),
             defineField({
               name: 'width',
               type: 'string',
               title: 'Ширина фото',
-              description: 'Яку частину ширини сторінки займає фото.',
+              description: 'Яку частину ширини тексту займає фото. 100% — на всю ширину.',
               options: {
                 list: [
                   { title: '25%', value: '25' },
@@ -304,22 +263,24 @@ export default defineType({
               name: 'images',
               type: 'array',
               title: 'Фотографії',
+              description: 'Від 2 до 6 фото, до 2 МБ кожне.',
               of: [
                 {
                   type: 'image',
                   options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-                  validation: (rule) => rule.custom(validateImageSize(2, 6000, 6000)),
+                  validation: (rule) => rule.custom(validateImageSize(2, 10000, 10000)),
                   fields: [
                     defineField({
                       name: 'caption',
                       type: 'string',
                       title: 'Підпис',
+                      description: 'Необовʼязково. Текст унизу поверх фото.',
                     }),
                     defineField({
                       name: 'alt',
                       type: 'string',
                       title: 'Alt текст',
-                      validation: (rule) => rule.required().warning('Опишіть фото англійською'),
+                      description: 'Коротко, що на фото: для незрячих відвідувачів і Google.',
                     }),
                   ],
                 },
@@ -330,7 +291,7 @@ export default defineType({
               name: 'columns',
               type: 'number',
               title: 'Кількість колонок',
-              description: 'Скільки фото показувати в ряд.',
+              description: 'Скільки фото в ряд на компʼютері. На телефоні завжди 2 в ряд.',
               options: {
                 list: [
                   { title: '2 в ряд', value: 2 },
@@ -372,11 +333,10 @@ export default defineType({
           },
         },
       ],
-      description: 'Основний текст сторінки події. Можна вставляти фото між абзацами.',
+      description: 'Основний текст сторінки події. Тут можна додати заголовки, списки, посилання, фото між абзацами («Фото у тексті»), кілька фото в ряд і лінію-розділювач.',
     }),
     defineField({
       name: 'attachmentFiles',
-      group: 'media',
       title: 'Прикріплені файли (Attachment Files)',
       type: 'array',
       of: [
@@ -390,40 +350,41 @@ export default defineType({
               name: 'title',
               type: 'string',
               title: 'Назва файлу (для відображення на сайті)',
-              description: 'Наприклад: "Положення про конкурс.pdf" або "Програма заходу"',
+              description: 'Як файл називатиметься на сайті. Наприклад: «Положення про конкурс» або «Програма заходу». Якщо залишити порожнім, буде показано імʼя файлу.',
             }),
             defineField({
               name: 'description',
               type: 'string',
               title: 'Короткий опис файлу',
+              // Сайт цей текст не показує, тому поле приховане. Уже введені дані зберігаються.
+              hidden: true,
             }),
           ],
         },
       ],
-      description: 'Файли (PDF, документи тощо), які відображатимуться перед фотогалереєю. Макс. 10 МБ на файл; стискайте PDF перед завантаженням.',
+      description: 'Необовʼязково. Документи (PDF, Word, Excel, PowerPoint), які відвідувачі зможуть переглянути й завантажити. Показуються під текстом сторінки події, перед фотогалереєю. До 10 МБ на файл.',
     }),
     defineField({
       name: 'gallery',
-      group: 'media',
-      title: 'Фотогалерея (Photo Gallery)',
+      title: 'Photo Gallery',
       type: 'array',
       of: [
         {
           type: 'image',
           title: 'Фото',
           options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-          validation: (rule) => rule.custom(validateImageSize(2, 6000, 6000)),
+          validation: (rule) => rule.custom(validateImageSize(2, 10000, 10000)),
           fields: [
             defineField({
               name: 'caption',
               type: 'string',
               title: 'Підпис',
+              description: 'Необовʼязково. Текст, який видно під час перегляду фото на весь екран.',
             }),
-            ALT_FIELD,
           ],
         },
       ],
-      description: 'Додаткові фото, які будуть відображені як галерея під описом. Макс. 2 МБ (до 6000 px) на фото.',
+      description: 'Необовʼязково. Фото, які показуються сіткою внизу сторінки події. Клік відкриває фото на весь екран. До 2 МБ і 10000 px на фото.',
     }),
   ],
   preview: {

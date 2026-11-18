@@ -38,7 +38,6 @@ The left sidebar lists all content types:
 | **Секції ESN (Sections)** | Cards of the local sections | Our Sections |
 | **Члени Борду (Board Members)** | The current National Board | National Board |
 | **Категорії новин** | News categories | A label on news cards on the News page |
-| **Категорії подій** | Event categories | Not shown on the website at the moment |
 | **Фото "Our Network" (Головна)** | Photos for the homepage collage | Homepage |
 | **Колишні борди (Former Boards)** | Boards of previous years | About Us → Former Boards |
 

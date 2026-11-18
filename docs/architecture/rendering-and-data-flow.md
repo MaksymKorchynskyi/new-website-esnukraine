@@ -138,20 +138,21 @@ Draft mode shows unpublished drafts on the real website and adds click-to-edit o
 > [!WARNING]
 > The enable URL contains a secret. Anyone with the URL can read draft content while the secret is valid. Do not share the URL or paste it into chats or issues. If it leaks, change `SANITY_DRAFT_MODE_SECRET` in Vercel (the Sanity read token itself never appears in a URL).
 
-The Studio configuration (`sanity.config.ts`) does not include Sanity's Presentation tool, so the Studio has no **Preview** button. `sanity/lib/live.ts` sets up Sanity's Live Content API (`defineLive`), but nothing uses it yet.
+The Studio configuration (`sanity.config.ts`) does not include Sanity's Presentation tool, so the Studio has no **Preview** button.
 
 ## Images
 
 | Source | Used for | How it is rendered |
 |---|---|---|
-| **Sanity assets** (`cdn.sanity.io`) | All images uploaded by editors | Mostly `next/image`, which resizes the image and serves AVIF or WebP (see `images` in `next.config.ts`) |
-| **`public/`** | Logos, the About Us history photos and video, the section map, the default sharing image, the "under construction" mascot | `next/image` or `<img>`/`<video>` |
-| **`images.unsplash.com`** | Built-in placeholder photos when CMS data is missing (see [below](#built-in-fallback-content)) and decorative photos on the ESNcard page | `next/image` |
+| **Sanity assets** (`cdn.sanity.io`) | All images uploaded by editors | `SanityImage` (`components/ui/SanityImage.tsx`): `next/image` with a custom loader, so the **Sanity CDN** resizes the photo to the width the browser needs, at quality 75 in WebP/AVIF. These images never use the Vercel image optimizer and its Hobby quota |
+| **`public/`** | Logos, the About Us history photos and video, the section map, the ESNcard photos, the "under construction" mascot | `next/image` (Vercel optimizer, AVIF or WebP) or `<img>`/`<video>` |
 
 Sanity image URLs are built in two ways:
 
-- **`asset->url` in GROQ** returns the URL of the original upload. Cards, homepage slides, the "Our Network" collage, section logos and board photos use it, and `next/image` takes care of resizing.
-- **`urlFor()`** from [`sanity/lib/image.ts`](../../esn-ukraine-web/sanity/lib/image.ts) builds a resized URL with a fixed width and height, honouring the editor's hotspot and crop. Article and event headers and social sharing images (1200 × 630) use it. Images in the article body use it when the query does not return the asset URL.
+- **The original upload URL** (`asset.url` from the shared `IMAGE_PROJECTION`, or `originalImageUrl()`) is used by cards, homepage slides, the "Our Network" collage, section logos, board photos, gallery photos and images in the article body. `SanityImage` asks the Sanity CDN for each width in the `srcset`.
+- **`urlFor()`** from [`sanity/lib/image.ts`](../../esn-ukraine-web/sanity/lib/image.ts) builds a URL with a fixed width and height, honouring the editor's hotspot and crop. Article and event headers (16:9) and social sharing images (1200 × 630) use it.
+
+The widths (`sizes`), the quality (75) and the sources match the production site before November 2026; only the server that resizes Sanity photos changed (Sanity CDN instead of Vercel), at the same visual quality.
 
 Board photos, the gallery lightbox, the About Us history slider and the footer logo use a plain `<img>` element, so these images are not resized by `next/image`.
 
@@ -159,7 +160,7 @@ Images in the article body and gallery use the low-quality image placeholder (`m
 
 ## Dates
 
-`formatDate` in [`sanity/lib/utils.ts`](../../esn-ukraine-web/sanity/lib/utils.ts) formats dates as `DD/MM/YYYY`. It uses the time zone of the machine that renders the page. On Vercel that is UTC, not Kyiv time, so an event that starts shortly after midnight Kyiv time can show the previous day.
+`formatDate` in [`sanity/lib/utils.ts`](../../esn-ukraine-web/sanity/lib/utils.ts) formats dates as `DD/MM/YYYY` in Kyiv time (`Europe/Kyiv`), on the server and in the browser alike, so an event shortly after midnight Kyiv time shows the right day.
 
 ## Error handling
 
@@ -167,18 +168,18 @@ Images in the article body and gallery use the low-quality image placeholder (`m
 |---|---|---|
 | Error boundary | `app/(website)/error.tsx` | A rendering error inside a page. Shows "Something went wrong" with a **Try again** button. |
 | Not found | `app/(website)/not-found.tsx` | `notFound()` calls, for example an unknown news or event slug. Shows a 404 page with a link home. |
-| Loading state | `app/(website)/loading.tsx` | A spinner while a page loads during client-side navigation. |
 
 ### Built-in fallback content
 
-Some components contain built-in content that is shown when Sanity returns nothing:
+Since November 2026 the website contains no sample events, placeholder people or stock photos. When Sanity returns nothing:
 
 | Where | Condition | What visitors see |
 |---|---|---|
-| `/events` | No events, or the fetch fails | A built-in list of sample events (`MOCK_EVENTS` in `app/(website)/events/page.tsx`) |
-| `/national-board` | No board member documents | Built-in placeholder profiles (`FALLBACK_BOARD_MEMBERS` in `components/sections/BoardSection.client.tsx`) |
-| Homepage "Our Network" | A slot has no photos | Built-in stock photos for that slot |
-| Homepage hero, news and event cards | A document has no image | A stock photo, or an "ESN" placeholder tile on cards |
+| `/events`, `/news` | No documents | An empty-state message |
+| `/national-board` | No board member documents | An empty-state message |
+| Homepage "Our Network" | A slot has no photos | That slot stays empty; with no photos at all the collage is hidden |
+| News and event cards | A document has no image | An "ESN" placeholder tile |
+| Homepage hero | A Spotlight item has no image | The slide is skipped |
 
 > [!IMPORTANT]
 > The homepage hero has **no** fallback. It needs at least one published news item or event with **Spotlight** enabled. Without one, rendering the homepage fails. Regenerations keep serving the previous version, but the next deployment build fails.

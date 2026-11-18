@@ -28,12 +28,16 @@ interface FormerBoardsClientProps {
 export default function FormerBoardsClient({ boards }: FormerBoardsClientProps) {
     // Keep track of which boards are open. By default, none are open.
     const [openBoards, setOpenBoards] = useState<Record<string, boolean>>({});
+    // Photos are mounted only after a board has been opened once, so collapsed
+    // boards never download their photos (names stay in the HTML for search engines).
+    const [loadedBoards, setLoadedBoards] = useState<Record<string, boolean>>({});
 
     const toggleBoard = (id: string) => {
         setOpenBoards((prev) => ({
             ...prev,
             [id]: !prev[id],
         }));
+        setLoadedBoards((prev) => (prev[id] ? prev : { ...prev, [id]: true }));
     };
 
     return (
@@ -43,6 +47,7 @@ export default function FormerBoardsClient({ boards }: FormerBoardsClientProps) 
                 <div className="flex flex-col gap-8">
                     {boards.map((board) => {
                         const isOpen = openBoards[board._id] || false;
+                        const showPhotos = loadedBoards[board._id] || false;
                         
                         return (
                             <div key={board._id} className="border border-gray-200 rounded-2xl overflow-hidden bg-gray-50/50">
@@ -87,11 +92,10 @@ export default function FormerBoardsClient({ boards }: FormerBoardsClientProps) 
                                                         <div key={member._key || index} className="flex flex-col items-center text-center">
                                                             <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden mb-4 shadow-md bg-gray-200">
                                                                 {member.imageUrl ? (
-                                                                    <SanityImage
+                                                                    showPhotos && <SanityImage
                                                                         src={member.imageUrl}
                                                                         alt={member.imageAlt || member.name}
                                                                         fill
-                                                                        sizes="(max-width: 768px) 128px, 160px"
                                                                         className="object-cover"
                                                                         placeholder={member.imageLqip ? 'blur' : 'empty'}
                                                                         blurDataURL={member.imageLqip ?? undefined}

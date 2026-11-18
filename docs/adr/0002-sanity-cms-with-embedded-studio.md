@@ -14,7 +14,7 @@ We use **Sanity**, a hosted headless CMS, with these choices:
 - The **content model lives in this repository** (`sanity/schemaTypes/`) and is versioned with the code.
 - The **Studio is embedded** in the Next.js application at `/studio`, with `NextStudio` from `next-sanity` (`sanity.config.ts`, `basePath: '/studio'`). It is deployed together with the website.
 - Studio labels, help texts and validation messages are in **Ukrainian**, for the editors.
-- **Upload validators** limit file format, size and resolution, to keep within the storage limits of the Sanity plan and to keep pages fast. They run after the upload, so a rejected file still lands in the asset store and has to be deleted by the editor.
+- **Upload validators** limit file size and resolution, to keep within the storage limits of the Sanity plan and to keep pages fast.
 
 ## Consequences
 

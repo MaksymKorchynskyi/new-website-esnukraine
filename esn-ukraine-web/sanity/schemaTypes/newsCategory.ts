@@ -9,6 +9,7 @@ export default defineType({
             name: 'title',
             title: 'Назва категорії',
             type: 'string',
+            description: 'Мітка, яка показується на картці новини, наприклад: Report.',
             validation: (rule) => rule.required().min(2).max(50),
         }),
         defineField({
@@ -19,7 +20,8 @@ export default defineType({
                 source: 'title',
                 maxLength: 50,
             },
-            validation: (rule) => rule.required(),
+            // Сайт це поле не використовує, тому воно приховане. Уже введені дані зберігаються.
+            hidden: true,
         }),
     ],
     preview: {

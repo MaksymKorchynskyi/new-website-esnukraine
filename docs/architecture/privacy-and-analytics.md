@@ -114,7 +114,7 @@ The newsletter API is described in detail in the [API reference](../reference/ap
 
 ## Content about people
 
-Board member and former board documents contain names, positions and photos that are published on the website. The `boardMember` type also has optional `description`, `section`, `email` and `linkedin` fields. The National Board page fetches these fields and includes them in the data sent to the browser, although it currently does not display them. Editors should only enter information that may be public. See the [content editing guide](../content-editing/homepage-people-and-sections.md#national-board).
+Board member and former board documents contain names, positions and photos that are published on the website. The National Board page requests only the fields it shows. The Sanity dataset itself is public, so editors should only enter information that may be public. See the [content editing guide](../content-editing/homepage-people-and-sections.md#national-board).
 
 ## Related
 

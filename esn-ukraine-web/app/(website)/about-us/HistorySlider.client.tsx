@@ -1,13 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 const IMAGES = [
-  { src: '/history_1.webp', alt: 'ESN Kyiv receives candidate status, 2018' },
-  { src: '/history_2.webp', alt: 'Ukraine becomes a full member of ESN, Palermo 2019' },
-  { src: '/history_3.webp', alt: 'ESN Ukraine volunteers at a national assembly' },
+  { src: '/history_1.png', alt: 'ESN Kyiv receives candidate status, 2018' },
+  { src: '/history_2.png', alt: 'Ukraine becomes a full member of ESN, Palermo 2019' },
+  { src: '/history_3.jpg', alt: 'ESN Ukraine volunteers at a national assembly' },
 ];
 
 export default function HistorySlider() {
@@ -21,12 +20,14 @@ export default function HistorySlider() {
       >
         {IMAGES.map((image, i) => (
           <div key={image.src} className="relative min-w-full h-full" aria-hidden={i !== current}>
-            <Image
+            {/* Original files, as on production (no re-compression) */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={image.src}
               alt={image.alt}
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
         ))}

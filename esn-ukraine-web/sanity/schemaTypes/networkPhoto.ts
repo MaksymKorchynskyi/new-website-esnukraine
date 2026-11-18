@@ -17,6 +17,7 @@ export default defineType({
       name: 'slot',
       title: 'В якому слоті на головній сторінці відображати?',
       type: 'string',
+      description: 'Місце фото в блоці Our Network на головній. Якщо в одному слоті кілька фото, вони змінюються по черзі.',
       options: {
         list: [
           { title: 'Слот A: Верхній лівий (горизонтальне фото)', value: 'slotA' },
@@ -33,20 +34,16 @@ export default defineType({
       title: 'Фотографія',
       type: 'image',
       options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-      description: 'Завантажте якісне фото волонтерів, заходу чи команди. Правило проєкту: макс. 2 МБ, до 4000 px, формати JPG/PNG/WebP/AVIF. Рекомендуємо стискати фото на tinypng.com перед завантаженням.',
-      validation: (rule) => rule.required().custom(validateImageSize(2, 4000, 4000)),
+      description: 'Завантажте якісне фото волонтерів, заходу чи команди. Важливо для безкоштовного тарифу Sanity: макс. розмір 2 МБ, формати JPG/PNG/WebP. Рекомендуємо стискати фото на tinypng.com перед завантаженням.',
+      validation: (rule) => rule.required().custom(validateImageSize(2, 0, 0)),
     }),
     defineField({
       name: 'order',
       title: 'Порядок відображення (необов\'язково)',
       type: 'number',
-      description: 'Число для сортування (наприклад, 1, 2, 3...)',
+      description: 'Черговість фото всередині одного слоту: менше число показується раніше.',
       initialValue: 10,
-      validation: (rule) => rule.integer().min(0),
     }),
-  ],
-  orderings: [
-    { title: 'Слот, потім порядок', name: 'slotOrder', by: [{ field: 'slot', direction: 'asc' }, { field: 'order', direction: 'asc' }] },
   ],
   preview: {
     select: {
