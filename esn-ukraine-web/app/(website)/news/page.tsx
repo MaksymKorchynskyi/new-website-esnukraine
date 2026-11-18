@@ -1,5 +1,7 @@
 import { sanityFetch } from "@/sanity/lib/fetch";
-import { groq } from "next-sanity";
+import { getAllNewsQuery } from "@/sanity/lib/queries";
+import type { NewsArticlePreview } from "@/sanity/lib/types";
+import { originalImageUrl } from "@/sanity/lib/image";
 import PageHero from "@/components/ui/PageHero";
 import { NewsCard } from "@/components/ui/Card";
 import NewsletterPopupButton from "@/components/sections/NewsletterPopup.client";
@@ -12,37 +14,11 @@ export const metadata = buildMetadata({
   path: '/news',
 });
 
-// ==========================================
-// INTERFACES (CMS-ready structure)
-// ==========================================
-interface NewsArticle {
-  _id: string;
-  slug: { current: string };
-  title: string;
-  publishedAt: string;
-  excerpt: string;
-  imageUrl: string | null;
-  category: string | null;
-}
-
-// ==========================================
-// SANITY FETCH (CMS integration)
-// ==========================================
-async function getNews(): Promise<NewsArticle[]> {
-  const query = groq`*[_type == "news"] | order(publishedAt desc) {
-    _id, 
-    title, 
-    slug,
-    publishedAt,
-    excerpt,
-    "imageUrl": mainImage.asset->url,
-    "category": category->title
-  }`;
-  return await sanityFetch<NewsArticle[]>({ query, tags: ['news'] });
-}
+/** Cards in the first row (3 columns on desktop) load eagerly: one of them is the LCP image. */
+const EAGER_CARDS = 3;
 
 export default async function NewsPage() {
-  const news = await getNews();
+  const news = await sanityFetch<NewsArticlePreview[]>({ query: getAllNewsQuery, tags: ['news'] });
 
   return (
     <main className="min-h-svh bg-white">
@@ -59,7 +35,7 @@ export default async function NewsPage() {
       />
 
       {/* News Grid */}
-      <section className="pt-10 pb-24 sm:pt-14 px-6 sm:px-12 lg:px-24">
+      <section className="pt-10 pb-24 sm:pt-14 px-6 sm:px-12 lg:px-24" aria-label="All news">
         <div className="mx-auto max-w-7xl">
           {news.length === 0 ? (
             <div className="text-center py-20">
@@ -67,15 +43,17 @@ export default async function NewsPage() {
             </div>
           ) : (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {news.map((article) => (
+              {news.map((article, index) => (
                 <NewsCard
                   key={article._id}
                   title={article.title}
-                  slug={article.slug.current}
-                  imageUrl={article.imageUrl}
+                  slug={article.slug}
+                  imageUrl={originalImageUrl(article.image)}
+                  imageLqip={article.image?.asset?.lqip}
                   excerpt={article.excerpt}
                   publishedAt={article.publishedAt}
-                  category={article.category}
+                  category={article.categoryTitle}
+                  priority={index < EAGER_CARDS}
                   type="news"
                 />
               ))}

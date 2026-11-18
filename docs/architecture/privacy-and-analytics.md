@@ -54,46 +54,46 @@ Two browser events connect these pieces:
 
 | Event | Dispatched when | Listened to by |
 |---|---|---|
-| `esn-consent-updated` (`detail` = consent state) | Consent is saved | `PostHogProvider` |
+| `esn-consent-updated` (`detail` = consent state) | Consent is saved | `AnalyticsLoader` (through `subscribeToConsent`) |
 | `esn-open-cookie-settings` | The settings button is clicked | `CookieBanner`, which opens the dialog |
 
 ## PostHog (product analytics)
 
-PostHog is set up in [`components/analytics/PostHogProvider.tsx`](../../esn-ukraine-web/components/analytics/PostHogProvider.tsx). It is initialised in the browser when `NEXT_PUBLIC_POSTHOG_KEY` is set:
+PostHog is loaded by [`components/analytics/AnalyticsLoader.tsx`](../../esn-ukraine-web/components/analytics/AnalyticsLoader.tsx) and [`lib/analytics.ts`](../../esn-ukraine-web/lib/analytics.ts). The `posthog-js` library is downloaded only **after** the visitor accepts analytics cookies; visitors who decline never download it. It is initialised when `NEXT_PUBLIC_POSTHOG_KEY` is set:
 
 | Option | Value | Effect |
 |---|---|---|
-| `api_host` | `/ingest/posthog` | Requests go to the website's own domain. A rewrite in `next.config.ts` forwards them to `https://eu.i.posthog.com` (EU region). |
+| `api_host` | `/ingest/posthog` | Requests go to the website's own domain. A rewrite in `next.config.ts` forwards them to `https://eu.i.posthog.com` (EU region). `skipTrailingSlashRedirect` keeps these requests from being redirected first |
 | `ui_host` | `https://eu.posthog.com` | Links in the toolbar point to the EU app |
-| `opt_out_capturing_by_default` | `true` | Nothing is captured until the visitor opts in |
 | `capture_pageview` | `false` | Page views are sent manually (see below) |
 | `disable_session_recording` | `true` | No session recordings |
+
+Everything else, such as autocapture of clicks, heatmaps and web vitals, stays at the PostHog defaults and can be switched in the PostHog project settings, as before November 2026.
 
 ```mermaid
 sequenceDiagram
     accTitle: Analytics consent flow
-    accDescr: PostHog starts opted out. When the visitor accepts analytics, the consent library stores the choice and dispatches an event. The PostHog provider then opts in, and page views are sent through the first-party proxy to PostHog EU.
+    accDescr: Nothing from PostHog is loaded until the visitor accepts analytics. Then the loader downloads posthog-js, initialises it, and page views are sent through the first-party proxy to PostHog EU.
 
     actor Visitor
     participant Banner as CookieBanner
     participant Consent as lib/cookies.ts
-    participant Provider as PostHogProvider
-    participant PageView as PostHogPageView
+    participant Loader as AnalyticsLoader
     participant PostHog as PostHog EU via /ingest/posthog
 
-    Note over Provider: PostHog is initialised in opted-out mode
+    Note over Loader: No PostHog code is loaded yet
     Visitor->>Banner: Accept All
     Banner->>Consent: acceptAll()
     Consent->>Consent: Save to localStorage, set esn_consent_given
-    Consent-->>Provider: esn-consent-updated, analytics true
-    Provider->>Provider: posthog.opt_in_capturing()
-    Provider-->>PageView: ph-opted-in event
-    PageView->>PostHog: $pageview for the current URL
+    Consent-->>Loader: consent changed, analytics true
+    Loader->>Loader: import posthog-js and init
+    Loader->>PostHog: $pageview for the current URL
 ```
 
-- On page load, `PostHogProvider` reads the stored consent and opts in or out accordingly.
-- [`PostHogPageView`](../../esn-ukraine-web/components/analytics/PostHogPageView.tsx) sends a `$pageview` on every route change, but only while capturing is not opted out. It also listens to the internal `ph-opted-in` event to record the current page right after the visitor opts in.
-- If `NEXT_PUBLIC_POSTHOG_KEY` is missing, PostHog logs a warning in the browser console and stays inactive.
+- On page load, `AnalyticsLoader` reads the stored consent. With analytics accepted earlier, PostHog starts right away; visitors who accepted on the old site keep their consent.
+- A `$pageview` is sent on every route change while analytics are on.
+- If the visitor later withdraws consent in the cookie settings, capturing stops and the PostHog identifiers are cleared.
+- If `NEXT_PUBLIC_POSTHOG_KEY` is missing, PostHog stays inactive.
 
 ## Vercel Web Analytics
 
@@ -114,7 +114,7 @@ The newsletter API is described in detail in the [API reference](../reference/ap
 
 ## Content about people
 
-Board member and former board documents contain names, positions and photos that are published on the website. The `boardMember` type also has optional `description`, `section`, `email` and `linkedin` fields. The National Board page fetches these fields and includes them in the data sent to the browser, although it currently does not display them. Editors should only enter information that may be public. See the [content editing guide](../content-editing/homepage-people-and-sections.md#national-board).
+Board member and former board documents contain names, positions and photos that are published on the website. The National Board page requests only the fields it shows. The Sanity dataset itself is public, so editors should only enter information that may be public. See the [content editing guide](../content-editing/homepage-people-and-sections.md#national-board).
 
 ## Related
 

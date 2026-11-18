@@ -100,7 +100,7 @@ Add it to `sanity/schemaTypes/index.ts`:
 import partner from './partner'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [news, event, section, newsCategory, eventCategory, boardMember, networkPhoto, formerBoard, partner],
+  types: [news, event, upcomingEvent, section, newsCategory, boardMember, networkPhoto, formerBoard, partner],
 }
 ```
 

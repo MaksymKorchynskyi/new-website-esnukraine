@@ -17,29 +17,25 @@ export default function Footer() {
                             onClick={(e) => {
                                 if (window.location.pathname === '/') {
                                     e.preventDefault();
-                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                                    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
                                 }
                             }}
                             className="inline-block self-start mb-5 hover:opacity-90 transition-opacity cursor-pointer group"
                             aria-label="ESN Ukraine — Scroll to top"
                         >
+                            {/* Original PNG, as on production: crisp logo edges */}
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src="/logo-esn-ukraine-white.png"
                                 alt="ESN Ukraine"
                                 width={200}
                                 height={80}
+                                loading="lazy"
+                                decoding="async"
                                 className="h-20 sm:h-24 lg:h-[90px] w-auto object-contain select-none"
                                 draggable={false}
-                                onError={(e) => {
-                                    const el = e.currentTarget;
-                                    el.style.display = 'none';
-                                    const fb = el.nextElementSibling as HTMLElement;
-                                    if (fb) fb.style.display = 'block';
-                                }}
                             />
-                            <span className="hidden text-xl font-black tracking-tight group-hover:text-esn-cyan transition-colors">
-                                ESN Ukraine
-                            </span>
                         </Link>
 
                         <p className="text-sm text-gray-400 leading-relaxed mb-6 max-w-md">
@@ -70,9 +66,9 @@ export default function Footer() {
 
                     {/* Column 2 — Address & Contacts */}
                     <div className="sm:col-span-1 lg:col-span-3">
-                        <h4 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-white mb-5 sm:mb-6">
+                        <h2 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-white mb-5 sm:mb-6">
                             Address & Contacts
-                        </h4>
+                        </h2>
 
                         <address className="not-italic text-sm text-gray-400 leading-relaxed mb-5">
                             <a
@@ -109,12 +105,12 @@ export default function Footer() {
                     </div>
 
                     {/* Columns 3 & 4 — Quick Links & Policies (Side-by-side on mobile & tablet) */}
-                    <div className="grid grid-cols-2 gap-6 sm:col-span-1 lg:col-span-5 lg:grid-cols-2 lg:gap-8">
+                    <nav aria-label="Footer" className="grid grid-cols-2 gap-6 sm:col-span-1 lg:col-span-5 lg:grid-cols-2 lg:gap-8">
                         {/* Quick Links */}
                         <div>
-                            <h4 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-white mb-5 sm:mb-6">
+                            <h2 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-white mb-5 sm:mb-6">
                                 Quick Links
-                            </h4>
+                            </h2>
                             <ul className="space-y-3">
                                 {FOOTER_QUICK_LINKS.map((link) => (
                                     <li key={link.href}>
@@ -131,9 +127,9 @@ export default function Footer() {
 
                         {/* Policies */}
                         <div>
-                            <h4 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-white mb-5 sm:mb-6">
+                            <h2 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-white mb-5 sm:mb-6">
                                 Policies
-                            </h4>
+                            </h2>
                             <ul className="space-y-3">
                                 {FOOTER_POLICY_LINKS.map((link) => {
                                     const isExternal = link.href.startsWith('http');
@@ -161,14 +157,14 @@ export default function Footer() {
                                 })}
                             </ul>
                         </div>
-                    </div>
+                    </nav>
                 </div>
 
                 {/* Bottom Bar — Copyright */}
                 <div className="border-t border-white/10 pt-8">
                     <div className="flex items-center justify-center">
                         <p className="text-xs text-gray-500 tracking-wide text-center">
-                            © 2026 Erasmus Student Network Ukraine. All rights reserved.
+                            © {new Date().getFullYear()} Erasmus Student Network Ukraine. All rights reserved.
                         </p>
                     </div>
                 </div>

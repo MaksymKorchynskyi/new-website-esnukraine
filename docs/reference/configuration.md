@@ -65,14 +65,17 @@ Keep these package groups on matching versions when you upgrade:
 
 | Setting | Value | Purpose |
 |---|---|---|
-| `images.formats` | `image/avif`, `image/webp` | Modern formats served by `next/image` |
+| `images.formats` | `image/avif`, `image/webp` | Modern formats served by `next/image` for files in `public/` |
+| `images.minimumCacheTTL` | 31 days | Optimised images stay cached, which saves the Vercel Hobby transformation quota |
 | `images.deviceSizes`, `images.imageSizes` | Fixed lists of widths | Widths generated for responsive images |
-| `images.remotePatterns` | `https://cdn.sanity.io/**`, `https://images.unsplash.com/**` | Hosts allowed in `next/image` |
+| `images.remotePatterns` | `https://cdn.sanity.io/images/<project>/<dataset>/**` | Only this project's Sanity images. Sanity photos are normally resized by the Sanity CDN through `SanityImage`, not by Vercel |
+| `skipTrailingSlashRedirect` | `true` | PostHog requests such as `/ingest/posthog/e/` are not redirected first |
+| `headers()` | `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, a minimal `Content-Security-Policy` (`frame-ancestors`, `object-src`, `base-uri`, `form-action`) | Security headers on every response. Vercel adds HSTS itself |
 | `experimental.optimizePackageImports` | `@sanity/icons`, `@sanity/ui`, `@sanity/util`, `sanity`, `lucide-react`, `framer-motion` | Imports only the modules in use, to keep bundles small |
 | `rewrites().beforeFiles` | `/ingest/posthog/:path*` → `https://eu.i.posthog.com/:path*` | First-party proxy for PostHog |
-| `redirects()` | 43 permanent redirects | Old Drupal URLs. See [SEO](../architecture/seo.md#redirects-from-the-previous-website) |
+| `redirects()` | Trailing-slash rule plus permanent redirects from old URLs | The first rule sends `/news/` to `/news` (except `/ingest/`, `/_next/`, `/api/`). The rest are old Drupal URLs, see [SEO](../architecture/seo.md#redirects-from-the-previous-website) |
 
-No custom `headers()` and no middleware (`middleware.ts` or `proxy.ts`) are configured.
+There is no middleware (`middleware.ts` or `proxy.ts`): every redirect runs in Vercel's routing layer, so page views never start a function.
 
 ## `tsconfig.json`
 

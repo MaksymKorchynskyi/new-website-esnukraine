@@ -10,6 +10,7 @@ export default defineType({
       name: 'title',
       title: 'Назва (наприклад: Board 2021/22)',
       type: 'string',
+      description: 'Показується як заголовок блоку на сторінці Former Boards.',
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -24,6 +25,7 @@ export default defineType({
       name: 'members',
       title: 'Члени борду',
       type: 'array',
+      description: 'Члени борду в тому порядку, в якому їх показувати на сайті. Порядок можна змінити перетягуванням.',
       of: [
         defineArrayMember({
           type: 'object',
@@ -32,12 +34,14 @@ export default defineType({
               name: 'name',
               title: 'Ім\'я та прізвище',
               type: 'string',
+              description: 'Латиницею, наприклад: Dariia Beliaieva.',
               validation: (rule) => rule.required(),
             }),
             defineField({
               name: 'position',
               title: 'Посада',
               type: 'string',
+              description: 'Англійською, наприклад: President.',
               validation: (rule) => rule.required(),
             }),
             defineField({
@@ -45,7 +49,7 @@ export default defineType({
               title: 'Фото',
               type: 'image',
               options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-              description: 'Фото члена борду.',
+              description: 'Фото члена борду. На сайті показується в колі, тож обличчя має бути по центру. Макс. 2,5 МБ і 3000×3500 px.',
               validation: (rule) => rule.required().custom(validateImageSize(2.5, 3000, 3500)),
               fields: [
                 {

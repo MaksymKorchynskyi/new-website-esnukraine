@@ -17,6 +17,7 @@ export default defineType({
       name: 'slot',
       title: 'В якому слоті на головній сторінці відображати?',
       type: 'string',
+      description: 'Місце фото в блоці Our Network на головній. Якщо в одному слоті кілька фото, вони змінюються по черзі.',
       options: {
         list: [
           { title: 'Слот A: Верхній лівий (горизонтальне фото)', value: 'slotA' },
@@ -40,7 +41,7 @@ export default defineType({
       name: 'order',
       title: 'Порядок відображення (необов\'язково)',
       type: 'number',
-      description: 'Число для сортування (наприклад, 1, 2, 3...)',
+      description: 'Черговість фото всередині одного слоту: менше число показується раніше.',
       initialValue: 10,
     }),
   ],

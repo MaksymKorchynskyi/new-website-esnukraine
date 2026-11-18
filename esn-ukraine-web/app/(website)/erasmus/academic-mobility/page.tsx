@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { buildMetadata } from '@/lib/seo';
+import { JsonLd, webPageJsonLd } from '@/lib/jsonld';
 import {
   ArrowLeft,
   ArrowRight,
@@ -8,7 +9,6 @@ import {
   Globe2,
   Clock,
   Wallet,
-  FileText,
   CheckCircle2,
   ChevronRight,
   ExternalLink,
@@ -69,34 +69,17 @@ const steps = [
 ];
 
 export default function AcademicMobilityPage() {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
+  const jsonLd = webPageJsonLd({
     name: 'Academic Mobility — Erasmus+ Study & Internship Abroad',
     description:
       'Learn about Erasmus+ academic mobility for Ukrainian students: study or intern abroad for 3–12 months at partner universities across Europe with EU grants.',
-    url: 'https://esnukraine.org/erasmus/academic-mobility',
-    publisher: {
-      '@type': 'Organization',
-      name: 'ESN Ukraine',
-      url: 'https://esnukraine.org',
-    },
-    breadcrumb: {
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://esnukraine.org' },
-        { '@type': 'ListItem', position: 2, name: 'Erasmus+', item: 'https://esnukraine.org/erasmus' },
-        { '@type': 'ListItem', position: 3, name: 'Academic Mobility', item: 'https://esnukraine.org/erasmus/academic-mobility' },
-      ],
-    },
-  };
+    path: '/erasmus/academic-mobility',
+    breadcrumbs: [{ name: 'Home', path: '/' }, { name: 'Erasmus+', path: '/erasmus' }, { name: 'Academic Mobility', path: '/erasmus/academic-mobility' }],
+  });
 
   return (
     <main className="min-h-svh bg-white">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       {/* ═══════ HERO ═══════ */}
       <section className="relative pt-32 sm:pt-36 md:pt-40 pb-20 sm:pb-24 md:pb-32 bg-esn-dark overflow-hidden">

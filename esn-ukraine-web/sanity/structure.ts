@@ -51,10 +51,6 @@ export const structure: StructureResolver = (S) =>
         .title('Категорії новин')
         .schemaType('newsCategory')
         .child(S.documentTypeList('newsCategory')),
-      S.listItem()
-        .title('Категорії подій')
-        .schemaType('eventCategory')
-        .child(S.documentTypeList('eventCategory')),
       S.divider(),
       S.listItem()
         .title('Фото "Our Network" (Головна)')
@@ -66,7 +62,7 @@ export const structure: StructureResolver = (S) =>
         ),
       ...S.documentTypeListItems().filter(
         (listItem) =>
-          !['news', 'event', 'upcomingEvent', 'section', 'boardMember', 'networkPhoto', 'newsCategory', 'eventCategory'].includes(
+          !['news', 'event', 'upcomingEvent', 'section', 'boardMember', 'networkPhoto', 'newsCategory'].includes(
             listItem.getId() || ''
           )
       ),

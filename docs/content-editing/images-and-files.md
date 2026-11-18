@@ -22,9 +22,10 @@ The Studio checks every upload. If a file is too large, it shows a red message, 
 | Board member photo | 2 MB | 3,000 × 3,500 px |
 | Former board member photo | 2.5 MB | 3,000 × 3,500 px |
 | Section logo | 2 MB | 3,000 × 3,000 px |
-| "Our Network" photo | 2 MB | 3,500 × 3,500 px |
+| "Our Network" photo | 2 MB | — |
+| Upcoming event poster | 2 MB | — |
 
-Some field descriptions in the Studio mention other numbers. The limits in this table are the ones the Studio enforces.
+The field descriptions in the Studio state the same limits.
 
 ## Recommended photo shapes
 

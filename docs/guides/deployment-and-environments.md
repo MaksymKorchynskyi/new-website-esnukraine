@@ -89,18 +89,18 @@ The webhook tells the website that content changed (see [Rendering and data flow
 | URL | `https://esnukraine.org/api/revalidate` |
 | Dataset | The production dataset |
 | Trigger on | Create, Update, Delete |
-| Filter | Optional, for example `_type in ["news", "event", "section", "boardMember", "formerBoard", "networkPhoto", "newsCategory", "eventCategory"]` |
-| Projection | `{ _type }`. The route uses `_type` as an extra cache tag |
+| Filter | Optional, for example `_type in ["news", "event", "upcomingEvent", "section", "boardMember", "formerBoard", "networkPhoto", "newsCategory"]` |
+| Projection | Optional: `{ _type, "slug": slug.current }`. Without a projection Sanity sends the whole document, which works too. The route expires the `_type` tag and, for news and events, the `type:slug` tag of that one document |
 | HTTP method | `POST` |
-| HTTP headers | `x-sanity-secret: <value of SANITY_REVALIDATE_SECRET>` |
+| Secret | Recommended: the value of `SANITY_REVALIDATE_SECRET`, so Sanity signs every request. An existing webhook that passes the secret as `?secret=` or in a header keeps working |
 | Drafts | Off: trigger only for published documents |
 
 Notes:
 
-- The route also accepts `Authorization: Bearer <secret>` or `?secret=<secret>`. Prefer a header, because URLs appear in logs.
-- Sanity's own **Secret** field signs the payload. The route does not verify the signature, so the header above is required.
+- The route accepts a valid signature or the secret itself (`Authorization: Bearer`, `x-sanity-secret` or `?secret=`). See [API → Authentication](../reference/api.md#authentication).
+- The route waits briefly for Sanity's eventual consistency before answering, so the regenerated page never reads the previous version of the document.
 - If you add a filter, extend it whenever you add a content type.
-- **To test:** publish a small change and check the webhook's delivery log in Sanity. It should show `200`. A `401` means the secret does not match.
+- **To test:** publish a small change and check the webhook's delivery log in Sanity. It should show `200`. A `401` means the secret in Sanity does not match `SANITY_REVALIDATE_SECRET`; a `400` means the payload has no `_type`.
 
 > [!NOTE]
 > **To confirm:** the current webhook configuration (URL, filter, header).

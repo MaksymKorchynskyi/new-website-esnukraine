@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback, useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Calendar, ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import SanityImage from '@/components/ui/SanityImage';
 import EsnStarOutline from '@/components/ui/EsnStarOutline';
 
 export interface HeroSlide {
@@ -92,6 +92,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
   const count = slides.length;
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [hasFocus, setHasFocus] = useState(false);
   const [isInView, setIsInView] = useState(true);
   // Slides whose photo has been requested. Starts with the first and the next one, grows as the
   // visitor moves through the slider and never shrinks — so nothing is downloaded before it is
@@ -121,8 +122,9 @@ export default function HeroSection({ slides }: HeroSectionProps) {
   );
 
   // Autoplay: one timer per slide, so manual navigation restarts the countdown.
-  // Paused on mouse hover, when the hero is scrolled out of view, and for reduced-motion users.
-  const autoplay = count > 1 && !isHovered && isInView && !reduceMotion;
+  // Paused on mouse hover, while keyboard focus is inside the hero, when the hero is scrolled
+  // out of view, and for reduced-motion users.
+  const autoplay = count > 1 && !isHovered && !hasFocus && isInView && !reduceMotion;
   useEffect(() => {
     if (!autoplay) return;
     const timer = setTimeout(() => goTo(currentSlide + 1), 6000);
@@ -169,7 +171,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
     if (nextSection) {
       const headerHeight = 84;
       const targetTop = nextSection.getBoundingClientRect().top + window.scrollY - headerHeight;
-      window.scrollTo({ top: targetTop, behavior: 'smooth' });
+      window.scrollTo({ top: targetTop, behavior: reduceMotion ? 'auto' : 'smooth' });
     }
   };
 
@@ -185,8 +187,14 @@ export default function HeroSection({ slides }: HeroSectionProps) {
       // thin white line of the next section under a 100svh hero (its svh can come out a few px
       // short of the visible height), so take whichever unit is biggest and run 2px past it.
       className="relative w-full overflow-hidden bg-esn-dark pt-[77px] text-white sm:pt-[84px] lg:h-[calc(max(100vh,100dvh,100svh)+2px)] lg:min-h-[680px]"
+      aria-roledescription="carousel"
+      aria-label="Spotlight stories"
       onPointerEnter={(e) => e.pointerType === 'mouse' && setIsHovered(true)}
       onPointerLeave={(e) => e.pointerType === 'mouse' && setIsHovered(false)}
+      onFocus={() => setHasFocus(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setHasFocus(false);
+      }}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
@@ -260,7 +268,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
                         >
                           {/* Same src, sizes and quality as the main photo → the browser reuses
                               the file it already has, no extra download */}
-                          <Image
+                          <SanityImage
                             src={slide.image}
                             alt=""
                             fill
@@ -289,9 +297,10 @@ export default function HeroSection({ slides }: HeroSectionProps) {
                         isActive ? 'opacity-100' : 'opacity-0'
                       }`}
                     >
-                      <Image
+                      <SanityImage
                         src={slide.image}
-                        alt={slide.title}
+                        // Decorative here: the slide's title and link carry the meaning
+                        alt=""
                         fill
                         priority={index === 0}
                         loading={index === 0 ? 'eager' : 'lazy'}
@@ -316,10 +325,14 @@ export default function HeroSection({ slides }: HeroSectionProps) {
           <div className="grid px-5 pt-6 sm:px-12 md:pt-12 lg:order-1 lg:col-span-6 lg:px-0 lg:pt-0">
             {slides.map((slide, index) => {
               const isActive = index === currentSlide;
-              const Heading = isActive ? 'h1' : 'p';
+              // The page has a permanent sr-only h1; slide titles are h2
+              const Heading = isActive ? 'h2' : 'p';
               return (
                 <div
                   key={slide.id}
+                  role="group"
+                  aria-roledescription="slide"
+                  aria-label={`${index + 1} of ${count}`}
                   aria-hidden={!isActive}
                   // lg:self-center: a slide with a shorter title is centred in the shared cell
                   // (sized by the tallest slide), so its text lines up with the photo's centre
@@ -374,6 +387,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
               {slides.map((_, idx) => (
                 <button
                   key={idx}
+                  type="button"
                   onClick={() => goTo(idx)}
                   className="group relative flex cursor-pointer items-center py-2.5 sm:py-0"
                   aria-label={`Go to slide ${idx + 1}`}
@@ -386,7 +400,11 @@ export default function HeroSection({ slides }: HeroSectionProps) {
 
               {/* Counter — shows how many stories there are */}
               {count > 1 && (
-                <span className="ml-1 text-xs font-bold tabular-nums tracking-widest text-white/45 sm:ml-2 sm:text-sm" aria-live="polite">
+                <span
+                  className="ml-1 text-xs font-bold tabular-nums tracking-widest text-white/45 sm:ml-2 sm:text-sm"
+                  // Announce the position only after manual navigation, not every 6 s during autoplay
+                  aria-live={autoplay ? 'off' : 'polite'}
+                >
                   <span className="text-white">{String(currentSlide + 1).padStart(2, '0')}</span>
                   <span className="mx-1.5">/</span>
                   {String(count).padStart(2, '0')}
@@ -398,6 +416,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
                 bottom of the screen, shown from sm up. The row ends 40px above the banner's
                 bottom; on desktop the banner runs 2px below the screen, hence -6px there. */}
             <button
+              type="button"
               onClick={scrollToNextSection}
               className="group absolute -bottom-2 left-1/2 lg:-bottom-1.5 hidden -translate-x-1/2 flex-col items-center text-white/80 transition-all duration-300 hover:text-white sm:flex"
               aria-label="Scroll down"
@@ -411,6 +430,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
             {/* Arrows */}
             <div className="flex gap-2.5 sm:gap-2">
               <button
+                type="button"
                 onClick={prevSlide}
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white transition-colors hover:bg-white hover:text-esn-dark sm:h-12 sm:w-12"
                 aria-label="Previous slide"
@@ -418,6 +438,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
                 <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
               <button
+                type="button"
                 onClick={nextSlide}
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white transition-colors hover:bg-white hover:text-esn-dark sm:h-12 sm:w-12"
                 aria-label="Next slide"

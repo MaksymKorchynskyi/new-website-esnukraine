@@ -4,11 +4,10 @@ import event from './event'
 import upcomingEvent from './upcomingEvent'
 import section from './section'
 import newsCategory from './newsCategory'
-import eventCategory from './eventCategory'
 import boardMember from './boardMember'
 import networkPhoto from './networkPhoto'
 import formerBoard from './formerBoard'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [news, event, upcomingEvent, section, newsCategory, eventCategory, boardMember, networkPhoto, formerBoard],
+  types: [news, event, upcomingEvent, section, newsCategory, boardMember, networkPhoto, formerBoard],
 }

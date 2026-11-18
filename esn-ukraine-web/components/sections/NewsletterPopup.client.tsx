@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
 import { ArrowRight, Mail, X } from 'lucide-react';
 import NewsletterForm from '@/components/sections/NewsletterForm.client';
-import { lockScroll } from '@/lib/scrollLock';
+import { useDialog } from '@/lib/useDialog';
 
 const noopSubscribe = () => () => {};
 
@@ -22,14 +22,11 @@ export default function NewsletterPopupButton({ label = 'Subscribe' }: { label?:
   // keyboard up in the middle of the opening animation and push the sheet around.
   const focusOnOpen = mounted && window.matchMedia('(pointer: fine)').matches;
 
-  // Close on Escape + lock page scroll while open
+  // Escape, focus trap, focus restore and iOS-safe scroll lock
+  const dialogRef = useDialog<HTMLDivElement>({ open, onClose: () => setOpen(false) });
+
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
-    window.addEventListener('keydown', onKey);
-
-    // iOS-safe page scroll lock (restores the scroll position on close)
-    const unlock = lockScroll();
 
     // Keep the overlay matched to the visible area, so the on-screen keyboard
     // never covers the sheet (the layout viewport does not shrink on iOS).
@@ -45,10 +42,8 @@ export default function NewsletterPopupButton({ label = 'Subscribe' }: { label?:
     vv?.addEventListener('scroll', fitToViewport);
 
     return () => {
-      window.removeEventListener('keydown', onKey);
       vv?.removeEventListener('resize', fitToViewport);
       vv?.removeEventListener('scroll', fitToViewport);
-      unlock();
     };
   }, [open]);
 
@@ -66,6 +61,7 @@ export default function NewsletterPopupButton({ label = 'Subscribe' }: { label?:
 
       {mounted &&
         createPortal(
+          <MotionConfig reducedMotion="user">
           <AnimatePresence>
             {open && (
               <motion.div
@@ -81,11 +77,12 @@ export default function NewsletterPopupButton({ label = 'Subscribe' }: { label?:
                 <div
                   className="absolute inset-0 bg-black/30 sm:bg-esn-navy/60 sm:backdrop-blur-sm touch-none"
                   onClick={() => setOpen(false)}
-                  aria-hidden
+                  aria-hidden="true"
                 />
 
                 {/* Dialog: centered card on every screen size */}
                 <motion.div
+                  ref={dialogRef}
                   role="dialog"
                   aria-modal="true"
                   aria-labelledby="newsletter-popup-title"
@@ -131,7 +128,8 @@ export default function NewsletterPopupButton({ label = 'Subscribe' }: { label?:
                 </motion.div>
               </motion.div>
             )}
-          </AnimatePresence>,
+          </AnimatePresence>
+          </MotionConfig>,
           document.body,
         )}
     </>

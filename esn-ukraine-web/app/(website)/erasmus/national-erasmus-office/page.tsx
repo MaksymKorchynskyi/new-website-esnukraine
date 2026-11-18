@@ -1,19 +1,17 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { buildMetadata } from '@/lib/seo';
+import { JsonLd, webPageJsonLd } from '@/lib/jsonld';
 import {
   ArrowLeft,
   ArrowRight,
   Building2,
   Globe2,
-  Users,
   CheckCircle2,
   ChevronRight,
   ExternalLink,
   Mail,
-  Phone,
   MapPin,
-  BookOpen,
   Megaphone,
   BarChart3,
   Handshake,
@@ -99,34 +97,17 @@ const initiatives = [
 ];
 
 export default function NationalErasmusOfficePage() {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
+  const jsonLd = webPageJsonLd({
     name: 'National Erasmus+ Office in Ukraine — Support & Information',
     description:
       'Learn about the National Erasmus+ Office (NEO) in Ukraine: its role in supporting Erasmus+ programme implementation, services for universities and students.',
-    url: 'https://esnukraine.org/erasmus/national-erasmus-office',
-    publisher: {
-      '@type': 'Organization',
-      name: 'ESN Ukraine',
-      url: 'https://esnukraine.org',
-    },
-    breadcrumb: {
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://esnukraine.org' },
-        { '@type': 'ListItem', position: 2, name: 'Erasmus+', item: 'https://esnukraine.org/erasmus' },
-        { '@type': 'ListItem', position: 3, name: 'National Erasmus+ Office', item: 'https://esnukraine.org/erasmus/national-erasmus-office' },
-      ],
-    },
-  };
+    path: '/erasmus/national-erasmus-office',
+    breadcrumbs: [{ name: 'Home', path: '/' }, { name: 'Erasmus+', path: '/erasmus' }, { name: 'National Erasmus+ Office', path: '/erasmus/national-erasmus-office' }],
+  });
 
   return (
     <main className="min-h-svh bg-white">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       {/* ═══════ HERO ═══════ */}
       <section className="relative pt-32 sm:pt-36 md:pt-40 pb-20 sm:pb-24 md:pb-32 bg-esn-dark overflow-hidden">
@@ -396,12 +377,12 @@ export default function NationalErasmusOfficePage() {
       </section>
 
       {/* ═══════ USEFUL RESOURCES ═══════ */}
-      <section className="py-12 sm:py-16 md:py-20 px-6 sm:px-12 lg:px-24 bg-esn-dark">
+      <section className="py-12 sm:py-16 md:py-20 px-6 sm:px-12 lg:px-24 bg-white">
         <div className="mx-auto max-w-5xl text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-esn-dark mb-4">
             Useful Resources
           </h2>
-          <p className="text-gray-400 mb-8 sm:mb-12 max-w-2xl mx-auto">
+          <p className="text-gray-500 mb-8 sm:mb-12 max-w-2xl mx-auto">
             Official links related to Erasmus+ and the National Erasmus+ Office.
           </p>
 
@@ -419,7 +400,7 @@ export default function NationalErasmusOfficePage() {
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-6 py-4 rounded-xl transition-colors font-bold text-sm sm:text-base"
+                className="flex items-center justify-center gap-2 bg-[#F4F8FA] hover:bg-esn-dark border border-gray-100 hover:border-esn-dark text-esn-dark hover:text-white px-6 py-4 rounded-xl transition-colors font-bold text-sm sm:text-base"
               >
                 {link.title}
                 <ExternalLink className="w-4 h-4 flex-shrink-0" />
@@ -430,7 +411,7 @@ export default function NationalErasmusOfficePage() {
       </section>
 
       {/* ═══════ CTA ═══════ */}
-      <section className="py-14 sm:py-20 md:py-24 bg-gradient-to-r from-orange-500 to-esn-dark">
+      <section className="py-14 sm:py-20 md:py-24 bg-gradient-to-r from-[#1a1d5e] via-esn-dark to-esn-cyan">
         <div className="mx-auto max-w-4xl px-6 sm:px-12 lg:px-24 text-center text-white">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-black mb-6">
             Explore Erasmus+ Opportunities

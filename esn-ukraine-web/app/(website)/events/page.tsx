@@ -1,5 +1,7 @@
 import { sanityFetch } from "@/sanity/lib/fetch";
-import { groq } from "next-sanity";
+import { getAllEventsQuery } from "@/sanity/lib/queries";
+import type { EventPreview } from "@/sanity/lib/types";
+import { originalImageUrl } from "@/sanity/lib/image";
 import PageHero from "@/components/ui/PageHero";
 import { EventCard } from "@/components/ui/Card";
 import { buildMetadata } from '@/lib/seo';
@@ -11,148 +13,22 @@ export const metadata = buildMetadata({
   path: '/events',
 });
 
-// ==========================================
-// INTERFACES (CMS-ready structure)
-// ==========================================
-interface Event {
-  _id: string;
-  slug: { current: string };
-  title: string;
-  date: string;
-  location: string;
-  description?: string;
-  imageUrl: string | null;
-}
-
 function truncateToSentences(text: string, maxSentences: number): string {
   const sentences = text.match(/[^.!?]+[.!?]+/g);
   if (!sentences || sentences.length <= maxSentences) return text;
   return sentences.slice(0, maxSentences).join('').trim() + '...';
 }
 
-// ==========================================
-// MOCK DATA (Realistic ESN Ukraine events)
-// ==========================================
-const MOCK_EVENTS: Event[] = [
-  {
-    _id: 'mock-1',
-    slug: { current: 'erasmus-days-2025' },
-    title: 'Erasmus Days 2025',
-    date: '2025-10-14',
-    location: 'Taras Shevchenko National University of Kyiv',
-    description: 'Annual celebration of Erasmus+ program with lectures, workshops, and networking opportunities for students interested in international mobility. Join us for inspiring talks by Erasmus alumni and interactive sessions on how to start your exchange journey. This is the perfect event to learn about scholarships and meet like-minded students.',
-    imageUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    _id: 'mock-2',
-    slug: { current: 'welcome-week-fall-2025' },
-    title: 'Welcome Week Fall 2025',
-    date: '2025-09-08',
-    location: 'Kyiv',
-    description: 'A week full of activities for incoming international students: city tours, cultural events, and opportunities to meet your ESN buddies. Every day brings a new adventure from exploring Kyiv landmarks to themed evening parties. Make unforgettable memories and build friendships that will last a lifetime.',
-    imageUrl: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    _id: 'mock-3',
-    slug: { current: 'national-platform-kyiv' },
-    title: 'National Platform Kyiv',
-    date: '2025-04-18',
-    location: 'Kyiv',
-    description: 'The largest gathering of ESN volunteers in Ukraine. Three days of workshops, trainings, and strategic planning for the network. Meet passionate ESN members from all over the country and shape the future of student mobility together.',
-    imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    _id: 'mock-4',
-    slug: { current: 'eurodinner-spring-2025' },
-    title: 'EuroDinner: Taste of Europe',
-    date: '2025-03-22',
-    location: 'Kyiv',
-    description: 'A culinary journey through Europe where international students share dishes from their home countries with Ukrainian friends. Taste authentic recipes from over 15 different countries in one evening. A celebration of diversity, culture, and delicious food that brings everyone together.',
-    imageUrl: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    _id: 'mock-5',
-    slug: { current: 'social-inclusion-days-2025' },
-    title: 'Social Inclusion Days',
-    date: '2025-02-15',
-    location: 'Online & Kyiv',
-    description: 'A week dedicated to raising awareness about accessibility, diversity, and inclusion in student communities. Participate in workshops, panel discussions, and creative activities that promote equal opportunities for all. Together we can build a more inclusive campus environment.',
-    imageUrl: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    _id: 'mock-6',
-    slug: { current: 'christmas-market-trip' },
-    title: 'Christmas Market Trip to Lviv',
-    date: '2024-12-14',
-    location: 'Lviv',
-    description: 'A magical weekend trip to explore the famous Lviv Christmas markets with international and local students. Enjoy traditional Ukrainian treats, handmade crafts, and the enchanting holiday atmosphere of one of Europe\'s most beautiful cities. A perfect way to experience Ukrainian Christmas traditions.',
-    imageUrl: 'https://images.unsplash.com/photo-1555109307-f7d9da25c244?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    _id: 'mock-7',
-    slug: { current: 'tandem-language-exchange' },
-    title: 'Tandem Language Exchange',
-    date: '2024-11-28',
-    location: 'Kyiv National Linguistic University',
-    description: 'Practice languages in a fun and relaxed atmosphere. Meet new people and improve your speaking skills. Whether you want to learn Ukrainian, English, or any other language, our tandem sessions pair you with native speakers for engaging conversation.',
-    imageUrl: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    _id: 'mock-8',
-    slug: { current: 'international-food-festival' },
-    title: 'International Food Festival',
-    date: '2024-10-19',
-    location: 'Igor Sikorsky KPI, Kyiv',
-    description: 'Students from around the world prepared traditional dishes from their countries for everyone to taste and enjoy. The festival featured live music, cultural performances, and cooking demonstrations. It was a vibrant celebration of global cuisine and intercultural connection.',
-    imageUrl: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    _id: 'mock-9',
-    slug: { current: 'city-quest-kyiv' },
-    title: 'City Quest: Discover Kyiv',
-    date: '2024-09-21',
-    location: 'Kyiv City Center',
-    description: 'An interactive city quest to explore hidden gems of Kyiv while competing in teams with other students. Solve creative challenges and riddles while discovering the history and culture of Ukraine\'s capital. The winning team received exclusive ESN prizes and bragging rights.',
-    imageUrl: 'https://images.unsplash.com/photo-1555099962-4199c345e5dd?auto=format&fit=crop&q=80&w=800',
-  },
-];
-
-// ==========================================
-// DATA FETCHING
-// ==========================================
-async function getEvents(): Promise<Event[]> {
-  try {
-    const query = groq`*[_type == "event"] | order(date desc) {
-      _id, 
-      title, 
-      date, 
-      location, 
-      excerpt,
-      description,
-      slug,
-      "imageUrl": mainImage.asset->url
-    }`;
-    const events = await sanityFetch<any[]>({ query, tags: ['event'] });
-
-    // If no events from CMS, return mock data
-    if (!events || events.length === 0) {
-      return MOCK_EVENTS;
-    }
-    // Use excerpt as description fallback
-    return events.map((e: any) => ({
-      ...e,
-      description: e.description || e.excerpt || '',
-    }));
-  } catch {
-    return MOCK_EVENTS;
-  }
-}
+/** Cards in the first row (3 columns on desktop) load eagerly: one of them is the LCP image. */
+const EAGER_CARDS = 3;
 
 // ==========================================
 // PAGE COMPONENT
 // ==========================================
 export default async function EventsPage() {
-  const events = await getEvents();
+  // No try/catch: if Sanity fails during a background ISR regeneration, Next.js keeps
+  // serving the last good version of the page instead of caching an empty one.
+  const events = await sanityFetch<EventPreview[]>({ query: getAllEventsQuery, tags: ['event'] });
 
   return (
     <main className="min-h-svh bg-white">
@@ -169,21 +45,23 @@ export default async function EventsPage() {
       />
 
       {/* Events Grid */}
-      <section className="pt-10 pb-24 sm:pt-14 px-6 sm:px-12 lg:px-24">
+      <section className="pt-10 pb-24 sm:pt-14 px-6 sm:px-12 lg:px-24" aria-label="Past events">
         <div className="mx-auto max-w-7xl">
           {events.length === 0 ? (
             <p className="text-gray-500 text-center py-12">No events yet.</p>
           ) : (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {events.map((event) => (
+              {events.map((event, index) => (
                 <EventCard
                   key={event._id}
                   title={event.title}
-                  slug={event.slug.current}
-                  imageUrl={event.imageUrl}
-                  description={event.description ? truncateToSentences(event.description, 3) : null}
+                  slug={event.slug}
+                  imageUrl={originalImageUrl(event.image)}
+                  imageLqip={event.image?.asset?.lqip}
+                  description={event.excerpt ? truncateToSentences(event.excerpt, 3) : null}
                   date={event.date}
                   location={event.location}
+                  priority={index < EAGER_CARDS}
                   type="event"
                 />
               ))}

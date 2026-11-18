@@ -22,10 +22,10 @@ Every public page is rendered on the server. The table shows how each group of r
 | Strategy | Routes | Behaviour |
 |---|---|---|
 | **Static** | `/about-us`, `/contact`, `/cookies`, `/privacy`, `/erasmus` and its subpages, `/for-students/*`, `/blog`, `/projects`, `/robots.txt` | Rendered once at build time. These pages do not read from Sanity, so content changes need a new deployment. |
-| **Incremental static regeneration (ISR)** | `/`, `/news`, `/events`, `/national-board`, `/our-sections`, `/about-us/former-boards`, `/sitemap.xml` | Rendered at build time and cached. Refreshed after one hour or when the publish webhook invalidates the cache. |
-| **ISR with pre-rendered parameters** | `/news/[slug]`, `/events/[slug]` | `generateStaticParams` pre-renders every published slug at build time. A slug published later is rendered on its first request and then cached. Unknown slugs return the 404 page. |
+| **Incremental static regeneration (ISR)** | `/`, `/news`, `/events`, `/upcoming-events`, `/national-board`, `/our-sections`, `/about-us/former-boards`, `/sitemap.xml`, `/rss.xml` | Rendered at build time and cached. Refreshed after one hour or, immediately, when the publish webhook expires the cache tags. `/upcoming-events` reads the `upcomingEvent` and `section` types. |
+| **ISR with pre-rendered parameters** | `/news/[slug]`, `/events/[slug]` | `generateStaticParams` pre-renders every published slug at build time. A slug published later is rendered on its first request and then cached. Unknown slugs are checked against the cached list of all slugs (no Sanity request) and return a real `404`. |
 | **Static shell, browser application** | `/studio/[[...tool]]` (`dynamic = 'force-static'`) | The page delivers the Studio application, which then runs in the browser. |
-| **Dynamic** | `/api/*` | Executed on every request. The newsletter route runs on the Edge runtime. |
+| **Dynamic** | `/api/*` | Executed on every request on the Node.js runtime. |
 
 The cache lifetime and tags come from `sanityFetch`, described below. Pages do not export their own `revalidate` settings.
 
@@ -45,15 +45,15 @@ Its behaviour depends on the context:
 
 | Context | Perspective | Caching | Other |
 |---|---|---|---|
-| **Normal request** (production, preview) | `published`: only published documents | Next.js data cache with `revalidate: 3600` and tags `['sanity', …tags]` | `stega` off |
-| **Draft mode** | `previewDrafts`: drafts override published documents | No caching (`revalidate: 0`) | Uses `SANITY_API_READ_TOKEN`; `stega` on, for visual editing |
+| **Normal request** (production, preview) | `published`: only published documents | Next.js data cache with `revalidate: 3600` (1 h) and the given tags | `stega` off |
+| **Draft mode** | `drafts`: drafts override published documents | No caching (`revalidate: 0`) | Uses `SANITY_API_READ_TOKEN`; `stega` on, for visual editing |
 | **Development** (`npm run dev`) | `published` | No caching (`revalidate: 0`) | Content changes appear on refresh |
 
 Implementation details worth knowing:
 
 - **The CDN is bypassed.** The client in `sanity/lib/client.ts` sets `useCdn: false`, so every fetch reads fresh data from the Sanity API. Next.js caching keeps the number of API calls low.
 - **Tags are sanitised.** Characters outside `a–z`, `A–Z`, `0–9`, `_`, `-` and `:` are replaced with `-`. Tags such as `news:<slug>` can contain special characters from slugs, which caused server errors in the past.
-- **Every tag list includes `sanity`.** That way a single `revalidateTag('sanity')` refreshes every page that uses CMS data.
+- **Tags name every document type a query reads.** The webhook expires only the tags of the published type (and `type:slug` for one document), so publishing an event no longer regenerates every page of the site. There is no global tag any more.
 - **`draftMode()` outside a request.** At build time, for example inside `generateStaticParams`, the function throws. `sanityFetch` catches the error and treats the request as not being in draft mode.
 
 The queries themselves are listed in [Content model → Queries](../reference/content-model.md#queries).
@@ -130,28 +130,29 @@ If a regeneration fails, for example because Sanity is unreachable or a componen
 
 Draft mode shows unpublished drafts on the real website and adds click-to-edit overlays that link back to the Studio.
 
-1. A maintainer opens `/api/draft-mode/enable?token=<SANITY_API_READ_TOKEN>&slug=/news/<slug>`.
-2. The route compares the token with `SANITY_API_READ_TOKEN`, enables Next.js draft mode (a cookie in the browser), and redirects to the given path.
-3. While the cookie is present, `sanityFetch` uses the `previewDrafts` perspective without caching. The root layout renders `<VisualEditing />`, which turns the invisible `stega` markers in strings into edit links.
+1. A maintainer opens `/api/draft-mode/enable?secret=<SANITY_DRAFT_MODE_SECRET>&slug=/news/<slug>`.
+2. The route compares the secret with `SANITY_DRAFT_MODE_SECRET` (constant-time comparison), enables Next.js draft mode (a cookie in the browser), and redirects to the given path. Only site-relative paths are accepted as `slug`.
+3. While the cookie is present, `sanityFetch` uses the `drafts` perspective without caching. The root layout renders `<VisualEditing />`, which turns the invisible `stega` markers in strings into edit links.
 4. `/api/draft-mode/disable?slug=/` turns draft mode off.
 
 > [!WARNING]
-> The enable URL contains the Sanity read token. Anyone with the URL can read draft content while the token is valid. Do not share the URL or paste it into chats or issues. If it leaks, rotate the token as described in [Deployment and environments](../guides/deployment-and-environments.md#rotate-secrets).
+> The enable URL contains a secret. Anyone with the URL can read draft content while the secret is valid. Do not share the URL or paste it into chats or issues. If it leaks, change `SANITY_DRAFT_MODE_SECRET` in Vercel (the Sanity read token itself never appears in a URL).
 
-The Studio configuration (`sanity.config.ts`) does not include Sanity's Presentation tool, so the Studio has no **Preview** button. `sanity/lib/live.ts` sets up Sanity's Live Content API (`defineLive`), but nothing uses it yet.
+The Studio configuration (`sanity.config.ts`) does not include Sanity's Presentation tool, so the Studio has no **Preview** button.
 
 ## Images
 
 | Source | Used for | How it is rendered |
 |---|---|---|
-| **Sanity assets** (`cdn.sanity.io`) | All images uploaded by editors | Mostly `next/image`, which resizes the image and serves AVIF or WebP (see `images` in `next.config.ts`) |
-| **`public/`** | Logos, the About Us history photos and video, the section map, the default sharing image, the "under construction" mascot | `next/image` or `<img>`/`<video>` |
-| **`images.unsplash.com`** | Built-in placeholder photos when CMS data is missing (see [below](#built-in-fallback-content)) and decorative photos on the ESNcard page | `next/image` |
+| **Sanity assets** (`cdn.sanity.io`) | All images uploaded by editors | `SanityImage` (`components/ui/SanityImage.tsx`): `next/image` with a custom loader, so the **Sanity CDN** resizes the photo to the width the browser needs, at quality 75 in WebP/AVIF. These images never use the Vercel image optimizer and its Hobby quota |
+| **`public/`** | Logos, the About Us history photos and video, the section map, the ESNcard photos, the "under construction" mascot | `next/image` (Vercel optimizer, AVIF or WebP) or `<img>`/`<video>` |
 
 Sanity image URLs are built in two ways:
 
-- **`asset->url` in GROQ** returns the URL of the original upload. Cards, homepage slides, the "Our Network" collage, section logos and board photos use it, and `next/image` takes care of resizing.
-- **`urlFor()`** from [`sanity/lib/image.ts`](../../esn-ukraine-web/sanity/lib/image.ts) builds a resized URL with a fixed width and height, honouring the editor's hotspot and crop. Article and event headers and social sharing images (1200 × 630) use it. Images in the article body use it when the query does not return the asset URL.
+- **The original upload URL** (`asset.url` from the shared `IMAGE_PROJECTION`, or `originalImageUrl()`) is used by cards, homepage slides, the "Our Network" collage, section logos, board photos, gallery photos and images in the article body. `SanityImage` asks the Sanity CDN for each width in the `srcset`.
+- **`urlFor()`** from [`sanity/lib/image.ts`](../../esn-ukraine-web/sanity/lib/image.ts) builds a URL with a fixed width and height, honouring the editor's hotspot and crop. Article and event headers (16:9) and social sharing images (1200 × 630) use it.
+
+The widths (`sizes`), the quality (75) and the sources match the production site before November 2026; only the server that resizes Sanity photos changed (Sanity CDN instead of Vercel), at the same visual quality.
 
 Board photos, the gallery lightbox, the About Us history slider and the footer logo use a plain `<img>` element, so these images are not resized by `next/image`.
 
@@ -159,7 +160,7 @@ Images in the article body and gallery use the low-quality image placeholder (`m
 
 ## Dates
 
-`formatDate` in [`sanity/lib/utils.ts`](../../esn-ukraine-web/sanity/lib/utils.ts) formats dates as `DD/MM/YYYY`. It uses the time zone of the machine that renders the page. On Vercel that is UTC, not Kyiv time, so an event that starts shortly after midnight Kyiv time can show the previous day.
+`formatDate` in [`sanity/lib/utils.ts`](../../esn-ukraine-web/sanity/lib/utils.ts) formats dates as `14 Oct 2025` in Kyiv time (`Europe/Kyiv`), on the server and in the browser alike, so an event shortly after midnight Kyiv time shows the right day.
 
 ## Error handling
 
@@ -167,18 +168,18 @@ Images in the article body and gallery use the low-quality image placeholder (`m
 |---|---|---|
 | Error boundary | `app/(website)/error.tsx` | A rendering error inside a page. Shows "Something went wrong" with a **Try again** button. |
 | Not found | `app/(website)/not-found.tsx` | `notFound()` calls, for example an unknown news or event slug. Shows a 404 page with a link home. |
-| Loading state | `app/(website)/loading.tsx` | A spinner while a page loads during client-side navigation. |
 
 ### Built-in fallback content
 
-Some components contain built-in content that is shown when Sanity returns nothing:
+Since November 2026 the website contains no sample events, placeholder people or stock photos. When Sanity returns nothing:
 
 | Where | Condition | What visitors see |
 |---|---|---|
-| `/events` | No events, or the fetch fails | A built-in list of sample events (`MOCK_EVENTS` in `app/(website)/events/page.tsx`) |
-| `/national-board` | No board member documents | Built-in placeholder profiles (`FALLBACK_BOARD_MEMBERS` in `components/sections/BoardSection.client.tsx`) |
-| Homepage "Our Network" | A slot has no photos | Built-in stock photos for that slot |
-| Homepage hero, news and event cards | A document has no image | A stock photo, or an "ESN" placeholder tile on cards |
+| `/events`, `/news` | No documents | An empty-state message |
+| `/national-board` | No board member documents | An empty-state message |
+| Homepage "Our Network" | A slot has no photos | That slot stays empty; with no photos at all the collage is hidden |
+| News and event cards | A document has no image | An "ESN" placeholder tile |
+| Homepage hero | A Spotlight item has no image | The slide is skipped |
 
 > [!IMPORTANT]
 > The homepage hero has **no** fallback. It needs at least one published news item or event with **Spotlight** enabled. Without one, rendering the homepage fails. Regenerations keep serving the previous version, but the next deployment build fails.

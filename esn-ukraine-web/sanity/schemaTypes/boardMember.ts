@@ -10,21 +10,21 @@ export default defineType({
       name: 'name',
       title: 'Ім\'я та прізвище (або назва)',
       type: 'string',
-      description: 'Наприклад: Dariia Beliaieva',
+      description: 'Імʼя та прізвище латиницею, наприклад: Dariia Beliaieva. Показується, коли відвідувач відкриває фото.',
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'position',
       title: 'Посада / Позиція',
       type: 'string',
-      description: 'Наприклад: President, Communication Manager',
+      description: 'Посада англійською, наприклад: President, Communication Manager. Показується поруч з імʼям на збільшеному фото.',
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'category',
       title: 'Категорія / Розділ борду',
       type: 'string',
-      description: 'Оберіть групу, в якій відображатиметься картка на сторінці',
+      description: 'Блок на сторінці National Board, у якому буде картка.',
       options: {
         list: [
           { title: 'The Board 2025-26', value: 'board' },
@@ -39,7 +39,7 @@ export default defineType({
       name: 'order',
       title: 'Порядковий номер',
       type: 'number',
-      description: 'Число для сортування всередині категорії (1, 2, 3...)',
+      description: 'Порядок картки всередині блоку: 1 — перша. Картки з однаковим числом сортуються за імʼям.',
       initialValue: 10,
     }),
     defineField({
@@ -47,7 +47,7 @@ export default defineType({
       title: 'Фотографія (продовгувата / вертикальна 4:5)',
       type: 'image',
       options: { hotspot: true, accept: ACCEPTED_IMAGE_TYPES },
-      description: 'Рекомендується завантажувати вертикальне / продовгувате зображення борду (співвідношення 4:5 або 3:4). Ліміти Sanity Free: макс. 2 МБ, формати JPG/PNG/WebP. Обов\'язково стискайте фото (наприклад, через tinypng.com або squoosh.app)!',
+      description: 'Вертикальне фото 4:5 (наприклад, 1200×1500 px). На сайті картка має формат 4:5: довше фото обрізається знизу. Макс. 2 МБ і 3000×3500 px, формати JPG/PNG/WebP/AVIF. Стискайте фото перед завантаженням (tinypng.com або squoosh.app).',
       validation: (rule) => rule.required().custom(validateImageSize(2, 3000, 3500)),
       fields: [
         {
@@ -58,29 +58,6 @@ export default defineType({
           validation: (rule) => rule.required(),
         },
       ],
-    }),
-    defineField({
-      name: 'description',
-      title: 'Опис (відкривається при натисканні на фото)',
-      type: 'text',
-      rows: 4,
-      description: 'Детальна інформація про людину або позицію, яка буде відображатися при відкритті фото зблизька в модальному вікні.',
-    }),
-    defineField({
-      name: 'section',
-      title: 'Секція ESN',
-      type: 'string',
-      description: 'Наприклад: ESN Kyiv, ESN Lviv',
-    }),
-    defineField({
-      name: 'email',
-      title: 'Email',
-      type: 'string',
-    }),
-    defineField({
-      name: 'linkedin',
-      title: 'LinkedIn URL',
-      type: 'url',
     }),
   ],
   preview: {

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { buildMetadata } from '@/lib/seo';
+import { JsonLd, webPageJsonLd } from '@/lib/jsonld';
 import {
   ArrowLeft,
   ArrowRight,
@@ -9,7 +10,6 @@ import {
   Clock,
   Wallet,
   CheckCircle2,
-  ChevronRight,
   ExternalLink,
   Lightbulb,
   Handshake,
@@ -118,34 +118,17 @@ const participationSteps = [
 ];
 
 export default function TrainingsPage() {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
+  const jsonLd = webPageJsonLd({
     name: 'Erasmus Trainings and Exchanges — Youth Mobility Opportunities',
     description:
       'Discover Erasmus+ youth exchanges, training courses, and capacity-building activities for young people and youth workers.',
-    url: 'https://esnukraine.org/erasmus/trainings-and-exchanges',
-    publisher: {
-      '@type': 'Organization',
-      name: 'ESN Ukraine',
-      url: 'https://esnukraine.org',
-    },
-    breadcrumb: {
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://esnukraine.org' },
-        { '@type': 'ListItem', position: 2, name: 'Erasmus+', item: 'https://esnukraine.org/erasmus' },
-        { '@type': 'ListItem', position: 3, name: 'Erasmus Trainings and Exchanges', item: 'https://esnukraine.org/erasmus/trainings-and-exchanges' },
-      ],
-    },
-  };
+    path: '/erasmus/trainings-and-exchanges',
+    breadcrumbs: [{ name: 'Home', path: '/' }, { name: 'Erasmus+', path: '/erasmus' }, { name: 'Erasmus Trainings and Exchanges', path: '/erasmus/trainings-and-exchanges' }],
+  });
 
   return (
     <main className="min-h-svh bg-white">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       {/* ═══════ HERO ═══════ */}
       <section className="relative pt-32 sm:pt-36 md:pt-40 pb-20 sm:pb-24 md:pb-32 bg-esn-dark overflow-hidden">

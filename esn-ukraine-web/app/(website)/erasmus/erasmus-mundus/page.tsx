@@ -1,20 +1,12 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { buildMetadata } from '@/lib/seo';
+import { JsonLd, webPageJsonLd } from '@/lib/jsonld';
 import {
   ArrowLeft,
   ArrowRight,
-  BookOpen,
-  Globe2,
-  Clock,
-  Wallet,
-  GraduationCap,
   CheckCircle2,
-  ChevronRight,
   ExternalLink,
-  MapPin,
-  Users,
-  Award,
   CalendarDays,
 } from 'lucide-react';
 
@@ -81,34 +73,17 @@ const applicationSteps = [
 ];
 
 export default function ErasmusMundusPage() {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
+  const jsonLd = webPageJsonLd({
     name: 'Erasmus Mundus Master Programmes — Full Scholarships for Master\'s Degrees',
     description:
       'Explore Erasmus Mundus Joint Master Programmes: fully-funded Master\'s degrees at top European universities.',
-    url: 'https://esnukraine.org/erasmus/erasmus-mundus',
-    publisher: {
-      '@type': 'Organization',
-      name: 'ESN Ukraine',
-      url: 'https://esnukraine.org',
-    },
-    breadcrumb: {
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://esnukraine.org' },
-        { '@type': 'ListItem', position: 2, name: 'Erasmus+', item: 'https://esnukraine.org/erasmus' },
-        { '@type': 'ListItem', position: 3, name: 'Erasmus Mundus Master Programmes', item: 'https://esnukraine.org/erasmus/erasmus-mundus' },
-      ],
-    },
-  };
+    path: '/erasmus/erasmus-mundus',
+    breadcrumbs: [{ name: 'Home', path: '/' }, { name: 'Erasmus+', path: '/erasmus' }, { name: 'Erasmus Mundus Master Programmes', path: '/erasmus/erasmus-mundus' }],
+  });
 
   return (
     <main className="min-h-svh bg-white">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       {/* ═══════ HERO ═══════ */}
       <section className="relative pt-32 sm:pt-36 md:pt-40 pb-20 sm:pb-24 md:pb-32 bg-esn-dark overflow-hidden">

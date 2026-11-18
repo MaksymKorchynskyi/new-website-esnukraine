@@ -138,7 +138,7 @@ esn-ukraine-web/
 │   ├── layout/               # Header, Footer, LanguageSwitcher, CookieBanner, CookieSettings
 │   ├── sections/             # *.client.tsx: Hero, Events, NetworkCollage, NewsletterForm, Board
 │   ├── ui/                   # Card, AttachmentFiles, PhotoGalleryLightbox, PolicyPageLayout, UkraineMap, UnderDevelopment
-│   └── analytics/            # PostHogProvider, PostHogPageView
+│   └── analytics/            # AnalyticsLoader (PostHog after consent)
 ├── lib/
 │   ├── navigation.tsx        # header menu, footer links, social links
 │   └── cookies.ts            # cookie consent state and events

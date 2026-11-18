@@ -18,11 +18,15 @@ Every environment variable the application reads, where it is used, whether it i
 | [`NEXT_PUBLIC_SANITY_API_VERSION`](#next_public_sanity_api_version) | Public | No | `sanity/env.ts` |
 | [`SANITY_API_READ_TOKEN`](#sanity_api_read_token) | Server | For draft mode | `sanity/lib/fetch.ts`, `app/api/draft-mode/enable/route.ts` |
 | [`SANITY_REVALIDATE_SECRET`](#sanity_revalidate_secret) | Server | In Production | `app/api/revalidate/route.ts` |
+| [`SANITY_DRAFT_MODE_SECRET`](#sanity_draft_mode_secret) | Server | For draft mode | `app/api/draft-mode/enable/route.ts` |
 | [`RESEND_API_KEY`](#resend_api_key) | Server | For the newsletter | `app/api/newsletter/subscribe/route.ts` |
 | [`RESEND_AUDIENCE_ID`](#resend_audience_id) | Server | For the newsletter | `app/api/newsletter/subscribe/route.ts` |
 | [`KV_REST_API_URL`](#kv_rest_api_url-and-kv_rest_api_token) | Server | In Production, for the newsletter | `app/api/newsletter/subscribe/route.ts` |
-| [`KV_REST_API_TOKEN`](#kv_rest_api_url-and-kv_rest_api_token) | Server | In Production, for the newsletter | `app/api/newsletter/subscribe/route.ts` |
-| [`NEXT_PUBLIC_POSTHOG_KEY`](#next_public_posthog_key) | Public | No | `components/analytics/PostHogProvider.tsx` |
+| [`KV_REST_API_TOKEN`](#kv_rest_api_url-and-kv_rest_api_token) | Server | In Production, for the newsletter and contact form | `lib/server/request-guards.ts` |
+| [`CONTACT_EMAIL_FROM`](#contact_email_from-and-contact_email_to) | Server | For the contact form | `app/api/contact/route.ts` |
+| [`CONTACT_EMAIL_TO`](#contact_email_from-and-contact_email_to) | Server | Optional | `app/api/contact/route.ts` |
+| [`RATE_LIMIT_SALT`](#rate_limit_salt) | Server | Optional | `lib/server/request-guards.ts` |
+| [`NEXT_PUBLIC_POSTHOG_KEY`](#next_public_posthog_key) | Public | No | `lib/analytics.ts` |
 | [`VERCEL_ENV`, `VERCEL_URL`, `VERCEL_PROJECT_PRODUCTION_URL`](#variables-set-by-vercel) | Server | Set by Vercel | Root layout, newsletter API |
 | `NODE_ENV` | — | Set by Next.js | `sanity/lib/fetch.ts`, `sanity.config.ts`, newsletter API |
 
@@ -60,11 +64,17 @@ Without it, draft mode cannot be enabled, and a warning is logged if draft mode 
 
 ### `SANITY_REVALIDATE_SECRET`
 
-A shared secret, chosen by you, that the Sanity webhook sends to `/api/revalidate`. Without a matching secret, the route answers `401` and content updates only through the hourly revalidation.
+A secret, chosen by you, that authenticates the Sanity webhook calls to `/api/revalidate`: either Sanity signs the request with it (the webhook's **Secret** field) or the webhook sends it as `?secret=` or in a header. Without a matching secret, the route answers `401` and content updates only through the hourly revalidation.
 
-**How to create it:** generate a long random string, for example with `openssl rand -base64 32`. Store it in Vercel and in the webhook configuration in Sanity. See [Configure the Sanity webhook](../guides/deployment-and-environments.md#configure-the-sanity-webhook).
+**How to create it:** generate a long random string, for example with `openssl rand -base64 32`. Store it in Vercel and in the webhook's **Secret** field in Sanity. See [Configure the Sanity webhook](../guides/deployment-and-environments.md#configure-the-sanity-webhook).
 
-## Newsletter
+### `SANITY_DRAFT_MODE_SECRET`
+
+A random string that unlocks draft mode: `/api/draft-mode/enable?secret=<value>&slug=/news/my-article`. It is separate from the Sanity read token, so the token never appears in a URL. Without it, draft mode cannot be enabled (`401`).
+
+**How to create it:** `openssl rand -base64 32`.
+
+## Newsletter and contact form
 
 ### `RESEND_API_KEY`
 
@@ -85,7 +95,17 @@ The REST endpoint and token of the Upstash Redis database used for rate limiting
 - **Production:** required. Without them, the newsletter API answers `503 "Service Unavailable"` and logs a critical error.
 - **Local development and Preview:** optional. Rate limiting is skipped.
 
+The same database rate-limits the contact form (`/api/contact`, 3 messages per 10 minutes per visitor).
+
 The names follow the convention used by the Upstash Redis integration in the Vercel Marketplace (formerly Vercel KV).
+
+### `CONTACT_EMAIL_FROM` and `CONTACT_EMAIL_TO`
+
+`CONTACT_EMAIL_FROM` is the sender of contact-form messages. It must be an address on a domain verified in Resend (for example `website@esnukraine.org`); without it `/api/contact` answers `503` and the form tells the visitor to write to `ukraine-nr@esn.org` instead. `CONTACT_EMAIL_TO` is the mailbox that receives the messages; it defaults to `ukraine-nr@esn.org`. The visitor's address is set as `Reply-To`.
+
+### `RATE_LIMIT_SALT`
+
+Optional secret salt. Visitor IP addresses are hashed with it before being used as rate-limit keys, so Redis never stores a raw IP. If unset, `SANITY_REVALIDATE_SECRET` is used as the salt.
 
 > [!NOTE]
 > **To confirm:** whether the values come from the Vercel integration or were added manually.
@@ -123,6 +143,8 @@ Recommended configuration per Vercel environment:
 | `NEXT_PUBLIC_SANITY_API_VERSION` | Optional | Optional | Optional |
 | `SANITY_API_READ_TOKEN` | Optional | Optional | Recommended (for draft mode) |
 | `SANITY_REVALIDATE_SECRET` | Not needed | Not needed | Required |
+| `SANITY_DRAFT_MODE_SECRET` | Optional | Optional | Recommended (for draft mode) |
+| `CONTACT_EMAIL_FROM` | Optional | Optional | Required (contact form) |
 | `RESEND_API_KEY`, `RESEND_AUDIENCE_ID` | Optional | Optional | Required |
 | `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Optional | Optional | Required |
 | `NEXT_PUBLIC_POSTHOG_KEY` | Optional | Optional | Recommended |

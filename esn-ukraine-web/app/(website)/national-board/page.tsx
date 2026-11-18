@@ -2,8 +2,10 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { groq } from 'next-sanity';
-import BoardSection, { BoardMemberItem } from '@/components/sections/BoardSection.client';
+import BoardSection, { type BoardMemberItem } from '@/components/sections/BoardSection.client';
 import { buildMetadata } from '@/lib/seo';
+import { hasAsset, urlFor, type ProjectedImage } from '@/sanity/lib/image';
+import { IMAGE_PROJECTION } from '@/sanity/lib/queries';
 
 export const metadata = buildMetadata({
   title: 'National Board',
@@ -15,6 +17,20 @@ export const metadata = buildMetadata({
 // ==========================================
 // DATA FETCHING FROM SANITY CMS
 // ==========================================
+interface BoardMemberDoc {
+    _id: string;
+    name: string;
+    position: string;
+    category: string;
+    order?: number;
+    image: ProjectedImage | null;
+}
+
+/**
+ * Only the fields the page shows are requested (description, email and
+ * LinkedIn are not rendered and would otherwise be shipped in the JS bundle).
+ * Photos use the original uploaded file, exactly as the production site does.
+ */
 async function getBoardMembers(): Promise<BoardMemberItem[]> {
     const query = groq`*[_type == "boardMember"] | order(order asc, name asc) {
         _id,
@@ -22,14 +38,24 @@ async function getBoardMembers(): Promise<BoardMemberItem[]> {
         position,
         category,
         order,
-        description,
-        section,
-        email,
-        linkedin,
-        "imageUrl": image.asset->url,
-        "imageAlt": image.alt
+        "image": image${IMAGE_PROJECTION}
     }`;
-    return await sanityFetch<BoardMemberItem[]>({ query, tags: ['boardMember'] });
+    const docs = await sanityFetch<BoardMemberDoc[]>({ query, tags: ['boardMember'] });
+
+    return docs
+        .filter((doc) => hasAsset(doc.image))
+        .map((doc) => {
+            const image = doc.image!;
+            return {
+                _id: doc._id,
+                name: doc.name,
+                position: doc.position,
+                category: doc.category,
+                order: doc.order,
+                imageUrl: image.asset?.url ?? urlFor(image).url(),
+                imageAlt: image.alt ?? null,
+            };
+        });
 }
 
 export default async function BoardPage() {

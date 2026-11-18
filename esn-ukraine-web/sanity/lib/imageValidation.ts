@@ -1,4 +1,4 @@
-import { CustomValidator } from 'sanity'
+import type { CustomValidator } from 'sanity'
 
 /**
  * Дозволені формати для завантаження зображень у Sanity Studio.
@@ -11,22 +11,22 @@ export const ACCEPTED_IMAGE_TYPES = 'image/jpeg,image/png,image/webp,image/avif'
  */
 export const ACCEPTED_FILE_TYPES = '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx'
 
+/** Значення поля image/file у документі: нас цікавить лише посилання на асет. */
+type AssetValue = { asset?: { _ref?: string } } | undefined
+
 /**
  * Валідатор для перевірки розміру та роздільної здатності зображень.
  * Дозволяє повнорозмірні фото з сучасних смартфонів та камер (до 10000px),
  * обмежуючи вагу файлу (за замовчуванням до 2 МБ) для збереження лімітів Sanity.
+ * 0 у maxWidth/maxHeight вимикає перевірку роздільної здатності.
  */
 export function validateImageSize(
   maxSizeMB: number = 2,
   maxWidth: number = 10000,
   maxHeight: number = 10000
-): CustomValidator {
-  return async (value: any, context) => {
-    if (!value || !value.asset || !value.asset._ref) {
-      return true
-    }
-
-    const ref = typeof value.asset._ref === 'string' ? value.asset._ref : ''
+): CustomValidator<AssetValue> {
+  return async (value, context) => {
+    const ref = typeof value?.asset?._ref === 'string' ? value.asset._ref : ''
     if (!ref) return true
 
     // 1. Швидка перевірка роздільної здатності через ID асета (_ref: image-id-widthxheight-format)
@@ -45,10 +45,7 @@ export function validateImageSize(
     // 2. Перевірка фактичної ваги файлу через Sanity Client
     try {
       const client = context.getClient({ apiVersion: '2024-01-01' })
-      const asset = await client.fetch(
-        `*[_id == $id][0]{ size }`,
-        { id: ref }
-      )
+      const asset = await client.fetch<{ size?: number } | null>(`*[_id == $id][0]{ size }`, { id: ref })
       if (asset && typeof asset.size === 'number') {
         const maxBytes = maxSizeMB * 1024 * 1024
         if (asset.size > maxBytes) {
@@ -68,21 +65,14 @@ export function validateImageSize(
 /**
  * Валідатор для перевірки розміру прикріплених файлів (PDF, DOCX тощо).
  */
-export function validateFileSize(maxSizeMB: number = 10): CustomValidator {
-  return async (value: any, context) => {
-    if (!value || !value.asset || !value.asset._ref) {
-      return true
-    }
-
-    const ref = typeof value.asset._ref === 'string' ? value.asset._ref : ''
+export function validateFileSize(maxSizeMB: number = 10): CustomValidator<AssetValue> {
+  return async (value, context) => {
+    const ref = typeof value?.asset?._ref === 'string' ? value.asset._ref : ''
     if (!ref) return true
 
     try {
       const client = context.getClient({ apiVersion: '2024-01-01' })
-      const asset = await client.fetch(
-        `*[_id == $id][0]{ size }`,
-        { id: ref }
-      )
+      const asset = await client.fetch<{ size?: number } | null>(`*[_id == $id][0]{ size }`, { id: ref })
       if (asset && typeof asset.size === 'number') {
         const maxBytes = maxSizeMB * 1024 * 1024
         if (asset.size > maxBytes) {

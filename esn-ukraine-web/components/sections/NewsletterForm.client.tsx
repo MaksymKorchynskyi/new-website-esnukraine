@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useRef, useId } from 'react';
+import { useState, useRef, useId, useEffect } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
+type ErrorField = 'email' | 'consent' | 'form';
 
 interface SubscribeResponse {
   success: boolean;
@@ -21,32 +22,50 @@ export default function NewsletterForm({
   const uid = useId();
   const emailId = `newsletter-email-${uid}`;
   const consentId = `privacy-consent-${uid}`;
+  const errorId = `newsletter-error-${uid}`;
   const [email, setEmail] = useState('');
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<FormStatus>('idle');
+  const [errorField, setErrorField] = useState<ErrorField>('form');
   const [message, setMessage] = useState('');
   const honeypotRef = useRef<HTMLInputElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
+
+  // The form unmounts on success: move focus to the confirmation so it is not lost
+  useEffect(() => {
+    if (status === 'success') successRef.current?.focus({ preventScroll: true });
+  }, [status]);
+
+  const fail = (field: ErrorField, text: string) => {
+    setStatus('error');
+    setErrorField(field);
+    setMessage(text);
+  };
+
+  const clearError = () => {
+    if (status === 'error') {
+      setStatus('idle');
+      setMessage('');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Client-side validation
     if (!email.trim()) {
-      setStatus('error');
-      setMessage('Please enter your email address.');
+      fail('email', 'Please enter your email address.');
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
-      setStatus('error');
-      setMessage('Please enter a valid email address.');
+      fail('email', 'Please enter a valid email address.');
       return;
     }
 
     if (!consent) {
-      setStatus('error');
-      setMessage('Please accept the privacy policy to subscribe.');
+      fail('consent', 'Please accept the privacy policy to subscribe.');
       return;
     }
 
@@ -64,21 +83,19 @@ export default function NewsletterForm({
         }),
       });
 
-      const data: SubscribeResponse = await res.json().catch(() => ({ 
-        success: false, 
-        error: res.status === 429 ? 'You are sending too many requests. Please wait a minute before trying again.' : 'Invalid response from server.' 
+      const data: SubscribeResponse = await res.json().catch(() => ({
+        success: false,
+        error: res.status === 429 ? 'You are sending too many requests. Please wait a minute before trying again.' : 'Invalid response from server.',
       }));
 
       if (data.success) {
         setStatus('success');
-        setMessage(data.message || 'You\'ve been subscribed!');
+        setMessage(data.message || "You've been subscribed!");
       } else {
-        setStatus('error');
-        setMessage(data.error || 'Something went wrong. Please try again.');
+        fail(res.status === 400 ? 'email' : 'form', data.error || 'Something went wrong. Please try again.');
       }
     } catch {
-      setStatus('error');
-      setMessage('Network error. Please check your connection and try again.');
+      fail('form', 'Network error. Please check your connection and try again.');
     }
   };
 
@@ -88,17 +105,23 @@ export default function NewsletterForm({
     setMessage('');
   };
 
+  const hasError = status === 'error' && Boolean(message);
+
   return (
-    <div className="relative" aria-live="polite">
+    <MotionConfig reducedMotion="user">
+    <div className="relative">
       <AnimatePresence mode="wait">
         {status === 'success' ? (
           <motion.div
             key="success"
+            ref={successRef}
+            tabIndex={-1}
+            role="status"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="flex flex-col items-center gap-3 py-2"
+            className="flex flex-col items-center gap-3 py-2 outline-none"
           >
             <motion.div
               initial={{ scale: 0 }}
@@ -112,14 +135,15 @@ export default function NewsletterForm({
 
             <div className="text-center">
               <p className="text-base sm:text-lg font-bold text-esn-dark">
-                You're subscribed!
+                You&apos;re subscribed!
               </p>
               <p className="mt-1 text-sm text-gray-500 max-w-sm">
-                Thank you for subscribing. You'll receive our latest news and updates.
+                Thank you for subscribing. You&apos;ll receive our latest news and updates.
               </p>
             </div>
 
             <button
+              type="button"
               onClick={handleReset}
               className="mt-1 text-xs font-bold text-esn-cyan hover:text-esn-dark transition-colors uppercase tracking-wider"
             >
@@ -150,20 +174,21 @@ export default function NewsletterForm({
 
               <input
                 id={emailId}
+                name="email"
                 autoFocus={autoFocus}
                 type="email"
+                autoComplete="email"
+                inputMode="email"
                 required
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  if (status === 'error') {
-                    setStatus('idle');
-                    setMessage('');
-                  }
+                  clearError();
                 }}
                 placeholder="Enter your email address"
                 disabled={status === 'loading'}
-                aria-invalid={status === 'error' ? 'true' : 'false'}
+                aria-invalid={hasError && errorField === 'email' ? 'true' : undefined}
+                aria-describedby={hasError ? errorId : undefined}
                 className="w-full sm:flex-1 rounded-full border border-gray-200 bg-white px-5 py-3 sm:px-6 sm:py-3.5 text-base sm:text-sm [@media(pointer:coarse)]:text-base text-esn-dark focus:ring-4 focus:ring-esn-cyan/20 focus:border-esn-cyan outline-none placeholder:text-gray-400 font-medium shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               />
 
@@ -174,7 +199,7 @@ export default function NewsletterForm({
               >
                 {status === 'loading' ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
                     <span>Subscribing...</span>
                   </>
                 ) : (
@@ -185,15 +210,17 @@ export default function NewsletterForm({
 
             {/* Error Message */}
             <AnimatePresence>
-              {status === 'error' && message && (
+              {hasError && (
                 <motion.div
+                  id={errorId}
+                  role="alert"
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.2 }}
                   className="flex items-center justify-center gap-2 mt-3"
                 >
-                  <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                  <AlertCircle className="w-4 h-4 text-red-500 shrink-0" aria-hidden="true" />
                   <p className="text-sm text-red-600 font-medium">{message}</p>
                 </motion.div>
               )}
@@ -210,13 +237,11 @@ export default function NewsletterForm({
                   checked={consent}
                   onChange={(e) => {
                     setConsent(e.target.checked);
-                    if (status === 'error') {
-                      setStatus('idle');
-                      setMessage('');
-                    }
+                    clearError();
                   }}
                   disabled={status === 'loading'}
-                  aria-invalid={status === 'error' && !consent ? 'true' : 'false'}
+                  aria-invalid={hasError && errorField === 'consent' ? 'true' : undefined}
+                  aria-describedby={hasError && errorField === 'consent' ? errorId : undefined}
                   className="mt-0.5 h-4 w-4 rounded border-gray-300 text-esn-dark focus:ring-esn-cyan cursor-pointer transition-colors accent-esn-dark shrink-0 disabled:opacity-60"
                 />
                 <label htmlFor={consentId} className="text-xs text-gray-500 leading-normal cursor-pointer select-none">
@@ -232,5 +257,6 @@ export default function NewsletterForm({
         )}
       </AnimatePresence>
     </div>
+    </MotionConfig>
   );
 }

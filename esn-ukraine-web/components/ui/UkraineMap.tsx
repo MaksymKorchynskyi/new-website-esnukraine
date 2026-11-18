@@ -5,7 +5,7 @@ export default function UkraineMap() {
     return (
         <div className="w-full max-w-5xl mx-auto overflow-hidden select-none">
             <Image
-                src="/ESN Ukraine section map.webp"
+                src="/esn-ukraine-section-map.webp"
                 alt="ESN Ukraine Section Map"
                 width={1536}
                 height={1024}

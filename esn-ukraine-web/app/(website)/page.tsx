@@ -1,10 +1,6 @@
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import {
-  Calendar,
-  ChevronRight,
-  Mail
-} from 'lucide-react';
+import { ChevronRight, Mail } from 'lucide-react';
 import HeroSection from '@/components/sections/HeroSection.client';
 import NetworkPanel from '@/components/sections/NetworkPanel';
 import { NewsCard } from '@/components/ui/Card';
@@ -30,13 +26,16 @@ const NewsletterForm = dynamic(() => import('@/components/sections/NewsletterFor
   loading: () => <div className="h-12" />,
 });
 
-import Image from 'next/image';
+import { stegaClean } from 'next-sanity';
 import { sanityFetch } from "@/sanity/lib/fetch";
-import { getSpotlightItemsQuery, getLatestNewsQuery, getLatestEventsQuery, getNetworkPhotosQuery } from "@/sanity/lib/queries";
-import type { SpotlightItem, NewsArticlePreview, EventPreview } from "@/sanity/lib/types";
+import { getHomePageQuery } from "@/sanity/lib/queries";
+import type { HomePageData, NetworkPhoto } from "@/sanity/lib/types";
+import { hasAsset, hotspotPosition, originalImageUrl } from "@/sanity/lib/image";
 import { formatDate } from "@/sanity/lib/utils";
+import type { VolunteerPhotoItem } from '@/components/sections/NetworkCollage.client';
 
 import { buildMetadata } from '@/lib/seo';
+import { JsonLd, websiteJsonLd } from '@/lib/jsonld';
 
 export const metadata = buildMetadata({
   title: 'ESN Ukraine',
@@ -47,51 +46,75 @@ export const metadata = buildMetadata({
 });
 
 
+/** Network collage photo → the shape the client component needs (URL built on the server). */
+function toCollagePhoto(photo: NetworkPhoto): VolunteerPhotoItem | null {
+  if (!hasAsset(photo.image)) return null;
+  return {
+    id: photo.id,
+    url: photo.image.asset.url ?? "",
+    alt: photo.title,
+    lqip: photo.image.asset.lqip ?? undefined,
+  };
+}
+
 export default async function Home() {
-  const sanitySpotlight = await sanityFetch<SpotlightItem[]>({ query: getSpotlightItemsQuery, tags: ['news', 'event'] });
-  const sanityNews = await sanityFetch<NewsArticlePreview[]>({ query: getLatestNewsQuery, tags: ['news'] });
-  const sanityEvents = await sanityFetch<EventPreview[]>({ query: getLatestEventsQuery, tags: ['event'] });
-  const sanityNetworkPhotos = await sanityFetch<{ id: string; title: string; slot: string; url: string; }[]>({ query: getNetworkPhotosQuery, tags: ['networkPhoto'] });
+  // One GROQ request for the whole page instead of four sequential ones.
+  const data = await sanityFetch<HomePageData>({
+    query: getHomePageQuery,
+    tags: ['news', 'event', 'networkPhoto'],
+  });
 
-  const photosSlotA = sanityNetworkPhotos?.filter(p => p.slot === 'slotA').map(p => ({ id: p.id, url: p.url, alt: p.title })) || [];
-  const photosSlotB = sanityNetworkPhotos?.filter(p => p.slot === 'slotB').map(p => ({ id: p.id, url: p.url, alt: p.title })) || [];
-  const photosSlotC = sanityNetworkPhotos?.filter(p => p.slot === 'slotC').map(p => ({ id: p.id, url: p.url, alt: p.title })) || [];
+  const photosBySlot = (slot: string) =>
+    (data.photos ?? [])
+      .filter((p) => stegaClean(p.slot) === slot)
+      .map(toCollagePhoto)
+      .filter((p): p is VolunteerPhotoItem => p !== null);
+  const photosSlotA = photosBySlot('slotA');
+  const photosSlotB = photosBySlot('slotB');
+  const photosSlotC = photosBySlot('slotC');
 
-  const SPOTLIGHT_SLIDES = sanitySpotlight.map((item, index) => ({
-    id: item._id || String(index),
-    type: item._type === 'news' ? 'News' : 'Event',
-    date: formatDate(item.date || item.publishedAt),
-    title: item.title,
-    description: item.excerpt,
-    image: item.bannerUrl || 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80',
-    imageBlur: item.bannerUrl ? item.bannerLqip ?? undefined : undefined,
-    imagePosition: item.bannerHotspot
-      ? `${Math.round(item.bannerHotspot.x * 100)}% ${Math.round(item.bannerHotspot.y * 100)}%`
-      : undefined,
-    link: `/${item._type === 'news' ? 'news' : 'events'}/${item.slug}`
-  }));
+  // Slides without any photo are skipped: the hero never shows a stock image
+  const SPOTLIGHT_SLIDES = (data.spotlight ?? [])
+    .filter((item) => hasAsset(item.banner))
+    .map((item) => ({
+      id: item._id,
+      type: item._type === 'news' ? 'News' : 'Event',
+      date: formatDate(item.date || item.publishedAt),
+      title: item.title,
+      description: item.excerpt,
+      image: originalImageUrl(item.banner) ?? "",
+      imageBlur: item.banner?.asset?.lqip ?? undefined,
+      imagePosition: hotspotPosition(item.banner),
+      link: `/${item._type === 'news' ? 'news' : 'events'}/${item.slug}`,
+    }));
 
-  const NEWS = sanityNews.map((item, index) => ({
-    id: item._id || String(index),
+  const NEWS = (data.news ?? []).map((item) => ({
+    id: item._id,
     title: item.title,
     publishedAt: item.publishedAt,
     excerpt: item.excerpt,
-    imageUrl: item.imageUrl || 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80',
-    slug: item.slug.current,
-    type: 'news' as const
+    imageUrl: originalImageUrl(item.image),
+    imageLqip: item.image?.asset?.lqip,
+    slug: item.slug,
+    type: 'news' as const,
   }));
 
-  const PAST_EVENTS = sanityEvents.map((item, index) => ({
-    id: index,
+  const PAST_EVENTS = (data.events ?? []).map((item) => ({
+    id: item._id,
     title: item.title,
     date: formatDate(item.date),
     location: item.location || 'Online',
     description: item.excerpt,
-    image: item.imageUrl || 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80',
-    link: `/events/${item.slug.current}`
+    image: originalImageUrl(item.image),
+    imageLqip: item.image?.asset?.lqip ?? undefined,
+    link: `/events/${item.slug}`,
   }));
   return (
     <main className="min-h-svh bg-white text-esn-dark selection:bg-esn-cyan selection:text-white">
+      <JsonLd data={websiteJsonLd()} />
+      {/* Permanent page heading for assistive tech and search engines; the hero's
+          rotating slide titles are h2 */}
+      <h1 className="sr-only">ESN Ukraine — Erasmus Student Network Ukraine</h1>
 
       {/* =========================================
           1. HERO SECTION (SLIDER WITH GRADIENT)
@@ -99,10 +122,6 @@ export default async function Home() {
       ========================================= */}
       <HeroSection slides={SPOTLIGHT_SLIDES} />
 
-      {/* =========================================
-          2. ABOUT US (TYPOGRAPHY & MISSION)
-          Еталонна верстка тексту.
-      ========================================= */}
       {/* =========================================
           2. ABOUT US (TYPOGRAPHY & MISSION)
           Еталонна верстка тексту.
@@ -148,6 +167,7 @@ export default async function Home() {
                 <div>
                   <Link
                     href="/about-us"
+                    aria-label="Read more about ESN Ukraine"
                     className="group inline-flex items-center justify-center gap-2 rounded-full border border-esn-dark sm:border-2 px-5 py-2.5 sm:px-8 sm:py-3 text-xs sm:text-sm font-bold uppercase tracking-widest text-esn-dark transition-all hover:bg-esn-dark hover:text-white shrink-0 min-h-[42px]"
                   >
                     Read More
@@ -169,9 +189,9 @@ export default async function Home() {
           <NetworkPanel
             photos={
               <NetworkCollage
-                photosSlotA={photosSlotA.length > 0 ? photosSlotA : undefined}
-                photosSlotB={photosSlotB.length > 0 ? photosSlotB : undefined}
-                photosSlotC={photosSlotC.length > 0 ? photosSlotC : undefined}
+                photosSlotA={photosSlotA}
+                photosSlotB={photosSlotB}
+                photosSlotC={photosSlotC}
               />
             }
           />
@@ -251,7 +271,7 @@ export default async function Home() {
 
         {/* Infinite Marquee Ticker */}
         <div className="relative w-full z-10" aria-hidden="true">
-        <div className="w-max animate-marquee flex">
+        <div className="w-max motion-safe:animate-marquee flex">
           {[...Array(2)].map((_, dupeIdx) => (
             <div key={dupeIdx} className="flex gap-10 sm:gap-16 pr-10 sm:pr-16">
               {[
@@ -280,4 +300,5 @@ export default async function Home() {
       </section>
     </main>
   );
-}// trigger vercel
+}
+

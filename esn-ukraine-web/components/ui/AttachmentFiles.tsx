@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { FileText, Eye, ExternalLink, X, Download, Loader2, AlertCircle } from 'lucide-react';
+import { useDialog } from '@/lib/useDialog';
 
 export interface AttachmentFile {
   _key: string;
@@ -42,6 +43,17 @@ function isPreviewable(ext: string): boolean {
   return ['PDF'].includes(ext);
 }
 
+/**
+ * Sanity file URLs end in an asset hash. `?dl=<name>` makes the CDN send a
+ * Content-Disposition header, so the download gets a human-readable file name.
+ */
+function downloadUrl(file: AttachmentFile): string {
+  const name = file.originalFilename || file.title;
+  if (!name) return file.fileUrl;
+  const separator = file.fileUrl.includes('?') ? '&' : '?';
+  return `${file.fileUrl}${separator}dl=${encodeURIComponent(name)}`;
+}
+
 export default function AttachmentFiles({ files }: AttachmentFilesProps) {
   const [activeFile, setActiveFile] = useState<AttachmentFile | null>(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -60,33 +72,16 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Reset loading state when switching files
-  useEffect(() => {
-    if (activeFile) {
-      setIframeLoaded(false);
-      setIframeError(false);
-    }
-  }, [activeFile]);
+  // Opening a file resets the loading state (no setState inside an effect)
+  const openPreview = useCallback((file: AttachmentFile) => {
+    setIframeLoaded(false);
+    setIframeError(false);
+    setActiveFile(file);
+  }, []);
+  const closePreview = useCallback(() => setActiveFile(null), []);
 
-  // Закриття модального вікна по Escape
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setActiveFile(null);
-    };
-    if (activeFile) {
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
-    } else {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [activeFile]);
+  // Escape, focus trap, focus restore and iOS-safe scroll lock while the preview is open
+  const dialogRef = useDialog<HTMLDivElement>({ open: activeFile !== null, onClose: closePreview });
 
   // Timeout fallback: if iframe hasn't loaded in 12s, show error state
   useEffect(() => {
@@ -99,7 +94,7 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
 
   const handleDownload = useCallback((e: React.MouseEvent, file: AttachmentFile) => {
     e.stopPropagation();
-    window.open(file.fileUrl, '_blank', 'noopener,noreferrer');
+    window.open(downloadUrl(file), '_blank', 'noopener,noreferrer');
   }, []);
 
   const handleFileClick = useCallback((file: AttachmentFile) => {
@@ -109,9 +104,9 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
     if (isMobile || !isPreviewable(ext)) {
       window.open(file.fileUrl, '_blank', 'noopener,noreferrer');
     } else {
-      setActiveFile(file);
+      openPreview(file);
     }
-  }, [isMobile]);
+  }, [isMobile, openPreview]);
 
   if (!files || files.length === 0) return null;
 
@@ -120,9 +115,9 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
       <div className="mx-auto max-w-5xl">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-1.5 h-6 bg-esn-cyan rounded-full" />
-          <h3 className="text-2xl font-black text-esn-dark tracking-tight">
+          <h2 className="text-2xl font-black text-esn-dark tracking-tight">
             Attachment Files
-          </h3>
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -136,17 +131,26 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
             return (
               <div
                 key={file._key || file.fileUrl}
+                role="button"
+                tabIndex={0}
                 onClick={() => handleFileClick(file)}
-                className="group bg-white rounded-2xl p-4 border border-gray-100 hover:border-esn-cyan shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4 cursor-pointer"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleFileClick(file);
+                  }
+                }}
+                aria-label={`${previewable && !isMobile ? 'Preview' : 'Open'} ${displayTitle}`}
+                className="group bg-white rounded-2xl p-4 border border-gray-100 hover:border-esn-cyan shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-esn-dark focus-visible:ring-offset-2"
               >
                 <div className="w-11 h-11 rounded-xl bg-esn-cyan/10 group-hover:bg-esn-cyan text-esn-cyan group-hover:text-white transition-colors flex items-center justify-center shrink-0">
                   <FileText className="w-5 h-5" />
                 </div>
 
                 <div className="flex-1 min-w-0 pr-2">
-                  <h4 className="text-sm sm:text-base font-bold text-gray-900 group-hover:text-esn-cyan transition-colors truncate">
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 group-hover:text-esn-cyan transition-colors truncate">
                     {displayTitle}
-                  </h4>
+                  </h3>
                   <div className="flex items-center gap-2 mt-1 text-xs font-medium text-gray-400">
                     <span className="font-extrabold uppercase text-esn-magenta">{ext}</span>
                     {formattedSize && (
@@ -161,6 +165,7 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
                 {/* Action buttons */}
                 <div className="flex items-center gap-2 shrink-0">
                   <button
+                    type="button"
                     onClick={(e) => handleDownload(e, file)}
                     className="w-9 h-9 rounded-xl border border-gray-200 bg-gray-50 hover:bg-esn-dark hover:border-esn-dark text-gray-500 hover:text-white flex items-center justify-center transition-all duration-200"
                     aria-label={`Download ${displayTitle}`}
@@ -170,6 +175,7 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
                   </button>
                   {previewable && (
                     <button
+                      type="button"
                       onClick={(e) => { e.stopPropagation(); handleFileClick(file); }}
                       className="w-9 h-9 rounded-xl border border-gray-200 bg-gray-50 hover:bg-esn-cyan hover:border-esn-cyan text-gray-500 hover:text-white flex items-center justify-center transition-all duration-200"
                       aria-label={`Preview ${displayTitle}`}
@@ -190,12 +196,19 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
         <div
           className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-0 sm:p-3 md:p-4 animate-fade-in overscroll-none"
           onClick={(e) => {
-            if (e.target === e.currentTarget) setActiveFile(null);
+            if (e.target === e.currentTarget) closePreview();
           }}
           onWheel={(e) => e.stopPropagation()}
         >
           {/* Modal container: full-screen on mobile, rounded card on desktop */}
-          <div className="bg-white w-full sm:max-w-6xl md:max-w-7xl h-[100dvh] sm:h-[93dvh] rounded-none sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-scale-up sm:border sm:border-gray-100">
+          <div
+            ref={dialogRef}
+            key={activeFile._key || activeFile.fileUrl}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="attachment-preview-title"
+            className="bg-white w-full sm:max-w-6xl md:max-w-7xl h-[100dvh] sm:h-[93dvh] rounded-none sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col sm:border sm:border-gray-100 outline-none"
+          >
             {/* Хедер модалки — компактний на мобільних */}
             <div className="px-4 py-3 sm:px-6 sm:py-4 bg-gray-900 text-white flex items-center justify-between gap-3 sm:gap-4 shrink-0 border-b border-gray-800">
               <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
@@ -203,9 +216,9 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
                   <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="font-bold text-white text-sm sm:text-base md:text-lg truncate leading-tight">
+                  <h3 id="attachment-preview-title" className="font-bold text-white text-sm sm:text-base md:text-lg truncate leading-tight">
                     {activeFile.title || activeFile.originalFilename || 'Document Preview'}
-                  </h4>
+                  </h3>
                   <p className="text-[11px] sm:text-xs text-gray-400 truncate hidden sm:block">
                     {activeFile.originalFilename} {formatFileSize(activeFile.size) && `(${formatFileSize(activeFile.size)})`}
                   </p>
@@ -214,7 +227,7 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
 
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <a
-                  href={activeFile.fileUrl}
+                  href={downloadUrl(activeFile)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-esn-cyan hover:bg-[#0095cc] text-white text-xs sm:text-sm font-semibold rounded-lg sm:rounded-xl transition-colors shadow-sm shrink-0"
@@ -225,7 +238,8 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
                 </a>
 
                 <button
-                  onClick={() => setActiveFile(null)}
+                  type="button"
+                  onClick={closePreview}
                   className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
                   aria-label="Close"
                 >
@@ -282,6 +296,7 @@ export default function AttachmentFiles({ files }: AttachmentFilesProps) {
               <div className="hidden sm:flex bg-gray-50 border-t border-gray-200 px-6 py-2.5 text-xs text-gray-500 items-center justify-between shrink-0">
                 <span>Document preview embedded directly on ESN Ukraine website</span>
                 <button
+                  type="button"
                   onClick={(e) => activeFile && handleDownload(e, activeFile)}
                   className="text-esn-dark hover:text-esn-cyan font-semibold inline-flex items-center gap-1 underline transition-colors"
                 >

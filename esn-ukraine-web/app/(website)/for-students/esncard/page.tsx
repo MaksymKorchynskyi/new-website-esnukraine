@@ -138,17 +138,17 @@ export default function ESNcardPage() {
                             {
                                 title: 'Travel Discounts',
                                 description: 'Save on flights, buses, and trains across Europe with partners like Ryanair and Flixbus.',
-                                imageUrl: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=600',
+                                imageUrl: '/images/esncard/travel.jpg',
                             },
                             {
                                 title: 'Local Partner Deals',
                                 description: 'Access exclusive discounts at cafes, restaurants, and services in Ukrainian cities.',
-                                imageUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&q=80&w=600',
+                                imageUrl: '/images/esncard/local-deals.jpg',
                             },
                             {
                                 title: 'Events & Entertainment',
                                 description: 'Priority access to ESN events, trips, and cultural activities across the network.',
-                                imageUrl: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&q=80&w=600',
+                                imageUrl: '/images/esncard/events.jpg',
                             },
                         ].map((benefit, index) => (
                             <div
@@ -158,7 +158,7 @@ export default function ESNcardPage() {
                                 <div className="relative h-44 sm:h-48 md:h-56 overflow-hidden">
                                     <Image
                                         src={benefit.imageUrl}
-                                        alt={benefit.title}
+                                        alt=""
                                         fill
                                         className="object-cover"
                                     />

@@ -25,7 +25,7 @@ We show the map as a **static image** rendered with `next/image` (`components/ui
 
 - **The map is not data-driven.** Adding a section in the Studio does not update it. Someone has to edit the image and deploy it (see [Add a new ESN section](../guides/maintenance-tasks.md#add-a-new-esn-section)).
 - The information is only in the image, so it depends on the image's alternative text and on the section cards below it for accessibility.
-- Files from earlier versions remain in `public/` (`ESN_Ukraine_Map.svg`, `images/ukraine-map.svg`), along with the `geojson-rewind` development dependency.
+- The map file is `public/esn-ukraine-section-map.webp`. The leftover `ESN_Ukraine_Map.svg` and the `geojson-rewind` development dependency have been removed; `images/ukraine-map.svg` is still the source of the homepage map mask.
 
 ## References
 
