@@ -377,12 +377,12 @@ export default function NationalErasmusOfficePage() {
       </section>
 
       {/* ═══════ USEFUL RESOURCES ═══════ */}
-      <section className="py-12 sm:py-16 md:py-20 px-6 sm:px-12 lg:px-24 bg-esn-dark">
+      <section className="py-12 sm:py-16 md:py-20 px-6 sm:px-12 lg:px-24 bg-white">
         <div className="mx-auto max-w-5xl text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-esn-dark mb-4">
             Useful Resources
           </h2>
-          <p className="text-gray-400 mb-8 sm:mb-12 max-w-2xl mx-auto">
+          <p className="text-gray-500 mb-8 sm:mb-12 max-w-2xl mx-auto">
             Official links related to Erasmus+ and the National Erasmus+ Office.
           </p>
 
@@ -400,7 +400,7 @@ export default function NationalErasmusOfficePage() {
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-6 py-4 rounded-xl transition-colors font-bold text-sm sm:text-base"
+                className="flex items-center justify-center gap-2 bg-[#F4F8FA] hover:bg-esn-dark border border-gray-100 hover:border-esn-dark text-esn-dark hover:text-white px-6 py-4 rounded-xl transition-colors font-bold text-sm sm:text-base"
               >
                 {link.title}
                 <ExternalLink className="w-4 h-4 flex-shrink-0" />
@@ -411,7 +411,7 @@ export default function NationalErasmusOfficePage() {
       </section>
 
       {/* ═══════ CTA ═══════ */}
-      <section className="py-14 sm:py-20 md:py-24 bg-gradient-to-r from-orange-500 to-esn-dark">
+      <section className="py-14 sm:py-20 md:py-24 bg-gradient-to-r from-[#1a1d5e] via-esn-dark to-esn-cyan">
         <div className="mx-auto max-w-4xl px-6 sm:px-12 lg:px-24 text-center text-white">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-black mb-6">
             Explore Erasmus+ Opportunities
