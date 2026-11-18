@@ -1,12 +1,12 @@
 /**
- * Утиліта для форматування дати у форматі DD/MM/YYYY (наприклад, 11/03/2022).
- * Дата рахується за київським часом і на сервері (UTC), і в браузері, тому
- * результат однаковий і не спричиняє помилок гідрації.
+ * Dates are formatted in the Kyiv time zone on both the server (UTC) and the
+ * client, so the output is identical and never causes a hydration mismatch.
+ * Example: "14 Oct 2025".
  */
 const KYIV_DATE = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'Europe/Kyiv',
-  day: '2-digit',
-  month: '2-digit',
+  day: 'numeric',
+  month: 'short',
   year: 'numeric',
 });
 

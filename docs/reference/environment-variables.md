@@ -26,7 +26,7 @@ Every environment variable the application reads, where it is used, whether it i
 | [`CONTACT_EMAIL_FROM`](#contact_email_from-and-contact_email_to) | Server | For the contact form | `app/api/contact/route.ts` |
 | [`CONTACT_EMAIL_TO`](#contact_email_from-and-contact_email_to) | Server | Optional | `app/api/contact/route.ts` |
 | [`RATE_LIMIT_SALT`](#rate_limit_salt) | Server | Optional | `lib/server/request-guards.ts` |
-| [`NEXT_PUBLIC_POSTHOG_KEY`](#next_public_posthog_key) | Public | No | `components/analytics/PostHogProvider.tsx` |
+| [`NEXT_PUBLIC_POSTHOG_KEY`](#next_public_posthog_key) | Public | No | `lib/analytics.ts` |
 | [`VERCEL_ENV`, `VERCEL_URL`, `VERCEL_PROJECT_PRODUCTION_URL`](#variables-set-by-vercel) | Server | Set by Vercel | Root layout, newsletter API |
 | `NODE_ENV` | — | Set by Next.js | `sanity/lib/fetch.ts`, `sanity.config.ts`, newsletter API |
 
@@ -64,7 +64,7 @@ Without it, draft mode cannot be enabled, and a warning is logged if draft mode 
 
 ### `SANITY_REVALIDATE_SECRET`
 
-A secret, chosen by you, with which Sanity signs every call to `/api/revalidate` (the **Secret** field of the webhook). Without a matching secret, the route answers `401` and content updates only through the daily revalidation.
+A secret, chosen by you, that authenticates the Sanity webhook calls to `/api/revalidate`: either Sanity signs the request with it (the webhook's **Secret** field) or the webhook sends it as `?secret=` or in a header. Without a matching secret, the route answers `401` and content updates only through the daily revalidation.
 
 **How to create it:** generate a long random string, for example with `openssl rand -base64 32`. Store it in Vercel and in the webhook's **Secret** field in Sanity. See [Configure the Sanity webhook](../guides/deployment-and-environments.md#configure-the-sanity-webhook).
 

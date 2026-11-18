@@ -160,7 +160,7 @@ Images in the article body and gallery use the low-quality image placeholder (`m
 
 ## Dates
 
-`formatDate` in [`sanity/lib/utils.ts`](../../esn-ukraine-web/sanity/lib/utils.ts) formats dates as `DD/MM/YYYY` in Kyiv time (`Europe/Kyiv`), on the server and in the browser alike, so an event shortly after midnight Kyiv time shows the right day.
+`formatDate` in [`sanity/lib/utils.ts`](../../esn-ukraine-web/sanity/lib/utils.ts) formats dates as `14 Oct 2025` in Kyiv time (`Europe/Kyiv`), on the server and in the browser alike, so an event shortly after midnight Kyiv time shows the right day.
 
 ## Error handling
 

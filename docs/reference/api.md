@@ -25,11 +25,14 @@ Invalidates the Next.js data cache, so that pages show newly published content. 
 
 ### Authentication
 
-Sanity signs the request body with the webhook **Secret** (`sanity-webhook-signature` header). The route verifies that signature against `SANITY_REVALIDATE_SECRET` with `parseBody` from `next-sanity/webhook`. Headers or query parameters carrying the secret are not accepted.
+Two methods are accepted, both checked against `SANITY_REVALIDATE_SECRET`:
+
+- **Signature (recommended).** When the webhook's **Secret** field is filled in, Sanity signs the body (`sanity-webhook-signature` header). The route verifies it with `parseBody` from `next-sanity/webhook`.
+- **Secret in the request.** `Authorization: Bearer <secret>`, an `x-sanity-secret` header or `?secret=<secret>` in the URL, compared in constant time. This is the setup the site used before November 2026, so an existing webhook keeps working unchanged.
 
 ### Request body
 
-JSON produced by the webhook projection `{ _type, "slug": slug.current }`:
+Either the full document (the default when no projection is set) or the projection `{ _type, "slug": slug.current }`. The route reads `_type` and the slug, as a string or as `slug.current`:
 
 | Field | Type | Description |
 |---|---|---|
@@ -49,7 +52,7 @@ With `expire: 0` the cached entries are gone immediately: the first visitor afte
 |---|---|---|
 | `200` | `{ "revalidated": true, "tags": ["news", "news:my-article"], "now": 1761400000000 }` | Success |
 | `400` | `{ "message": "Bad request: missing _type" }` | The projection does not include `_type` |
-| `401` | `{ "message": "Invalid signature" }` | The signature is missing or does not match the secret |
+| `401` | `{ "message": "Invalid signature" }` or `{ "message": "Unauthorized: Invalid token" }` | The signature or the secret does not match `SANITY_REVALIDATE_SECRET` |
 | `503` | `{ "message": "Revalidation is not configured" }` | `SANITY_REVALIDATE_SECRET` is not set |
 | `500` | `{ "message": "Internal Server Error" }` | Unexpected error. The message is logged |
 

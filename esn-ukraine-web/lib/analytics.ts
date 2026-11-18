@@ -17,20 +17,14 @@ export async function startAnalytics(): Promise<PostHog | null> {
 
   if (!loading) {
     loading = import('posthog-js').then(({ default: posthog }) => {
+      // Same capture settings as the production site before November 2026
+      // (autocapture, heatmaps etc. stay at the PostHog defaults); only the
+      // moment of loading changed.
       posthog.init(key, {
         api_host: '/ingest/posthog',
         ui_host: 'https://eu.posthog.com',
         capture_pageview: false, // sent manually on route changes (SPA)
-        capture_pageleave: true,
-        // Only what the site actually uses; nothing can be widened from the PostHog UI
-        autocapture: false,
-        disable_surveys: true,
-        capture_dead_clicks: false,
-        capture_heatmaps: false,
-        capture_performance: false,
-        capture_exceptions: false,
         disable_session_recording: true,
-        persistence: 'localStorage+cookie',
       });
       instance = posthog;
       return posthog;

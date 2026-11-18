@@ -41,8 +41,7 @@ A catalogue of the React components and shared modules in `esn-ukraine-web/`. Fo
 
 | Component | Type | Purpose |
 |---|---|---|
-| `PostHogProvider.tsx` | Client | Initialises PostHog in opted-out mode and opts in or out according to the cookie consent. Wraps the whole website in the root layout |
-| `PostHogPageView.tsx` | Client | Sends a `$pageview` on every route change, but only while tracking is allowed |
+| `AnalyticsLoader.tsx` | Client | Loads PostHog (`lib/analytics.ts`) only after analytics consent, stops it when consent is withdrawn, and sends a `$pageview` on every route change |
 
 See [Privacy and analytics](../architecture/privacy-and-analytics.md).
 
@@ -67,7 +66,7 @@ See [Privacy and analytics](../architecture/privacy-and-analytics.md).
 | [`sanity/lib/queries.ts`](../../esn-ukraine-web/sanity/lib/queries.ts) | GROQ queries | See [Content model → Queries](content-model.md#queries) |
 | [`sanity/lib/types.ts`](../../esn-ukraine-web/sanity/lib/types.ts) | Result types | Hand-written TypeScript types for query results |
 | [`sanity/lib/image.ts`](../../esn-ukraine-web/sanity/lib/image.ts) | `urlFor`, `urlForImage` (identical) | Sanity image URL builder |
-| [`sanity/lib/utils.ts`](../../esn-ukraine-web/sanity/lib/utils.ts) | `formatDate` | `DD/MM/YYYY` formatting in Kyiv time |
+| [`sanity/lib/utils.ts`](../../esn-ukraine-web/sanity/lib/utils.ts) | `formatDate` | Dates such as `14 Oct 2025`, in Kyiv time |
 | [`sanity/lib/imageValidation.ts`](../../esn-ukraine-web/sanity/lib/imageValidation.ts) | `validateImageSize`, `validateFileSize`, `ACCEPTED_IMAGE_TYPES`, `ACCEPTED_FILE_TYPES` | Upload validation used in schemas |
 | [`sanity/lib/live.ts`](../../esn-ukraine-web/sanity/lib/live.ts) | `sanityFetch`, `SanityLive` (Live Content API) | Not used at the moment |
 | [`sanity/lib/mockData.ts`](../../esn-ukraine-web/sanity/lib/mockData.ts) | Mock news and events | Not imported anywhere at the moment |
