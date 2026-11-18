@@ -3,10 +3,11 @@ import type { QueryParams } from "next-sanity";
 import { draftMode } from "next/headers";
 
 /**
- * Time-based revalidation is only a safety net: the Sanity webhook
- * (`/api/revalidate`) expires the affected tags the moment content is published.
+ * The Sanity webhook (`/api/revalidate`) expires the affected tags the moment
+ * content is published. The hourly revalidation (same as production) is the
+ * safety net if a webhook call ever fails.
  */
-export const REVALIDATE_SECONDS = 86400; // 24 hours
+export const REVALIDATE_SECONDS = 3600; // 1 hour
 
 export async function sanityFetch<QueryResponse>({
   query,

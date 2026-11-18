@@ -22,7 +22,7 @@ Every public page is rendered on the server. The table shows how each group of r
 | Strategy | Routes | Behaviour |
 |---|---|---|
 | **Static** | `/about-us`, `/contact`, `/cookies`, `/privacy`, `/erasmus` and its subpages, `/for-students/*`, `/blog`, `/projects`, `/robots.txt` | Rendered once at build time. These pages do not read from Sanity, so content changes need a new deployment. |
-| **Incremental static regeneration (ISR)** | `/`, `/news`, `/events`, `/upcoming-events`, `/national-board`, `/our-sections`, `/about-us/former-boards`, `/sitemap.xml`, `/rss.xml` | Rendered at build time and cached. Refreshed after 24 hours or, immediately, when the publish webhook expires the cache tags. `/upcoming-events` reads the `upcomingEvent` and `section` types. |
+| **Incremental static regeneration (ISR)** | `/`, `/news`, `/events`, `/upcoming-events`, `/national-board`, `/our-sections`, `/about-us/former-boards`, `/sitemap.xml`, `/rss.xml` | Rendered at build time and cached. Refreshed after one hour or, immediately, when the publish webhook expires the cache tags. `/upcoming-events` reads the `upcomingEvent` and `section` types. |
 | **ISR with pre-rendered parameters** | `/news/[slug]`, `/events/[slug]` | `generateStaticParams` pre-renders every published slug at build time. A slug published later is rendered on its first request and then cached. Unknown slugs are checked against the cached list of all slugs (no Sanity request) and return a real `404`. |
 | **Static shell, browser application** | `/studio/[[...tool]]` (`dynamic = 'force-static'`) | The page delivers the Studio application, which then runs in the browser. |
 | **Dynamic** | `/api/*` | Executed on every request on the Node.js runtime. |
@@ -45,7 +45,7 @@ Its behaviour depends on the context:
 
 | Context | Perspective | Caching | Other |
 |---|---|---|---|
-| **Normal request** (production, preview) | `published`: only published documents | Next.js data cache with `revalidate: 86400` (24 h) and the given tags | `stega` off |
+| **Normal request** (production, preview) | `published`: only published documents | Next.js data cache with `revalidate: 3600` (1 h) and the given tags | `stega` off |
 | **Draft mode** | `drafts`: drafts override published documents | No caching (`revalidate: 0`) | Uses `SANITY_API_READ_TOKEN`; `stega` on, for visual editing |
 | **Development** (`npm run dev`) | `published` | No caching (`revalidate: 0`) | Content changes appear on refresh |
 

@@ -64,7 +64,7 @@ Without it, draft mode cannot be enabled, and a warning is logged if draft mode 
 
 ### `SANITY_REVALIDATE_SECRET`
 
-A secret, chosen by you, that authenticates the Sanity webhook calls to `/api/revalidate`: either Sanity signs the request with it (the webhook's **Secret** field) or the webhook sends it as `?secret=` or in a header. Without a matching secret, the route answers `401` and content updates only through the daily revalidation.
+A secret, chosen by you, that authenticates the Sanity webhook calls to `/api/revalidate`: either Sanity signs the request with it (the webhook's **Secret** field) or the webhook sends it as `?secret=` or in a header. Without a matching secret, the route answers `401` and content updates only through the hourly revalidation.
 
 **How to create it:** generate a long random string, for example with `openssl rand -base64 32`. Store it in Vercel and in the webhook's **Secret** field in Sanity. See [Configure the Sanity webhook](../guides/deployment-and-environments.md#configure-the-sanity-webhook).
 

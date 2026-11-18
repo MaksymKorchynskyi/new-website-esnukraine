@@ -15,7 +15,6 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'",
   },
-  { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
 ];
 
 const nextConfig: NextConfig = {
@@ -46,7 +45,7 @@ const nextConfig: NextConfig = {
   },
   // PostHog's client sends requests with a trailing slash (/ingest/posthog/e/). Without
   // this, Next.js answers each with a 308 redirect first: two requests per event.
-  // Trailing slashes on page URLs are normalised in proxy.ts instead.
+  // Trailing slashes on page URLs are redirected by the first rule in redirects().
   skipTrailingSlashRedirect: true,
   experimental: {
     optimizePackageImports: ['@sanity/icons', '@sanity/ui', '@sanity/util', 'sanity', 'lucide-react', 'framer-motion'],
@@ -66,6 +65,16 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // Trailing slash → canonical URL (/news/ → /news), as Next.js does by default.
+      // `skipTrailingSlashRedirect` turns the default off so PostHog requests
+      // (/ingest/posthog/e/) are not redirected; this rule handles pages instead.
+      // Being a config redirect, it runs in Vercel's routing layer, not in a function.
+      {
+        source: '/:path((?!ingest/|_next/|api/)[^.]*[^/.])/',
+        destination: '/:path',
+        permanent: true,
+      },
+
       // =============================================
       // SEO REDIRECTS: Старий сайт → Новий сайт
       // Повна міграція esnukraine.org (Drupal → Next.js)

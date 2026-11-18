@@ -92,7 +92,7 @@ The data is a constant object in each page file and is serialised with `JSON.str
 - **18 static URLs**, listed by hand. They carry no `lastModified` (a date that changed on every regeneration would teach Google to ignore it) and no `priority` (ignored by Google).
 - **Every news item and event** with a slug, with `lastModified` taken from the document's `_updatedAt`.
 - The base URL comes from the `SITE_URL` constant in `lib/seo.ts`, shared with `robots.ts`, the RSS feed and JSON-LD.
-- The sitemap uses `sanityFetch` with the `news` and `event` tags, so it refreshes together with the content (at least daily). If Sanity is unreachable, the static URLs are still published.
+- The sitemap uses `sanityFetch` with the `news` and `event` tags, so it refreshes together with the content (at least hourly). If Sanity is unreachable, the static URLs are still published.
 
 The placeholder pages (Projects, Blog, Buddy, Housing, Survival Guide) are deliberately not listed because they are `noindex`. When you add, rename or remove a public page, update the static list in `app/sitemap.ts`.
 
