@@ -70,7 +70,9 @@ const nextConfig: NextConfig = {
       // (/ingest/posthog/e/) are not redirected; this rule handles pages instead.
       // Being a config redirect, it runs in Vercel's routing layer, not in a function.
       {
-        source: '/:path((?!ingest/|_next/|api/)[^.]*[^/.])/',
+        // Non-empty segments only, so a path such as `//host/` can never become a
+        // protocol-relative `Location: //host` (open redirect), even off Vercel.
+        source: '/:path((?!ingest/|_next/|api/)(?:[^/.]+/)*[^/.]+)/',
         destination: '/:path',
         permanent: true,
       },
